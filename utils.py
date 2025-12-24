@@ -1,7 +1,7 @@
 import pygame
 
 class Button:
-    def __init__(self, position, size, color=[100, 100, 100], change_color=None, func=None, text='', font="Segoe Print", font_size=16, font_color=[0, 0, 0]):
+    def __init__(self, position, size, color=[100, 100, 100], change_color=None, func=None, text='', font="arial", font_size=16, font_color=[0, 0, 0]):
         self.color = color
         self.size = size
         self.func = func
@@ -40,7 +40,6 @@ class Button:
         if self.rect.collidepoint(pos):
             if self.func:
                 return self.func(*args)
-            print(f"Button '{self.txt}' clicked!")
 
 class Text:
     def __init__(self, msg, position, clr=[100, 100, 100], font="Segoe Print", font_size=15, mid=False):
@@ -57,3 +56,17 @@ class Text:
 
     def draw(self, screen):
         screen.blit(self.txt_surf, self.position)
+
+def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
+    """
+    canvas is the screen or surface to draw on -
+    color is the color of the rectangle -
+    x is the horizontal left and right -
+    y is vertical up and down -
+    width in pixel -
+    height in pixel -
+    thickness 0 is filled after that its thickness of the border
+    """
+
+    rect = pygame.Rect(x, y, width, height)
+    pygame.draw.rect(canvas, color, rect, thickness)

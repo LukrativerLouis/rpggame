@@ -22,6 +22,8 @@ class Game():
         self.clock = pygame.time.Clock()
         self.running = True
 
+        # dynamic display
+
         self.scale_factor = 1.0
         self.offset_x = 0
         self.offset_y = 0
@@ -31,10 +33,10 @@ class Game():
 
     def create_objects(self):
 
-        btn_inventory = Button(position = (100, 100), size = (150, 50), text = "Inventory", change_color = [150, 150, 150])
-        btn_quit = Button(position=(1280 - 100, 650), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func=self.quit_game)
+        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Start Quest", change_color = [150, 150, 150], func = lambda: self.character.adjust_gold_and_exp(1, 5))
+        btn_quit = Button(position=(1880 - 100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func=self.quit_game)
 
-        self.button_list = [btn_inventory, btn_quit]
+        self.button_list = [btn_quest, btn_quit]
 
     def quit_game(self):
         self.running = False
@@ -121,9 +123,12 @@ class Game():
             for button in self.button_list:
                 button.draw(self.canvas, mouse_pos)
 
-            show_text(self.canvas, f"Gold: {self.character.gold}", y = 10, x = 10, color = "green")
+            show_text(self.canvas, f"Gold: {self.character.gold}", y = 15, x = 25, color = "yellow")
+            show_text(self.canvas, f"EXP: {self.character.experience}", y = 35, x = 25, color = "green")
 
-            show_text(self.canvas, f"Virtual Mouse: {mouse_pos}", y = 1050, x = 10, color = "white")
+            show_text(self.canvas, f"Virtual Mouse: {mouse_pos}", y = 1050, x = 210, color = "white")
+
+            create_rectangle(self.canvas, 0, 0, 200, 1080, 5, "blue")
 
             self.screen.fill((20, 20, 20))
 
