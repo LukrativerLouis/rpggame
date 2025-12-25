@@ -1,5 +1,6 @@
 import pygame
 from character import *
+from quest_window import *
 from settings import *
 from debug import *
 from utils import *
@@ -19,8 +20,12 @@ class Game():
 
         self.canvas = pygame.Surface((self.settings.base_width, self.settings.base_height))
 
+        self.main_button_list = []
+
         self.clock = pygame.time.Clock()
         self.running = True
+
+        self.quest_window = Quest_Window(self.character)
 
         # dynamic display
 
@@ -33,10 +38,10 @@ class Game():
 
     def create_objects(self):
 
-        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Start Quest", change_color = [150, 150, 150], func = lambda: self.character.adjust_gold_and_exp(1, 5))
-        btn_quit = Button(position=(1880 - 100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func=self.quit_game)
+        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Start Quest", change_color = [150, 150, 150], func = lambda: self.quest_window.toggle_quest_window())
+        btn_quit = Button(position=(1880 - 100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
 
-        self.button_list = [btn_quest, btn_quit]
+        self.main_button_list = [btn_quest, btn_quit]
 
     def quit_game(self):
         self.running = False
@@ -103,6 +108,14 @@ class Game():
                 if event.type == pygame.QUIT:
                     self.running = False
 
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        for button in self.main_button_list:
+                            button.click(mouse_pos)
+
+                    if self.quest_window.show_quest_window:
+                        self.quest_window.handle_events(event, mouse_pos)
+
                 elif event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:
                         self.calc_scale()
@@ -113,14 +126,9 @@ class Game():
                     if event.key == pygame.K_ESCAPE:
                         self.quit_game()
 
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for button in self.button_list:
-                            button.click(mouse_pos)
-
             self.canvas.fill("black")
 
-            for button in self.button_list:
+            for button in self.main_button_list:
                 button.draw(self.canvas, mouse_pos)
 
             show_text(self.canvas, f"Gold: {self.character.gold}", y = 15, x = 25, color = "yellow")
@@ -128,7 +136,15 @@ class Game():
 
             show_text(self.canvas, f"Virtual Mouse: {mouse_pos}", y = 1050, x = 210, color = "white")
 
+            # left menu rect
             create_rectangle(self.canvas, 0, 0, 200, 1080, 5, "blue")
+
+            # right main rect
+            create_rectangle(self.canvas, 195, 0, 1725, 1080, 5, "blue")
+
+            # quest window
+            if self.quest_window.show_quest_window:
+                self.quest_window.draw(self.canvas, mouse_pos)
 
             self.screen.fill((20, 20, 20))
 

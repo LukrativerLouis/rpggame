@@ -3,10 +3,12 @@ import pygame
 class Button:
     def __init__(self, position, size, color=[100, 100, 100], change_color=None, func=None, text='', font="arial", font_size=16, font_color=[0, 0, 0]):
         self.color = color
+        self.size_original = size
         self.size = size
         self.func = func
         self.surf = pygame.Surface(size)
         self.rect = self.surf.get_rect(center=position)
+        self.center_pos = position
 
         if change_color:
             self.change_color = change_color
@@ -20,47 +22,76 @@ class Button:
         self.txt = text
         self.font_color = font_color
         self.txt_surf = self.font.render(self.txt, 1, self.font_color)
-        self.txt_rect = self.txt_surf.get_rect(center=[wh//2 for wh in self.size])
+
+        self.update_text_position()
         
         self.current_color = self.color
 
+        self.is_clicked = False
+        self.click_timer = 0
+        self.shrink_scale = 0.96
+
+    def update_text_position(self):
+        self.txt_rect = self.txt_surf.get_rect(center=[wh//2 for wh in self.size])
+
     def draw(self, surface, mouse_pos):
+        self.update_animation()
         self.check_mouseover(mouse_pos)
 
-        self.surf.fill(self.current_color)
-        self.surf.blit(self.txt_surf, self.txt_rect)
-        surface.blit(self.surf, self.rect)
+        ratio = self.size[0] / self.size_original[0]
+
+        draw_surf = pygame.Surface(self.size).convert_alpha() 
+        draw_surf.fill(self.current_color)
+
+        scaled_txt_w = int(self.txt_surf.get_width() * ratio)
+        scaled_txt_h = int(self.txt_surf.get_height() * ratio)
+        
+        scaled_txt_surf = pygame.transform.smoothscale(self.txt_surf, (scaled_txt_w, scaled_txt_h))
+
+        scaled_txt_rect = scaled_txt_surf.get_rect(center=(self.size[0] // 2, self.size[1] // 2))
+
+        draw_surf.blit(scaled_txt_surf, scaled_txt_rect)
+        surface.blit(draw_surf, self.rect)
 
     def check_mouseover(self, pos):
-        self.current_color = self.color
-        if self.rect.collidepoint(pos):
-            self.current_color = self.change_color
+        if not self.is_clicked:
+            self.current_color = self.color
+            if self.rect.collidepoint(pos):
+                self.current_color = self.change_color
 
     def click(self, pos, *args):
         if self.rect.collidepoint(pos):
+            self.animate_click()
             if self.func:
                 return self.func(*args)
+            
+    def animate_click(self):
+        self.is_clicked = True
+        self.click_timer = pygame.time.get_ticks()
 
-class Text:
-    def __init__(self, msg, position, clr=[100, 100, 100], font="Segoe Print", font_size=15, mid=False):
-        self.position = position
-        self.font = pygame.font.SysFont(font, font_size)
-        self.txt_surf = self.font.render(msg, 1, clr)
+        # Calculate new shrunk size
+        new_width = int(self.size_original[0] * self.shrink_scale)
+        new_height = int(self.size_original[1] * self.shrink_scale)
+        self.size = (new_width, new_height)
+        
+        # Important: Re-center the rect so it shrinks to middle, not top-left
+        self.surf = pygame.transform.scale(self.surf, self.size)
+        self.rect = self.surf.get_rect(center=self.center_pos)
+        self.update_text_position()
 
-        if len(clr) == 4:
-            self.txt_surf.set_alpha(clr[3])
-
-        if mid:
-            self.position = self.txt_surf.get_rect(center=position)
-
-
-    def draw(self, screen):
-        screen.blit(self.txt_surf, self.position)
+    def update_animation(self):
+        if self.is_clicked:
+            if pygame.time.get_ticks() - self.click_timer > 100:
+                self.is_clicked = False
+                self.size = self.size_original
+                self.surf = pygame.transform.scale(self.surf, self.size)
+                self.rect = self.surf.get_rect(center = self.center_pos)
+                self.update_text_position()
 
 def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
     """
     canvas is the screen or surface to draw on -
-    color is the color of the rectangle -
+    color is the color of the rectangle standard is black -
     x is the horizontal left and right -
     y is vertical up and down -
     width in pixel -
