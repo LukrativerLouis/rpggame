@@ -2,7 +2,6 @@ import pygame
 from character import *
 from quest_window import *
 from settings import *
-from debug import *
 from utils import *
 
 
@@ -25,6 +24,7 @@ class Game():
         self.clock = pygame.time.Clock()
         self.running = True
 
+        self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character)
 
         # dynamic display
@@ -38,10 +38,11 @@ class Game():
 
     def create_objects(self):
 
-        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Start Quest", change_color = [150, 150, 150], func = lambda: self.quest_window.toggle_quest_window())
-        btn_quit = Button(position=(1880 - 100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
+        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Start Quest", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
+        btn_dungeon = Button(position = (100, 200), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
+        btn_quit = Button(position=(100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
 
-        self.main_button_list = [btn_quest, btn_quit]
+        self.main_button_list = [btn_quest, btn_dungeon, btn_quit]
 
     def quit_game(self):
         self.running = False
@@ -98,6 +99,12 @@ class Game():
 
         self.calc_scale()
 
+    def toggle_main_state(self, new_window_state):
+        if self.main_window_state == new_window_state:
+            self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
+        else:
+            self.main_window_state = new_window_state
+
     def start(self):
 
         while self.running:
@@ -108,19 +115,19 @@ class Game():
                 if event.type == pygame.QUIT:
                     self.running = False
 
-                elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         for button in self.main_button_list:
                             button.click(mouse_pos)
 
-                    if self.quest_window.show_quest_window:
+                    if self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                         self.quest_window.handle_events(event, mouse_pos)
 
-                elif event.type == pygame.VIDEORESIZE:
+                if event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:
                         self.calc_scale()
 
-                elif event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_F11:
                         self.toggle_fullscreen()
                     if event.key == pygame.K_ESCAPE:
@@ -143,7 +150,7 @@ class Game():
             create_rectangle(self.canvas, 195, 0, 1725, 1080, 5, "blue")
 
             # quest window
-            if self.quest_window.show_quest_window:
+            if self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                 self.quest_window.draw(self.canvas, mouse_pos)
 
             self.screen.fill((20, 20, 20))
