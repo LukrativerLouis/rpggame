@@ -14,7 +14,7 @@ class Quest():
             self.experience = 10
             self.gold = 1
             self.item = 0
-            self.duration = 2 # only for test TODO 
+            self.duration = 5
         elif self.quest_type == GOLD_QUEST_TYPE:
             self.experience = 1
             self.gold = 10
@@ -24,7 +24,7 @@ class Quest():
             self.experience = 1
             self.gold = 1
             self.item = 0
-            self.duration = 10
+            self.duration = 15
         elif self.quest_type == DANGEROUS_QUEST_TYPE:
             self.experience = 20
             self.gold = 20

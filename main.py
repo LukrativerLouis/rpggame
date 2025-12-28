@@ -25,7 +25,7 @@ class Game():
         self.running = True
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
-        self.quest_window = Quest_Window(self.character)
+        self.quest_window = Quest_Window(self.character, self)
 
         # dynamic display
 
@@ -141,7 +141,7 @@ class Game():
             show_text(self.canvas, f"Gold: {self.character.gold}", y = 15, x = 25, color = "yellow")
             show_text(self.canvas, f"EXP: {self.character.experience}", y = 35, x = 25, color = "green")
 
-            show_text(self.canvas, f"Virtual Mouse: {mouse_pos}", y = 1050, x = 210, color = "white")
+            show_text(self.canvas, f"Mouse: {mouse_pos}", y = 850, x = 10, color = "white")
 
             # left menu rect
             create_rectangle(self.canvas, 0, 0, 200, 1080, 5, "blue")
