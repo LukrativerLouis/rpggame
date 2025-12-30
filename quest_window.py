@@ -70,8 +70,6 @@ class Quest_Window:
         self.__close_dialog_window(True)
 
     def __quest_completed(self):
-
-        print("you won!")
         self.character.adjust_gold_and_exp(self.selected_quest.gold, self.selected_quest.experience)
 
         if self.selected_quest_index == 0:
@@ -94,7 +92,7 @@ class Quest_Window:
         if self.fight_window is None:
             self.character.current_health = self.character.max_health
             self.character.attack_score = 0
-            self.fight_window = Fight_Window(self, self.character, lambda: self.__quest_completed())
+            self.fight_window = Fight_Window(self, self.character, lambda: self.__quest_completed(), False)
 
     def __draw_quest_window(self, canvas):
         # window
@@ -117,6 +115,10 @@ class Quest_Window:
 
         # quest background
         create_rectangle(canvas, 200, 5, 1715, 1070, 0, "brown")
+
+        # quest_title
+
+        show_text(canvas, f"{self.selected_quest.title}", 200 + 1715 / 2, 35, "darkgoldenrod", True)
 
         # loading bar border
 

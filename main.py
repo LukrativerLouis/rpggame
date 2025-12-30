@@ -4,7 +4,6 @@ from quest_window import *
 from settings import *
 from utils import *
 
-
 class Game():
     def __init__(self):
         pygame.init()
@@ -122,8 +121,14 @@ class Game():
                             button.click(mouse_pos)
 
                     # event handling window states
-                    if self.main_window_state == QUEST_MAIN_WINDOW_STATE:
+                    if self.main_window_state == DEFAULT_MAIN_WINDOW_STATE:
+                        pass
+                    elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                         self.quest_window.handle_events(event, mouse_pos)
+                    elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
+                        pass
+                    elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
+                        pass
 
                 if event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:

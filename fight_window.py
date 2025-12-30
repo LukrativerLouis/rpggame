@@ -5,12 +5,15 @@ from character import *
 from quest import *
 
 class Fight_Window:
-    def __init__(self, quest_window, character: Character, completed_function):
+    def __init__(self, quest_window, character: Character, completed_function, allow_retry):
         # init stuff
         self.start_fight = False
         self.quest_window = quest_window
         self.quest = self.quest_window.selected_quest
         self.fight_window_button_list = self.__create_fight_window_button()
+        self.button_continue = None
+        self.button_retry = None
+        self.allow_retry = allow_retry
         self.character = character
         self.enemy: Enemy = self.quest.enemy
 
@@ -32,6 +35,7 @@ class Fight_Window:
         self.battle_log = []
         self.current_log_index = 0
 
+        self.__create_fight_done_button()
         self.__simulate_fight()
 
     def __create_fight_window_button(self):
@@ -39,6 +43,12 @@ class Fight_Window:
         button_faster = Button(position = (1250, 1025), size = (150, 50), text = "faster", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__adjust_attack_cooldown())
         
         return [button_skip, button_faster]
+    
+    def __create_fight_done_button(self):
+        self.button_continue = Button(position = (690 + 735 / 2, 1025), size = (150, 50), text = "continue", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.completed_function())
+        if not self.allow_retry:
+            self.button_continue.center_pos = (900, 1025)
+        self.button_retry = Button(position = (1250, 1025), size = (150, 50), text = "retry", color = [255, 0, 0], change_color = [255, 50, 50])
     
     def __finish_instantly(self):
         while self.current_log_index < len(self.battle_log):
@@ -102,43 +112,65 @@ class Fight_Window:
                 self.start_time = pygame.time.get_ticks()
         else:
             self.fight_done = True
+            self.fight_won = self.character.current_health > self.enemy.current_health
     
     def draw(self, canvas, mouse_pos):
+
+        character_rect_x = 300
+        enemy_rect_x = 1445
+        player_rect_width = 370
+
+        base_y = 200
+        health_bar_offset = 410
+        stats_offset = 450
+
+        player_rect_border = 5
+        player_health_bar_width = 2
+        player_rect_height = 400
+
         # quest background
         create_rectangle(canvas, 200, 5, 1715, 1070, 0, "cadetblue")
 
-        for button in self.fight_window_button_list:
-            button.draw(canvas, mouse_pos)
+        # buttons
+        if self.fight_done:
+            self.button_continue.draw(canvas, mouse_pos)
+            if not self.fight_won and self.allow_retry:
+                self.button_retry.draw(canvas, mouse_pos)
+        else:
+            for button in self.fight_window_button_list:
+                button.draw(canvas, mouse_pos)
 
         # character rect
-        create_rectangle(canvas, 300, 250, 370, 400, 5, "blue3")
-        create_rectangle(canvas, 305, 255, 360, 390, 0, "black")
+        create_rectangle(canvas, character_rect_x, base_y, player_rect_width, player_rect_height, player_rect_border, "blue3")
+        create_rectangle(canvas, character_rect_x + player_rect_border, base_y + player_rect_border, player_rect_width - player_rect_border * 2, player_rect_height - player_rect_border * 2, 0, "black")
 
         # character health bar
-        character_health_width = max(0, self.character.current_health / self.character_health_bar_ratio - 4)
-        create_rectangle(canvas, 300, 660, self.health_bar_length, 30, 2, "black")
-        create_rectangle(canvas, 302, 662, character_health_width, 26, 0, "red")
-
-        show_text(canvas, f"{self.character.current_health}/{self.character.max_health}", 300 + self.health_bar_length / 2, 660 + 30 / 2, "white", True)
+        character_health_y = base_y + health_bar_offset
+        character_health_width = max(0, self.character.current_health / self.character_health_bar_ratio - player_health_bar_width * 2)
+        create_rectangle(canvas, character_rect_x, character_health_y, self.health_bar_length, 30, player_health_bar_width, "black")
+        create_rectangle(canvas, character_rect_x + player_health_bar_width, character_health_y + player_health_bar_width, character_health_width, 26, 0, "red")
+        show_text(canvas, f"{self.character.current_health}/{self.character.max_health}", 300 + self.health_bar_length / 2, character_health_y + 30 / 2, "white", True)
 
         # character stats
-        create_rectangle(canvas, 300, 700, 370, 300, 0, "azure3")
-        show_text(canvas, f"Damage: {self.character.damage}", 300 + self.health_bar_length / 2, 720, "azure4", True)
+        character_stats_y = base_y + stats_offset
+        create_rectangle(canvas, character_rect_x, character_stats_y, player_rect_width, 300, 0, "azure3")
+        show_text(canvas, f"Damage: {self.character.damage}", 300 + self.health_bar_length / 2, character_stats_y + 20, "azure4", True)
 
         # Enemy rect
-        create_rectangle(canvas, 1445, 250, 370, 400, 5, "blue3")
-        create_rectangle(canvas, 1450, 255, 360, 390, 0, "black")
+        create_rectangle(canvas, enemy_rect_x, base_y, player_rect_width, player_rect_height, player_rect_border, "blue3")
+        create_rectangle(canvas, enemy_rect_x + player_rect_border, base_y + player_rect_border, player_rect_width - player_rect_border * 2, player_rect_height - player_rect_border * 2, 0, "black")
 
         # enemy health bar
-        enemy_health_width = max(0, self.enemy.current_health / self.enemy_health_bar_ratio - 4)
-        create_rectangle(canvas, 1445, 660, self.health_bar_length, 30, 2, "black")
-        create_rectangle(canvas, 1447, 662, enemy_health_width, 26, 0, "red")
-
-        show_text(canvas, f"{self.enemy.current_health}/{self.enemy.max_health}", 1445 + self.health_bar_length / 2, 660 + 30 / 2, "white", True)
+        enemy_health_y = base_y + health_bar_offset
+        enemy_health_width = max(0, self.enemy.current_health / self.enemy_health_bar_ratio - player_health_bar_width * 2)
+        create_rectangle(canvas, enemy_rect_x, enemy_health_y, self.health_bar_length, 30, 2, "black")
+        create_rectangle(canvas, enemy_rect_x + player_health_bar_width, enemy_health_y + player_health_bar_width, enemy_health_width, 26, 0, "red")
+        show_text(canvas, f"{self.enemy.current_health}/{self.enemy.max_health}", enemy_rect_x + self.health_bar_length / 2, enemy_health_y + 30 / 2, "white", True)
 
         # enemy stats
-        create_rectangle(canvas, 1445, 700, 370, 300, 0, "azure3")
-        show_text(canvas, f"Damage: {self.enemy.damage}", 1445 + self.health_bar_length / 2, 720, "azure4", True)
+        enemy_stats_y = base_y + stats_offset
+        create_rectangle(canvas, enemy_rect_x, enemy_stats_y, player_rect_width, 300, 0, "azure3")
+        show_text(canvas, f"Damage: {self.enemy.damage}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 20, "azure4", True)
 
         if not self.start_fight:
             # cooldown before fight 
@@ -148,11 +180,15 @@ class Fight_Window:
             self.__play_next_animation_step()
 
         if self.fight_done:
+            # fight end base
+            create_rectangle(canvas, character_rect_x + player_rect_width + 20, character_stats_y, 735, 300, 0, "darkgray")
+
             if self.fight_won:
-                #self.completed_function()
-                print("winner")
+                show_text(canvas, "You won", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
+                show_text(canvas, f"Experience: {self.quest.experience}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 40, "darkgoldenrod1", True)
+                show_text(canvas, f"Gold: {self.quest.gold}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 60, "darkgoldenrod1", True)
             else:
-                print("loser")
+                show_text(canvas, "You lost", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
 
     def __inital_start_cooldown(self):
         current_time = pygame.time.get_ticks()
@@ -165,5 +201,11 @@ class Fight_Window:
     def handle_events(self, event, mouse_pos):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                for button in self.fight_window_button_list:
-                    button.click(mouse_pos)
+                if self.fight_done:
+                    self.button_continue.click(mouse_pos)
+                    if not self.fight_won and self.allow_retry:
+                        self.button_retry.click(mouse_pos)
+                else:
+                    for button in self.fight_window_button_list:
+                        button.click(mouse_pos)
+                
