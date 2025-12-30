@@ -1,5 +1,6 @@
 import random
 from settings import *
+from character import *
 
 class Quest():
     def __init__(self, quest_type):
@@ -9,6 +10,7 @@ class Quest():
         self.experience = 0
         self.item = 0
         self.duration = 0 # duration in seconds
+        self.enemy = Enemy()
 
         if self.quest_type == EXPERIENCE_QUEST_TYPE:
             self.experience = 10

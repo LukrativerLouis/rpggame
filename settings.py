@@ -7,6 +7,10 @@ MAIN_END = 1725
 DEFAULT_MAIN_WINDOW_STATE = "Default_Main_Window_State"
 QUEST_MAIN_WINDOW_STATE = "Quest_Main_Window_State"
 DUNGEON_MAIN_WINDOW_STATE = "Dungeon_Main_Window_State"
+CHARACTER_MAIN_WINDOW_STATE = "Character_Main_Window_State"
+
+CHARACTER = "character"
+ENEMY = "enemy"
 
 EXPERIENCE_QUEST_TYPE = "experience_quest_type"
 GOLD_QUEST_TYPE = "gold_quest_type"

@@ -1,5 +1,6 @@
 from settings import *
 from character import *
+from fight_window import *
 from quest import *
 from utils import *
 
@@ -19,7 +20,9 @@ class Quest_Window:
         self.countdown_bar_remaining_time = 0
         self.countdown_bar_start_time = pygame.time.get_ticks()
         self.quest_started = False
+        self.fight_started = False
         self.character = character
+        self.fight_window = None
         self.level = level
 
     def __toggle_dialog_window(self, show_quest_index = -1):
@@ -54,8 +57,8 @@ class Quest_Window:
         return [button_close, button_start_quest]
     
     def __create_traveling_screen_buttons(self):
-        button_cancel_quest = Button(position = (975, 1025), size = (150, 50), text = "cancel quest", color = [255, 0, 0],change_color = [255, 50, 50])
-        button_skip_quest = Button(position = (1150, 1025), size = (150, 50), text = "skip quest", color = [255, 0, 0],change_color = [255, 50, 50])
+        button_cancel_quest = Button(position = (975, 1025), size = (150, 50), text = "cancel quest", color = [255, 0, 0], change_color = [255, 50, 50])
+        button_skip_quest = Button(position = (1150, 1025), size = (150, 50), text = "skip quest", color = [255, 0, 0], change_color = [255, 50, 50])
 
         return [button_cancel_quest, button_skip_quest]
     
@@ -66,15 +69,10 @@ class Quest_Window:
         self.countdown_bar_start_time = pygame.time.get_ticks()
         self.__close_dialog_window(True)
 
-    def __start_fight(self):
-
-        print(f"current Quest: {self.selected_quest.title}")
-        self.character.adjust_gold_and_exp(self.selected_quest.gold, self.selected_quest.experience)
-
-        # move to after fight!
-        self.__quest_completed()
-
     def __quest_completed(self):
+
+        print("you won!")
+        self.character.adjust_gold_and_exp(self.selected_quest.gold, self.selected_quest.experience)
 
         if self.selected_quest_index == 0:
             self.quest_list[0] = Quest(EXPERIENCE_QUEST_TYPE)
@@ -86,7 +84,17 @@ class Quest_Window:
         self.show_dialog_window = False
         self.quest_started = False
         self.level.main_window_state = DEFAULT_MAIN_WINDOW_STATE
-        self.selected_quest = None   
+        self.selected_quest = None
+        self.fight_started = False
+        self.fight_window = None
+
+    def __start_fight(self):
+
+        self.fight_started = True
+        if self.fight_window is None:
+            self.character.current_health = self.character.max_health
+            self.character.attack_score = 0
+            self.fight_window = Fight_Window(self, self.character, lambda: self.__quest_completed())
 
     def __draw_quest_window(self, canvas):
         # window
@@ -94,10 +102,10 @@ class Quest_Window:
         create_rectangle(canvas, 905, 5, INITIAL_SCREEN_WIDTH - 910, INITIAL_SCREEN_HEIGHT - 10, 0, "azure4")
 
         # text
-        show_text(canvas, self.selected_quest.title, 100, 1000, "darkgoldenrod1")
-        show_text(canvas, self.selected_quest.description, 200, 1000, "darkgoldenrod1")
-        show_text(canvas, f"Experience: {self.selected_quest.experience}", 400, 1000, "green")
-        show_text(canvas, f"Gold: {self.selected_quest.gold}", 450, 1000, "yellow")
+        show_text(canvas, self.selected_quest.title, 1000, 100, "darkgoldenrod1")
+        show_text(canvas, self.selected_quest.description, 1000, 200, "darkgoldenrod1")
+        show_text(canvas, f"Experience: {self.selected_quest.experience}", 1000, 400, "green")
+        show_text(canvas, f"Gold: {self.selected_quest.gold}", 1000, 450, "yellow")
 
     def __draw_quest_traveling_screen(self, canvas):
         countdown_bar_x = 300
@@ -118,7 +126,7 @@ class Quest_Window:
 
         create_rectangle(canvas, countdown_bar_x + countdown_bar_border, countdown_bar_y + countdown_bar_border, self.countdown_bar_length_current - countdown_bar_border * 2, self.countdown_bar_progress - countdown_bar_border * 2, 0, "cyan4")
 
-        show_text(canvas, f"{self.countdown_bar_remaining_time:.1f}s", countdown_bar_y + countdown_bar_height / 2, countdown_bar_x + self.countdown_bar_length / 2, "darkgoldenrod", True)
+        show_text(canvas, f"{self.countdown_bar_remaining_time:.1f}s", countdown_bar_x + self.countdown_bar_length / 2, countdown_bar_y + countdown_bar_height / 2, "darkgoldenrod", True)
 
     def __animate_countdown_bar(self):
 
@@ -141,7 +149,7 @@ class Quest_Window:
         for button in self.quest_button_list:
             button.draw(canvas, mouse_pos)
 
-        if self.show_dialog_window and self.selected_quest != None:
+        if self.show_dialog_window and self.selected_quest is not None:
             self.__draw_quest_window(canvas)
 
             for button in self.dialog_button_list:
@@ -152,15 +160,22 @@ class Quest_Window:
 
             for button in self.traveling_screen_button_list:
                 button.draw(canvas, mouse_pos)
+            
+            if self.fight_started:
+                self.fight_window.draw(canvas, mouse_pos)
     
     def handle_events(self, event,  mouse_pos):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 for button in self.quest_button_list:
                     button.click(mouse_pos)
-                if self.show_dialog_window and self.selected_quest != None:
+                if self.show_dialog_window and self.selected_quest is not None:
                     for button in self.dialog_button_list:
                         button.click(mouse_pos)
                 if self.quest_started:
                     for button in self.traveling_screen_button_list:
                         button.click(mouse_pos)
+
+        if self.fight_started and self.quest_started:
+            self.fight_window.handle_events(event, mouse_pos)
+

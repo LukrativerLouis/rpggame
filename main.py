@@ -38,11 +38,12 @@ class Game():
 
     def create_objects(self):
 
-        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Start Quest", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
-        btn_dungeon = Button(position = (100, 200), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
+        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Questboard", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
+        btn_character = Button(position = (100, 170), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
+        btn_dungeon = Button(position = (100, 240), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
         btn_quit = Button(position=(100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
 
-        self.main_button_list = [btn_quest, btn_dungeon, btn_quit]
+        self.main_button_list = [btn_quest, btn_character, btn_dungeon, btn_quit]
 
     def quit_game(self):
         self.running = False
@@ -120,6 +121,7 @@ class Game():
                         for button in self.main_button_list:
                             button.click(mouse_pos)
 
+                    # event handling window states
                     if self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                         self.quest_window.handle_events(event, mouse_pos)
 
@@ -138,10 +140,10 @@ class Game():
             for button in self.main_button_list:
                 button.draw(self.canvas, mouse_pos)
 
-            show_text(self.canvas, f"Gold: {self.character.gold}", y = 15, x = 25, color = "yellow")
-            show_text(self.canvas, f"EXP: {self.character.experience}", y = 35, x = 25, color = "green")
+            show_text(self.canvas, f"Gold: {self.character.gold}", x = 25, y = 15, color = "yellow")
+            show_text(self.canvas, f"EXP: {self.character.experience}", x = 25, y = 35, color = "green")
 
-            show_text(self.canvas, f"Mouse: {mouse_pos}", y = 850, x = 10, color = "white")
+            show_text(self.canvas, f"Mouse: {mouse_pos}", x = 10, y = 850, color = "white")
 
             # left menu rect
             create_rectangle(self.canvas, 0, 0, 200, 1080, 5, "blue")
@@ -149,7 +151,7 @@ class Game():
             # right main rect
             create_rectangle(self.canvas, 195, 0, 1725, 1080, 5, "blue")
 
-            # quest window
+            # window states
             if self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                 self.quest_window.draw(self.canvas, mouse_pos)
 

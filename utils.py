@@ -116,5 +116,5 @@ def debug(canvas, info, y, x, color, center = False):
 
     canvas.blit(debug_surf, debug_rect)
 
-def show_text(canvas, info, y= 100, x= 100, color= "Green", center = False):
+def show_text(canvas, info, x = 100, y = 100, color= "Green", center = False):
     debug(canvas, info, y, x, color, center)
