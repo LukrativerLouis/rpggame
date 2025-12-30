@@ -5,17 +5,18 @@ from character import *
 from quest import *
 
 class Fight_Window:
-    def __init__(self, quest_window, character: Character, completed_function, allow_retry):
+    def __init__(self, gold, experience, item, enemy, character: Character, completed_function, allow_retry):
         # init stuff
         self.start_fight = False
-        self.quest_window = quest_window
-        self.quest = self.quest_window.selected_quest
+        self.gold = gold
+        self.experience = experience
+        self.item = item
         self.fight_window_button_list = self.__create_fight_window_button()
         self.button_continue = None
         self.button_retry = None
         self.allow_retry = allow_retry
         self.character = character
-        self.enemy: Enemy = self.quest.enemy
+        self.enemy: Enemy = enemy
 
         # ui
         self.health_bar_length = 370
@@ -184,11 +185,11 @@ class Fight_Window:
             create_rectangle(canvas, character_rect_x + player_rect_width + 20, character_stats_y, 735, 300, 0, "darkgray")
 
             if self.fight_won:
-                show_text(canvas, "You won", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
-                show_text(canvas, f"Experience: {self.quest.experience}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 40, "darkgoldenrod1", True)
-                show_text(canvas, f"Gold: {self.quest.gold}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 60, "darkgoldenrod1", True)
+                show_text(canvas, "You won!", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
+                show_text(canvas, f"Experience: {self.experience}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 40, "darkgoldenrod1", True)
+                show_text(canvas, f"Gold: {self.gold}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 60, "darkgoldenrod1", True)
             else:
-                show_text(canvas, "You lost", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
+                show_text(canvas, "You lost!", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
 
     def __inital_start_cooldown(self):
         current_time = pygame.time.get_ticks()

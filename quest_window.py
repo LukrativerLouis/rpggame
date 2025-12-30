@@ -92,7 +92,7 @@ class Quest_Window:
         if self.fight_window is None:
             self.character.current_health = self.character.max_health
             self.character.attack_score = 0
-            self.fight_window = Fight_Window(self, self.character, lambda: self.__quest_completed(), False)
+            self.fight_window = Fight_Window(self.selected_quest.gold, self.selected_quest.experience, None, self.selected_quest.enemy, self.character, lambda: self.__quest_completed(), False)
 
     def __draw_quest_window(self, canvas):
         # window

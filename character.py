@@ -4,6 +4,7 @@ class Character:
     def __init__(self):
         self.gold = 0
         self.experience = 0
+        self.required_experience = 0
         self.level = 1
         self.damage = 1
         self.max_health = 20
