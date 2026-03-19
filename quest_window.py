@@ -21,6 +21,7 @@ class Quest_Window:
         self.countdown_bar_start_time = pygame.time.get_ticks()
         self.quest_started = False
         self.fight_started = False
+        self.start_fight_early = False
         self.character = character
         self.fight_window = None
         self.level = level
@@ -43,6 +44,14 @@ class Quest_Window:
             self.selected_quest = None
             self.selected_quest_index = -1
 
+    def __cancel_quest(self):
+        self.quest_started = False
+        self.__close_dialog_window(False)
+
+    def __skip_quest_time(self):
+        self.__start_fight()
+        self.start_fight_early = True
+
     def __create_quest_window_buttons(self):
         button_quest_first = Button(position = (400, 150), size = (150, 50), text = "Quest 1", change_color = [150, 150, 150], func = lambda: self.__toggle_dialog_window(0))
         button_quest_second = Button(position=(700, 150), size=(150, 50), text="Quest 2", color=[100, 50, 50], change_color=[150, 50, 50], func= lambda: self.__toggle_dialog_window(1))
@@ -57,14 +66,14 @@ class Quest_Window:
         return [button_close, button_start_quest]
     
     def __create_traveling_screen_buttons(self):
-        button_cancel_quest = Button(position = (975, 1025), size = (150, 50), text = "cancel quest", color = [255, 0, 0], change_color = [255, 50, 50])
-        button_skip_quest = Button(position = (1150, 1025), size = (150, 50), text = "skip quest", color = [255, 0, 0], change_color = [255, 50, 50])
+        button_cancel_quest = Button(position = (975, 1025), size = (150, 50), text = "cancel quest", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__cancel_quest())
+        button_skip_quest = Button(position = (1150, 1025), size = (150, 50), text = "skip quest time", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__skip_quest_time())
 
         return [button_cancel_quest, button_skip_quest]
     
     def __start_quest(self):
-
         self.quest_started = True
+        self.start_fight_early = False
         self.countdown_bar_total_time = self.selected_quest.duration
         self.countdown_bar_start_time = pygame.time.get_ticks()
         self.__close_dialog_window(True)
@@ -142,7 +151,8 @@ class Quest_Window:
         self.countdown_bar_length_current = (self.countdown_bar_remaining_time / self.countdown_bar_total_time) * self.countdown_bar_length
 
         if elapsed_time >= self.selected_quest.duration:
-            self.__start_fight()
+            if not self.start_fight_early:
+                self.__start_fight()
 
     def draw(self, canvas, mouse_pos):
         # temp quest board
@@ -174,7 +184,7 @@ class Quest_Window:
                 if self.show_dialog_window and self.selected_quest is not None:
                     for button in self.dialog_button_list:
                         button.click(mouse_pos)
-                if self.quest_started:
+                if self.quest_started and not self.fight_started:
                     for button in self.traveling_screen_button_list:
                         button.click(mouse_pos)
 
