@@ -7,6 +7,7 @@ class Character_Window:
         self.character = character        
         self.exp_bar_length = 370
         self.character_exp_bar_ratio = self.character.required_experience / self.exp_bar_length
+        self.show_exp_bar_tooltips = False
 
     def draw(self, canvas, mouse_pos):
 
@@ -47,6 +48,13 @@ class Character_Window:
         exp_bar = create_rectangle(canvas, character_rect_x, character_rect_y, character_exp_bar_width, character_exp_bar_height, 2, "cyan")
         show_text(canvas, f"Level: {self.character.level}", exp_bar.x + exp_bar.width / 2, exp_bar.y + exp_bar.height / 2, "white", True)
 
+
+
+        if exp_bar.collidepoint(mouse_pos):
+            self.show_exp_bar_tooltips = True
+        else:
+            self.show_exp_bar_tooltips = False
+
         # weapon and accessorie
 
         create_rectangle(canvas, MAIN_START + main_side_padding + item_holder_size + spacer_padding, base_x + (item_holder_size + spacer_padding) * 2 , item_holder_size, item_holder_size, 2, "red")
@@ -78,6 +86,9 @@ class Character_Window:
         # extra 4
 
         create_rectangle(canvas, MAIN_START + main_side_padding + (item_holder_size + spacer_padding) * 3, base_x + ((item_holder_size + spacer_padding) * 3), item_holder_size, item_holder_size, 2, "red")
+
+        if self.show_exp_bar_tooltips:
+            create_tooltip(canvas, exp_bar.x + exp_bar.width / 2 - 30, exp_bar.y + exp_bar.height + spacer_padding, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "white", "gray")
         
 
     def handle_events(self, canvas, mouse_pos):

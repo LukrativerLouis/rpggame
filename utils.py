@@ -101,7 +101,10 @@ def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
 
     rect = pygame.Rect(x, y, width, height)
     return pygame.draw.rect(canvas, color, rect, thickness)
-    
+
+def create_tooltip(canvas, x, y, width, height, text, text_color, color = "black"):
+    create_rectangle(canvas, x, y, width, height, 0, color)
+    show_text(canvas, text, x + width / 2, y + height / 2, text_color, True)
 
 pygame.font.init()
 font = pygame.font.SysFont("arial", 20)
