@@ -16,9 +16,9 @@ class Character:
         self.experience += new_exp
 
 class Enemy:
-    def __init__(self):
-        self.level = 1
-        self.damage = 1
-        self.max_health = 10
-        self.current_health = self.max_health
+    def __init__(self, level = 1, damage = 1, max_health = 10):
+        self.level = level
+        self.damage = damage
+        self.max_health = max_health
+        self.current_health = max_health
         self.attack_score = 0
