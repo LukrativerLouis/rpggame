@@ -79,8 +79,6 @@ class Quest_Window:
         self.__close_dialog_window(True)
 
     def __quest_completed(self):
-        self.character.adjust_gold_and_exp(self.selected_quest.gold, self.selected_quest.experience)
-
         if self.selected_quest_index == 0:
             self.quest_list[0] = Quest(EXPERIENCE_QUEST_TYPE)
         elif self.selected_quest_index == 1:

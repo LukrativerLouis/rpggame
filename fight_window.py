@@ -17,6 +17,7 @@ class Fight_Window:
         self.allow_retry = allow_retry
         self.character = character
         self.enemy: Enemy = enemy
+        self.reward_rewarded = False
 
         # ui
         self.health_bar_length = 370
@@ -188,6 +189,10 @@ class Fight_Window:
                 show_text(canvas, "You won!", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
                 show_text(canvas, f"Experience: {self.experience}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 40, "darkgoldenrod1", True)
                 show_text(canvas, f"Gold: {self.gold}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 60, "darkgoldenrod1", True)
+                if not self.reward_rewarded:
+                    self.character.adjust_gold_and_exp(self.gold, self.experience)
+                    self.reward_rewarded = True
+                    
             else:
                 show_text(canvas, "You lost!", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
 

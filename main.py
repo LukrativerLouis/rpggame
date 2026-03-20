@@ -1,5 +1,7 @@
 import pygame
 from character import *
+from character_window import *
+from dungeon_window import *
 from quest_window import *
 from settings import *
 from utils import *
@@ -25,6 +27,8 @@ class Game():
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character, self)
+        self.character_window = Character_Window(self.character)
+        self.dungeon_window = Dungeon_Window(self.character)
 
         # dynamic display
 
@@ -36,7 +40,6 @@ class Game():
         self.create_objects()
 
     def create_objects(self):
-
         btn_quest = Button(position = (100, 100), size = (150, 50), text = "Questboard", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
         btn_character = Button(position = (100, 170), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
         btn_dungeon = Button(position = (100, 240), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
@@ -126,9 +129,9 @@ class Game():
                     elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                         self.quest_window.handle_events(event, mouse_pos)
                     elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
-                        pass
+                        self.character_window.handle_events(event, mouse_pos)
                     elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
-                        pass
+                        self.dungeon_window.handle_events(event, mouse_pos)
 
                 if event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:
@@ -157,8 +160,15 @@ class Game():
             create_rectangle(self.canvas, 195, 0, 1725, 1080, 5, "blue")
 
             # window states
-            if self.main_window_state == QUEST_MAIN_WINDOW_STATE:
+
+            if self.main_window_state == DEFAULT_MAIN_WINDOW_STATE:
+                pass
+            elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                 self.quest_window.draw(self.canvas, mouse_pos)
+            elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
+                self.character_window.draw(self.canvas, mouse_pos)
+            elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
+                self.dungeon_window.draw(self.canvas, mouse_pos)
 
             self.screen.fill((20, 20, 20))
 

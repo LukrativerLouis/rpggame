@@ -100,7 +100,8 @@ def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
     """
 
     rect = pygame.Rect(x, y, width, height)
-    pygame.draw.rect(canvas, color, rect, thickness)
+    return pygame.draw.rect(canvas, color, rect, thickness)
+    
 
 pygame.font.init()
 font = pygame.font.SysFont("arial", 20)
