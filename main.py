@@ -118,20 +118,18 @@ class Game():
                 if event.type == pygame.QUIT:
                     self.running = False
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        for button in self.main_button_list:
-                            button.click(mouse_pos)
+                for button in self.main_button_list:
+                    button.handle_event(event, mouse_pos)
 
-                    # event handling window states
-                    if self.main_window_state == DEFAULT_MAIN_WINDOW_STATE:
-                        pass
-                    elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
-                        self.quest_window.handle_events(event, mouse_pos)
-                    elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
-                        self.character_window.handle_events(event, mouse_pos)
-                    elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
-                        self.dungeon_window.handle_events(event, mouse_pos)
+                # event handling window states
+                if self.main_window_state == DEFAULT_MAIN_WINDOW_STATE:
+                    pass
+                elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
+                    self.quest_window.handle_events(event, mouse_pos)
+                elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
+                    self.character_window.handle_events(event, mouse_pos)
+                elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
+                    self.dungeon_window.handle_events(event, mouse_pos)
 
                 if event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:

@@ -1,83 +1,69 @@
 import pygame
 
+import pygame
+
 class Button:
     def __init__(self, position, size, color=[100, 100, 100], change_color=None, func=None, text='', font="arial", font_size=16, font_color=[0, 0, 0]):
+        self.center_pos = pygame.Vector2(position)
+        self.size_original = pygame.Vector2(size)
         self.color = color
-        self.size_original = size
-        self.size = size
+        self.change_color = change_color if change_color else color
         self.func = func
-        self.surf = pygame.Surface(size)
-        self.rect = self.surf.get_rect(center=position)
-        self.center_pos = position
-
-        if change_color:
-            self.change_color = change_color
-        else:
-            self.change_color = color
-
-        if len(color) == 4:
-            self.surf.set_alpha(color[3])
-
+        
+        self.is_pressed = False
+        self.is_hovered = False
+        
         self.font = pygame.font.SysFont(font, font_size)
         self.txt = text
         self.font_color = font_color
-        self.txt_surf = self.font.render(self.txt, 1, self.font_color)
-
-        self.update_text_position()
+        self.txt_surf = self.font.render(self.txt, True, self.font_color)
         
-        self.current_color = self.color
+        self.rect = pygame.Rect(0, 0, size[0], size[1])
+        self.rect.center = position
+        
+        self.shrink_scale = 0.95
 
-        self.is_clicked = False
-        self.click_timer = 0
-        self.shrink_scale = 0.96
+    def handle_event(self, event, mouse_pos):
+        self.is_hovered = self.rect.collidepoint(mouse_pos)
 
-    def update_text_position(self):
-        self.txt_rect = self.txt_surf.get_rect(center=[wh//2 for wh in self.size])
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.is_hovered:
+                self.is_pressed = True
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                if self.is_pressed and self.is_hovered and self.func:
+                    self.func()
+                self.is_pressed = False
 
     def draw(self, surface, mouse_pos):
-        self.update_animation()
-        self.check_mouseover(mouse_pos)
-
-        ratio = self.size[0] / self.size_original[0]
-
-        draw_surf = pygame.Surface(self.size).convert_alpha() 
-        draw_surf.fill(self.current_color)
-
-        scaled_txt_w = int(self.txt_surf.get_width() * ratio)
-        scaled_txt_h = int(self.txt_surf.get_height() * ratio)
+        self.is_hovered = self.rect.collidepoint(mouse_pos)
+        current_color = self.change_color if self.is_hovered else self.color
         
-        scaled_txt_surf = pygame.transform.smoothscale(self.txt_surf, (scaled_txt_w, scaled_txt_h))
-
-        scaled_txt_rect = scaled_txt_surf.get_rect(center=(self.size[0] // 2, self.size[1] // 2))
-
-        draw_surf.blit(scaled_txt_surf, scaled_txt_rect)
-        surface.blit(draw_surf, self.rect)
-
-    def check_mouseover(self, pos):
-        if not self.is_clicked:
-            self.current_color = self.color
-            if self.rect.collidepoint(pos):
-                self.current_color = self.change_color
-
-    def click(self, pos, *args):
-        if self.rect.collidepoint(pos):
-            self.animate_click()
-            if self.func:
-                return self.func(*args)
-            
-    def animate_click(self):
-        self.is_clicked = True
-        self.click_timer = pygame.time.get_ticks()
-
-        # Calculate new shrunk size
-        new_width = int(self.size_original[0] * self.shrink_scale)
-        new_height = int(self.size_original[1] * self.shrink_scale)
-        self.size = (new_width, new_height)
+        scale = self.shrink_scale if self.is_pressed else 1.0
+        current_w = int(self.size_original.x * scale)
+        current_h = int(self.size_original.y * scale)
         
-        # Important: Re-center the rect so it shrinks to middle, not top-left
-        self.surf = pygame.transform.scale(self.surf, self.size)
-        self.rect = self.surf.get_rect(center=self.center_pos)
-        self.update_text_position()
+        draw_surf = pygame.Surface((current_w, current_h)).convert_alpha()
+        draw_surf.fill(current_color)
+        
+        if len(current_color) == 4:
+            draw_surf.set_alpha(current_color[3])
+
+        text_w = int(self.txt_surf.get_width() * scale)
+        text_h = int(self.txt_surf.get_height() * scale)
+        scaled_txt = pygame.transform.smoothscale(self.txt_surf, (text_w, text_h))
+        
+        text_rect = scaled_txt.get_rect(center=(current_w // 2, current_h // 2))
+        draw_surf.blit(scaled_txt, text_rect)
+
+        draw_rect = draw_surf.get_rect(center=self.center_pos)
+        surface.blit(draw_surf, draw_rect)
+
+    def set_text(self, new_text):
+        if self.txt != new_text:
+            self.txt = new_text
+            self.txt_surf = self.font.render(self.txt, True, self.font_color)
 
     def update_animation(self):
         if self.is_clicked:

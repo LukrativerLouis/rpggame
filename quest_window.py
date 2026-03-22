@@ -175,16 +175,14 @@ class Quest_Window:
                 self.fight_window.draw(canvas, mouse_pos)
     
     def handle_events(self, event,  mouse_pos):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                for button in self.quest_button_list:
-                    button.click(mouse_pos)
-                if self.show_dialog_window and self.selected_quest is not None:
-                    for button in self.dialog_button_list:
-                        button.click(mouse_pos)
-                if self.quest_started and not self.fight_started:
-                    for button in self.traveling_screen_button_list:
-                        button.click(mouse_pos)
+        for button in self.quest_button_list:
+            button.handle_event(event, mouse_pos)
+        if self.show_dialog_window and self.selected_quest is not None:
+            for button in self.dialog_button_list:
+                button.handle_event(event, mouse_pos)
+        if self.quest_started and not self.fight_started:
+            for button in self.traveling_screen_button_list:
+                button.handle_event(event, mouse_pos)
 
         if self.fight_started and self.quest_started:
             self.fight_window.handle_events(event, mouse_pos)

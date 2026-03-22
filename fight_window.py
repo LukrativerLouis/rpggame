@@ -205,13 +205,11 @@ class Fight_Window:
             self.start_time = pygame.time.get_ticks()
 
     def handle_events(self, event, mouse_pos):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                if self.fight_done:
-                    self.button_continue.click(mouse_pos)
-                    if not self.fight_won and self.allow_retry:
-                        self.button_retry.click(mouse_pos)
-                else:
-                    for button in self.fight_window_button_list:
-                        button.click(mouse_pos)
+        if self.fight_done:
+            self.button_continue.handle_event(event, mouse_pos)
+            if not self.fight_won and self.allow_retry:
+                self.button_retry.handle_event(event, mouse_pos)
+        else:
+            for button in self.fight_window_button_list:
+                button.handle_event(event, mouse_pos)
                 
