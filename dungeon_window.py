@@ -2,6 +2,7 @@ from settings import *
 from utils import *
 from character import *
 from dungeon_monster import *
+from fight_window import *
 
 spacer_padding = 5
 main_side_padding = 20
@@ -11,6 +12,8 @@ specific_offset = 20
 class Dungeon_Window:
     def __init__(self, character: Character):
         self.character = character
+        self.fight_started = False
+        self.fight_window = None
 
         self.dungeon_start_buttons = None
         self.specific_dungeon_buttons = None
@@ -35,9 +38,25 @@ class Dungeon_Window:
         
         self.dungeon_start_buttons = [self.button_d1, self.button_d2, self.button_d3]
         
-        self.btn_start_fight = Button(position=(0,0), size=(100, 50), text="start fight")
-        self.btn_close_spec = Button(position=(0,0), size=(100, 50), text="close", func=lambda: self.__toggle_dungeon_seleced(DUNGEON_1))
+        self.btn_start_fight = Button(position=(0,0), size=(100, 50), text="start fight", func = lambda: self.__start_fight())
+        self.btn_close_spec = Button(position=(0,0), size=(100, 50), text="close", func = lambda: self.__toggle_dungeon_seleced(DUNGEON_1))
         self.specific_dungeon_buttons = [self.btn_start_fight, self.btn_close_spec]
+
+    def __fight_completed(self):
+        self.fight_started = False
+        self.fight_window = None
+
+    def __fight_competed_winning(self):
+        self.beaten_dungeon_monster[self.current_dungeon_selected] += 1
+        self.current_dungeon_monster: Dungeon_Monster = dungeon_monster_list[self.current_dungeon_selected][self.beaten_dungeon_monster[self.current_dungeon_selected] - 1]
+
+
+    def __start_fight(self):
+        self.fight_started = True
+        if self.fight_window is None:
+            self.character.current_health = self.character.max_health
+            self.character.attack_score = 0
+            self.fight_window = Fight_Window(self.current_dungeon_monster.gold, self.current_dungeon_monster.experience, None, self.current_dungeon_monster.enemy, self.character, lambda: self.__fight_completed(), lambda: self.__fight_competed_winning())
 
     def __toggle_dungeon_seleced(self, new_selected_dungeon):
         self.current_dungeon_selected = new_selected_dungeon
@@ -121,6 +140,9 @@ class Dungeon_Window:
             for button in self.specific_dungeon_buttons:
                 button.draw(canvas, mouse_pos)
 
+            if self.fight_started:
+                self.fight_window.draw(canvas, mouse_pos)
+
 
     def handle_events(self, event, mouse_pos):
         if self.dungeon_start_buttons is not None:
@@ -130,3 +152,6 @@ class Dungeon_Window:
             if self.current_dungeon_focused and self.specific_dungeon_buttons is not None:
                 for button in self.specific_dungeon_buttons:
                     button.handle_event(event, mouse_pos)
+                
+                if self.fight_started:
+                    self.fight_window.handle_events(event, mouse_pos)

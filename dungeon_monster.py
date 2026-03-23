@@ -9,7 +9,13 @@ class Dungeon_Monster():
         self.gold = gold
         self.experience = experience
         self.item = item
+        self.enemy_level = level
+        self.enemy_damage = damage
+        self.enemy_max_health = max_health
         self.enemy = Enemy(level = level, damage = damage, max_health = max_health)
+
+    def reset_enemy(self):
+        self.enemy = Enemy(level = self.enemy_level, damage = self.enemy_damage, max_health = self.enemy_max_health)
 
 DUNGEON_1 = "Dungeon 1"
 DUNGEON_2 = "Dungeon 2"
@@ -17,7 +23,7 @@ DUNGEON_3 = "Dungeon 3"
 
 dungeon_monster_list = {
     DUNGEON_1: [
-        Dungeon_Monster(name="Monster 1", description="Not that scary only number 1", gold=5, experience=100, item="randomItemID1", level=10, damage=10, max_health=100),
+        Dungeon_Monster(name="Monster 1", description="Not that scary only number 1", gold=5, experience=100, item="randomItemID1", level=10, damage=1, max_health=5),
         Dungeon_Monster(name="Monster 2", description="Not that scary only number 2", gold=10, experience=1000, item="randomItemID2", level=12, damage=30, max_health=1000),
         Dungeon_Monster(name="Monster 3", description="Not that scary only number 3", gold=20, experience=2000, item="randomItemID3", level=15, damage=50, max_health=3000),
         Dungeon_Monster(name="Monster 4", description="Not that scary only number 4", gold=30, experience=3000, item="randomItemID4", level=20, damage=50, max_health=4000),

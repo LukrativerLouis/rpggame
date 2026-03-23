@@ -5,7 +5,7 @@ from character import *
 from quest import *
 
 class Fight_Window:
-    def __init__(self, gold, experience, item, enemy, character: Character, completed_function, allow_retry):
+    def __init__(self, gold, experience, item, enemy, character: Character, completed_function, completed_function_winning):
         # init stuff
         self.start_fight = False
         self.gold = gold
@@ -13,8 +13,6 @@ class Fight_Window:
         self.item = item
         self.fight_window_button_list = self.__create_fight_window_button()
         self.button_continue = None
-        self.button_retry = None
-        self.allow_retry = allow_retry
         self.character = character
         self.enemy: Enemy = enemy
         self.reward_rewarded = False
@@ -33,12 +31,17 @@ class Fight_Window:
         self.fight_won = False
         self.fight_done = False
         self.completed_function = completed_function
+        self.completed_function_winning = completed_function_winning
 
         self.battle_log = []
         self.current_log_index = 0
 
         self.__create_fight_done_button()
         self.__simulate_fight()
+
+    def __execute_completed_functions(self):
+        self.completed_function_winning()
+        self.completed_function()
 
     def __create_fight_window_button(self):
         button_skip = Button(position = (900, 1025), size = (150, 50), text = "skip fight", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__finish_instantly() )
@@ -47,10 +50,7 @@ class Fight_Window:
         return [button_skip, button_faster]
     
     def __create_fight_done_button(self):
-        self.button_continue = Button(position = (690 + 735 / 2, 1025), size = (150, 50), text = "continue", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.completed_function())
-        if not self.allow_retry:
-            self.button_continue.center_pos = (900, 1025)
-        self.button_retry = Button(position = (1250, 1025), size = (150, 50), text = "retry", color = [255, 0, 0], change_color = [255, 50, 50])
+        self.button_continue = Button(position = (900, 1025), size = (150, 50), text = "continue", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__execute_completed_functions())
     
     def __finish_instantly(self):
         while self.current_log_index < len(self.battle_log):
@@ -136,8 +136,6 @@ class Fight_Window:
         # buttons
         if self.fight_done:
             self.button_continue.draw(canvas, mouse_pos)
-            if not self.fight_won and self.allow_retry:
-                self.button_retry.draw(canvas, mouse_pos)
         else:
             for button in self.fight_window_button_list:
                 button.draw(canvas, mouse_pos)
@@ -207,8 +205,6 @@ class Fight_Window:
     def handle_events(self, event, mouse_pos):
         if self.fight_done:
             self.button_continue.handle_event(event, mouse_pos)
-            if not self.fight_won and self.allow_retry:
-                self.button_retry.handle_event(event, mouse_pos)
         else:
             for button in self.fight_window_button_list:
                 button.handle_event(event, mouse_pos)
