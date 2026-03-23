@@ -1,6 +1,7 @@
 import pygame
 from character import *
 from character_window import *
+from shop_window import *
 from dungeon_window import *
 from quest_window import *
 from settings import *
@@ -27,6 +28,7 @@ class Game():
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character, self)
+        self.shop_window = Shop_Window(self.character)
         self.character_window = Character_Window(self.character)
         self.dungeon_window = Dungeon_Window(self.character)
 
@@ -41,11 +43,12 @@ class Game():
 
     def create_objects(self):
         btn_quest = Button(position = (100, 100), size = (150, 50), text = "Questboard", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
-        btn_character = Button(position = (100, 170), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
-        btn_dungeon = Button(position = (100, 240), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
+        btn_shop = Button(position = (100, 170), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
+        btn_character = Button(position = (100, 240), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
+        btn_dungeon = Button(position = (100, 310), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
         btn_quit = Button(position=(100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
 
-        self.main_button_list = [btn_quest, btn_character, btn_dungeon, btn_quit]
+        self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_quit]
 
     def quit_game(self):
         self.running = False
@@ -114,6 +117,8 @@ class Game():
 
             mouse_pos = self.get_virtual_mouse_pos()
 
+            # event handling
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -126,6 +131,8 @@ class Game():
                     pass
                 elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                     self.quest_window.handle_events(event, mouse_pos)
+                elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
+                    self.shop_window.handle_events(event, mouse_pos)
                 elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                     self.character_window.handle_events(event, mouse_pos)
                 elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
@@ -140,6 +147,8 @@ class Game():
                         self.toggle_fullscreen()
                     if event.key == pygame.K_ESCAPE:
                         self.quit_game()
+
+            # drawing
 
             self.canvas.fill("black")
 
@@ -163,6 +172,8 @@ class Game():
                 pass
             elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                 self.quest_window.draw(self.canvas, mouse_pos)
+            elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
+                self.shop_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                 self.character_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:

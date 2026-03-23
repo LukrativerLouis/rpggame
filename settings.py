@@ -8,6 +8,7 @@ DEFAULT_MAIN_WINDOW_STATE = "Default_Main_Window_State"
 QUEST_MAIN_WINDOW_STATE = "Quest_Main_Window_State"
 DUNGEON_MAIN_WINDOW_STATE = "Dungeon_Main_Window_State"
 CHARACTER_MAIN_WINDOW_STATE = "Character_Main_Window_State"
+SHOP_MAIN_WINDOW_STATE = "Shop_Main_Window_State"
 
 CHARACTER = "character"
 ENEMY = "enemy"

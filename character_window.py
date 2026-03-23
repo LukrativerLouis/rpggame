@@ -4,22 +4,42 @@ from character import *
 
 class Character_Window:
     def __init__(self, character: Character):
+        self.character_blueprint = Character_Blueprint(character)
+
+    def draw(self, canvas, mouse_pos):
+        self.character_blueprint.draw(canvas, mouse_pos)
+
+    def handle_events(self, events, mouse_pos):
+        self.character_blueprint.handle_events(events, mouse_pos)
+
+class Character_Blueprint:
+    def __init__(self, character: Character):
         self.character = character        
         self.exp_bar_length = 370
         self.character_exp_bar_ratio = self.character.required_experience / self.exp_bar_length
         self.show_exp_bar_tooltips = False
+        self.character_window_x = 0
+        self.character_window_y = 0
+        self.character_window_width = 0
+        self.character_window_height = 0
+        self.item_holder_size = 200
 
     def draw(self, canvas, mouse_pos):
-
         main_side_padding = 20
         spacer_padding = 5
         text_padding = 30
         base_x = 20
-        item_holder_size = 200
+        # to lazy to move it
+        item_holder_size = self.item_holder_size
 
         # helmet
 
-        create_rectangle(canvas, MAIN_START + main_side_padding, base_x, item_holder_size, item_holder_size, 2, "red")
+        helmet_rect = create_rectangle(canvas, MAIN_START + main_side_padding, base_x, item_holder_size, item_holder_size, 2, "red")
+
+        self.character_window_x = helmet_rect.x
+        self.character_window_y = helmet_rect.y
+        self.character_window_width = 815
+        self.character_window_height = 815 - item_holder_size
 
         # plate
 
@@ -48,8 +68,6 @@ class Character_Window:
         exp_bar = create_rectangle(canvas, character_rect_x, character_rect_y, character_exp_bar_width, character_exp_bar_height, 2, "cyan")
         show_text(canvas, f"Level: {self.character.level}", exp_bar.x + exp_bar.width / 2, exp_bar.y + exp_bar.height / 2, "white", True)
 
-
-
         if exp_bar.collidepoint(mouse_pos):
             self.show_exp_bar_tooltips = True
         else:
@@ -73,7 +91,7 @@ class Character_Window:
 
         # amulet
 
-        create_rectangle(canvas, MAIN_START + main_side_padding + (item_holder_size + spacer_padding) * 3, base_x, item_holder_size, item_holder_size, 2, "red")
+        amulet_rect = create_rectangle(canvas, MAIN_START + main_side_padding + (item_holder_size + spacer_padding) * 3, base_x, item_holder_size, item_holder_size, 2, "red")
 
         # ring 
 
@@ -87,9 +105,17 @@ class Character_Window:
 
         create_rectangle(canvas, MAIN_START + main_side_padding + (item_holder_size + spacer_padding) * 3, base_x + ((item_holder_size + spacer_padding) * 3), item_holder_size, item_holder_size, 2, "red")
 
+
+        # inventory 
+
+        create_rectangle(canvas, amulet_rect.x + item_holder_size + item_holder_size + spacer_padding, amulet_rect.y, item_holder_size, item_holder_size, 2, "green")
+        create_rectangle(canvas, amulet_rect.x + item_holder_size + (item_holder_size + spacer_padding) * 2, amulet_rect.y, item_holder_size, item_holder_size, 2, "green")
+        create_rectangle(canvas, amulet_rect.x + item_holder_size + (item_holder_size + spacer_padding) * 3, amulet_rect.y, item_holder_size, item_holder_size, 2, "green")
+
+        # tooltip
+
         if self.show_exp_bar_tooltips:
             create_tooltip(canvas, exp_bar.x + exp_bar.width / 2 - 30, exp_bar.y + exp_bar.height + spacer_padding, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "white", "gray")
-        
 
-    def handle_events(self, canvas, mouse_pos):
+    def handle_events(self, event, mouse_pos):
         pass
