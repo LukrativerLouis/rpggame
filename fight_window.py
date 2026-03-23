@@ -40,7 +40,8 @@ class Fight_Window:
         self.__simulate_fight()
 
     def __execute_completed_functions(self):
-        self.completed_function_winning()
+        if self.completed_function_winning:
+            self.completed_function_winning()
         self.completed_function()
 
     def __create_fight_window_button(self):
