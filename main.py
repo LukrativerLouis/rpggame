@@ -6,6 +6,7 @@ from dungeon_window import *
 from quest_window import *
 from settings import *
 from utils import *
+import math
 
 class Game():
     def __init__(self):
@@ -23,6 +24,7 @@ class Game():
 
         self.main_button_list = []
         self.main_item_list = []
+        self.item_holder_list = []
         self.active_item = None
 
         self.clock = pygame.time.Clock()
@@ -30,8 +32,8 @@ class Game():
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character, self)
-        self.shop_window = Shop_Window(self.character, self.main_item_list)
-        self.character_window = Character_Window(self.character, self.main_item_list)
+        self.shop_window = Shop_Window(self.character, self.main_item_list, self.active_item)
+        self.character_window = Character_Window(self.character, self.main_item_list, self.active_item)
         self.dungeon_window = Dungeon_Window(self.character)
 
         # dynamic display
@@ -127,6 +129,15 @@ class Game():
 
             mouse_pos = self.get_virtual_mouse_pos()
 
+            self.item_holder_list = []
+
+            if self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
+                self.item_holder_list.extend(self.character_window.character_blueprint.item_holder_list)
+
+            elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
+                self.item_holder_list.extend(self.character_window.character_blueprint.item_holder_list)
+                self.item_holder_list.extend(self.shop_window.item_holder_list)
+
             # event handling
 
             for event in pygame.event.get():
@@ -155,13 +166,37 @@ class Game():
                             break
 
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    self.active_item = None
+                    if self.active_item is not None:
+                        current_item = self.main_item_list[self.active_item]
+
+                        max_snap_distance = 150
+                        closest_holder = None
+                        min_dist = float("inf")
+
+                        for holder in self.item_holder_list:
+
+                            item_center = pygame.Vector2(current_item.rect.center)
+                            holder_center = pygame.Vector2(holder.center)
+                            dist = item_center.distance_to(holder_center)
+
+                            if dist < min_dist:
+                                min_dist = dist
+                                closest_holder = holder
+
+                        if closest_holder and min_dist < max_snap_distance:
+                            current_item.rect.center = closest_holder.center
+                            current_item.x, current_item.y = closest_holder.center
+                        else:
+                            current_item.rect.center = (current_item.x, current_item.y)
+
+                        self.active_item = None
 
                 if event.type == pygame.MOUSEMOTION:
                     if self.active_item != None:
                         rel_x = event.rel[0] / self.scale_factor
                         rel_y = event.rel[1] / self.scale_factor
                         self.main_item_list[self.active_item].rect.move_ip(rel_x, rel_y)
+                        
 
                 if event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:
@@ -199,12 +234,14 @@ class Game():
                 self.quest_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
                 self.shop_window.draw(self.canvas, mouse_pos)
-                self.set_items_to_visible()
+                self.item_holder_list = self.shop_window.item_holder_list
             elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                 self.character_window.draw(self.canvas, mouse_pos)
-                self.set_items_to_visible()
+                self.item_holder_list = self.character_window.item_holder_list
             elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                 self.dungeon_window.draw(self.canvas, mouse_pos)
+            else:
+                self.item_holder_list = []
 
             if self.main_window_state in [SHOP_MAIN_WINDOW_STATE, CHARACTER_MAIN_WINDOW_STATE]:
                 self.set_items_to_visible()
@@ -214,6 +251,9 @@ class Game():
             for item in self.main_item_list:
                 if item.visible:
                     item.draw(self.canvas, mouse_pos)
+
+            if self.active_item is not None:
+                self.main_item_list[self.active_item].draw(self.canvas, mouse_pos)
 
             self.screen.fill((20, 20, 20))
 
