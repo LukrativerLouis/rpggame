@@ -10,6 +10,8 @@ class Character:
         self.max_health = 20
         self.current_health = self.max_health
         self.attack_score = 0
+        self.inventory = []
+        self.equipment = []
 
     def adjust_gold_and_exp(self, new_gold = 0, new_exp = 0):
         self.gold += new_gold

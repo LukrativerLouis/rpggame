@@ -22,14 +22,16 @@ class Game():
         self.canvas = pygame.Surface((self.settings.base_width, self.settings.base_height))
 
         self.main_button_list = []
+        self.main_item_list = []
+        self.active_item = None
 
         self.clock = pygame.time.Clock()
         self.running = True
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character, self)
-        self.shop_window = Shop_Window(self.character)
-        self.character_window = Character_Window(self.character)
+        self.shop_window = Shop_Window(self.character, self.main_item_list)
+        self.character_window = Character_Window(self.character, self.main_item_list)
         self.dungeon_window = Dungeon_Window(self.character)
 
         # dynamic display
@@ -49,6 +51,14 @@ class Game():
         btn_quit = Button(position=(100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
 
         self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_quit]
+
+    def set_items_to_visible(self):
+        for item in self.main_item_list:
+            item.visible = True
+
+    def set_items_to_invisible(self):
+        for item in self.main_item_list:
+            item.visible = False
 
     def quit_game(self):
         self.running = False
@@ -138,6 +148,21 @@ class Game():
                 elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                     self.dungeon_window.handle_events(event, mouse_pos)
 
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.main_item_list != None:
+                    for num, item in enumerate(self.main_item_list):
+                        if item.rect.collidepoint(mouse_pos) and item.visible:
+                            self.active_item = num
+                            break
+
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                    self.active_item = None
+
+                if event.type == pygame.MOUSEMOTION:
+                    if self.active_item != None:
+                        rel_x = event.rel[0] / self.scale_factor
+                        rel_y = event.rel[1] / self.scale_factor
+                        self.main_item_list[self.active_item].rect.move_ip(rel_x, rel_y)
+
                 if event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:
                         self.calc_scale()
@@ -174,10 +199,21 @@ class Game():
                 self.quest_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
                 self.shop_window.draw(self.canvas, mouse_pos)
+                self.set_items_to_visible()
             elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                 self.character_window.draw(self.canvas, mouse_pos)
+                self.set_items_to_visible()
             elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                 self.dungeon_window.draw(self.canvas, mouse_pos)
+
+            if self.main_window_state in [SHOP_MAIN_WINDOW_STATE, CHARACTER_MAIN_WINDOW_STATE]:
+                self.set_items_to_visible()
+            else:
+                self.set_items_to_invisible()
+
+            for item in self.main_item_list:
+                if item.visible:
+                    item.draw(self.canvas, mouse_pos)
 
             self.screen.fill((20, 20, 20))
 
