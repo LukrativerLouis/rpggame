@@ -24,7 +24,6 @@ class Shop_Window():
                 self.item_holder_list.append(pygame.Rect(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE))
 
     def __get_new_item(self):
-        # TODO: create one item for a slot
         test_item = Item(600, 600, ITEM_SIZE, ITEM_SIZE, "TEST", 0, 0, 0, 0, "TEST", False)
         self.main_item_list.append(test_item)
 

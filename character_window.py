@@ -4,6 +4,7 @@ from character import *
 
 class Character_Window:
     def __init__(self, character: Character, main_item_list, active_item):
+        self.character = character
         self.character_blueprint = Character_Blueprint(character)
         self.main_item_list = main_item_list
         self.active_item = active_item

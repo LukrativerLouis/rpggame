@@ -174,7 +174,6 @@ class Game():
                         min_dist = float("inf")
 
                         for holder in self.item_holder_list:
-
                             item_center = pygame.Vector2(current_item.rect.center)
                             holder_center = pygame.Vector2(holder.center)
                             dist = item_center.distance_to(holder_center)
@@ -183,10 +182,13 @@ class Game():
                                 min_dist = dist
                                 closest_holder = holder
 
+                        # if snap or not
                         if closest_holder and min_dist < max_snap_distance:
+                            # snapped to item_holder
                             current_item.rect.center = closest_holder.center
                             current_item.x, current_item.y = closest_holder.center
                         else:
+                            # returned to origin
                             current_item.rect.center = (current_item.x, current_item.y)
 
                         self.active_item = None

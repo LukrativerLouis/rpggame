@@ -1,5 +1,6 @@
 from utils import *
 from settings import *
+import random
 
 class Item():
     def __init__(self, x, y, width, height, name, physical_damage, magic_damage, armor, magic_resist, type, visible):
@@ -26,3 +27,32 @@ class Item():
     def handle_events(self, event, mouse_pos):
         #TODO: Hover for TOOLTIPS
         pass
+
+class Item_Holder():
+    def __init__(self, x, y, width, height, type):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.rect.Rect(x, y, width, height)
+        self.type = type
+
+# item types
+
+WEAPON = "weapon"
+SWORD = "sword"
+BOW = "bow"
+STAFF = "staff"
+HELMET = "Helmet"
+CHEST_PLATE = "chest_plate"
+LEGGINGS = "leggings"
+SHOES = "shoes"
+
+
+item_list = {
+    {"name": "Wooden Sword", "physical_damage": 1, "magic_damage": 0, "armor": 1, "magic_resist": 0, "type": WEAPON, "sub_type": SWORD}
+}
+
+def getItemDetails():
+    random_item = random.choice(item_list)
+    return random_item["name"], random_item["physical_damage"], random_item["magic_damage"], random_item["armor"], random_item["magic_resist"]
