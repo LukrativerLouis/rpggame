@@ -21,7 +21,7 @@ class Shop_Window():
             for col in range(3):
                 x = start_for_shop_x + (ITEM_HOLDER_SIZE + spacer_padding) * col
                 y = start_for_shop_y + (ITEM_HOLDER_SIZE + spacer_padding) * row
-                self.item_holder_list.append(pygame.Rect(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE))
+                self.item_holder_list.append(Item_Holder(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, SHOP))
 
     def __get_new_item(self):
         test_item = Item(600, 600, ITEM_SIZE, ITEM_SIZE, "TEST", 0, 0, 0, 0, "TEST", False)

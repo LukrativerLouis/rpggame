@@ -47,10 +47,21 @@ HELMET = "Helmet"
 CHEST_PLATE = "chest_plate"
 LEGGINGS = "leggings"
 SHOES = "shoes"
+ACCESSORIES = "accessories"
+AMULET = "amulet"
+RING = "ring"
+EXTRA3 = "extra3"
+EXTRA4 = "extra4"
+
+# item_holder types
+# all types not used for items
+
+SHOP = "shop"
+INVENTORY = "inventory"
 
 
 item_list = {
-    {"name": "Wooden Sword", "physical_damage": 1, "magic_damage": 0, "armor": 1, "magic_resist": 0, "type": WEAPON, "sub_type": SWORD}
+    "name": "Wooden Sword", "physical_damage": 1, "magic_damage": 0, "armor": 1, "magic_resist": 0, "type": WEAPON, "sub_type": SWORD
 }
 
 def getItemDetails():

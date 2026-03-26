@@ -1,6 +1,7 @@
 from settings import *
 from utils import *
 from character import *
+from item import *
 
 class Character_Window:
     def __init__(self, character: Character, main_item_list, active_item):
@@ -37,19 +38,21 @@ class Character_Blueprint:
         main_side_padding = 20
         spacer_padding = 5
 
-        self.helmet_slot = pygame.Rect(MAIN_START + main_side_padding, base_x, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.plate_slot = pygame.Rect(MAIN_START + main_side_padding, base_x + ITEM_HOLDER_SIZE + spacer_padding, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.legs_slot = pygame.Rect(MAIN_START + main_side_padding, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 2), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.shoes_slot = pygame.Rect(MAIN_START + main_side_padding, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 3), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.weapon_slot = pygame.Rect(MAIN_START + main_side_padding + ITEM_HOLDER_SIZE + spacer_padding, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 2, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.acc_rect_slot = pygame.Rect(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 2, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 2, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.amulet_slot = pygame.Rect(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.ring_slot = pygame.Rect(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x + ITEM_HOLDER_SIZE + spacer_padding, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.extra3_slot = pygame.Rect(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 2), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.extra4_slot = pygame.Rect(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 3), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.inv_1_slot = pygame.Rect(self.amulet_slot.x + ITEM_HOLDER_SIZE + ITEM_HOLDER_SIZE + spacer_padding, self.amulet_slot.y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.inv_2_slot = pygame.Rect(self.amulet_slot.x + ITEM_HOLDER_SIZE + (ITEM_HOLDER_SIZE + spacer_padding) * 2, self.amulet_slot.y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
-        self.inv_3_slot = pygame.Rect(self.amulet_slot.x + ITEM_HOLDER_SIZE + (ITEM_HOLDER_SIZE + spacer_padding) * 3, self.amulet_slot.y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE)
+        # adjust for item_holder class
+
+        self.helmet_slot = Item_Holder(MAIN_START + main_side_padding, base_x, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, HELMET)
+        self.plate_slot = Item_Holder(MAIN_START + main_side_padding, base_x + ITEM_HOLDER_SIZE + spacer_padding, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, CHEST_PLATE)
+        self.legs_slot = Item_Holder(MAIN_START + main_side_padding, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 2), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, LEGGINGS)
+        self.shoes_slot = Item_Holder(MAIN_START + main_side_padding, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 3), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, SHOES)
+        self.weapon_slot = Item_Holder(MAIN_START + main_side_padding + ITEM_HOLDER_SIZE + spacer_padding, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 2, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, WEAPON)
+        self.acc_rect_slot = Item_Holder(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 2, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 2, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, ACCESSORIES)
+        self.amulet_slot = Item_Holder(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, AMULET)
+        self.ring_slot = Item_Holder(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x + ITEM_HOLDER_SIZE + spacer_padding, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, RING)
+        self.extra3_slot = Item_Holder(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 2), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, EXTRA3)
+        self.extra4_slot = Item_Holder(MAIN_START + main_side_padding + (ITEM_HOLDER_SIZE + spacer_padding) * 3, base_x + ((ITEM_HOLDER_SIZE + spacer_padding) * 3), ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, EXTRA4)
+        self.inv_1_slot = Item_Holder(self.amulet_slot.x + ITEM_HOLDER_SIZE + ITEM_HOLDER_SIZE + spacer_padding, self.amulet_slot.y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, INVENTORY)
+        self.inv_2_slot = Item_Holder(self.amulet_slot.x + ITEM_HOLDER_SIZE + (ITEM_HOLDER_SIZE + spacer_padding) * 2, self.amulet_slot.y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, INVENTORY)
+        self.inv_3_slot = Item_Holder(self.amulet_slot.x + ITEM_HOLDER_SIZE + (ITEM_HOLDER_SIZE + spacer_padding) * 3, self.amulet_slot.y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, INVENTORY)
 
         self.character_window_x = self.helmet_slot.x
         self.character_window_y = self.helmet_slot.y
