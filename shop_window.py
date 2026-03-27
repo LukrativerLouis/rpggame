@@ -1,9 +1,8 @@
-import pygame
 from character_window import *
 from item import *
 
 class Shop_Window():
-    def __init__(self, character, main_item_list, active_item):
+    def __init__(self, character: Character, main_item_list, active_item):
         self.character = character
         self.main_item_list = main_item_list
         self.shop_item_list = []
@@ -23,18 +22,18 @@ class Shop_Window():
             for col in range(3):
                 x = start_for_shop_x + (ITEM_HOLDER_SIZE + spacer_padding) * col
                 y = start_for_shop_y + (ITEM_HOLDER_SIZE + spacer_padding) * row
-                self.item_holder_list.append(Item_Holder(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, "blue", SHOP, True))
+                self.item_holder_list.append(Item_Holder(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, "blue", SHOP))
 
     def __create_all_items(self):
         for item_holder in self.item_holder_list:
             id, name, physical_damage, magic_damage, armor, magic_resist, type, sub_type = getItemDetailsRandom()
-            item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, physical_damage, magic_damage, armor, magic_resist, type, sub_type, False)
+            item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, physical_damage, magic_damage, armor, magic_resist, self.character.get_item_gold_value() , type, sub_type, False)
             self.main_item_list.append(item)
             self.shop_item_list.append(item)
 
     def create_new_item(self, item_holder):
         id, name, physical_damage, magic_damage, armor, magic_resist, type, sub_type = getItemDetailsRandom()
-        item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, physical_damage, magic_damage, armor, magic_resist, type, sub_type, False)
+        item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, physical_damage, magic_damage, armor, magic_resist,self.character.get_item_gold_value(), type, sub_type, False)
         self.main_item_list.append(item)
         self.shop_item_list.append(item)
 

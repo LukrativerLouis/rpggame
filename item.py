@@ -3,7 +3,7 @@ from settings import *
 import random
 
 class Item():
-    def __init__(self, id, x, y, width, height, name, physical_damage, magic_damage, armor, magic_resist, type, sub_type, visible):
+    def __init__(self, id, x, y, width, height, name, physical_damage, magic_damage, armor, magic_resist, gold_value, type, sub_type, visible):
         self.id = id
         self.x = x
         self.y = y
@@ -18,11 +18,17 @@ class Item():
         self.magic_damage = magic_damage
         self.armor = armor
         self.magic_resist = magic_resist
+        self.gold_value = gold_value
+        self.sell_value = self.get_sell_value()
         self.type = type
         self.sub_type = sub_type
         self.visible = visible
         color_list = ["lightblue", "cornflowerblue", "magenta", "orange", "darkseagreen", "deeppink", "darkorange4"]
         self.color = random.choice(color_list)
+    
+    def get_sell_value(self):
+        # TODO: make sell value dynamic
+        return self.gold_value * SELL_FACTOR
 
     def draw(self, canvas, mouse_pos):
         self.surf.fill(self.color)
@@ -34,7 +40,7 @@ class Item():
         pass
 
 class Item_Holder():
-    def __init__(self, x, y, width, height, color, type, shop = False, highlight_color = "indigo"):
+    def __init__(self, x, y, width, height, color, type, highlight_color = "indigo"):
         self.x = x
         self.y = y
         self.width = width
@@ -46,7 +52,6 @@ class Item_Holder():
         self.current_color = self.color
         self.type = type
         self.highlight = False
-        self.shop = shop
 
     def draw(self, canvas, mouse_pos):
         if self.highlight:

@@ -17,6 +17,10 @@ class Character:
         self.gold += new_gold
         self.experience += new_exp
 
+    def get_item_gold_value(self):
+        # maybe return type (legendary or common or uncommon or something)
+        return self.level
+
 class Enemy:
     def __init__(self, level = 1, damage = 1, max_health = 10):
         self.level = level

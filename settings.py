@@ -12,6 +12,8 @@ DUNGEON_MAIN_WINDOW_STATE = "Dungeon_Main_Window_State"
 CHARACTER_MAIN_WINDOW_STATE = "Character_Main_Window_State"
 SHOP_MAIN_WINDOW_STATE = "Shop_Main_Window_State"
 
+SELL_FACTOR = 0.3
+
 CHARACTER = "character"
 ENEMY = "enemy"
 

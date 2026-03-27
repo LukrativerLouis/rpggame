@@ -195,6 +195,7 @@ class Game():
                             self.main_item_list.remove(current_item)
                             for h in self.item_holder_list:
                                 h.highlight = False
+                            self.character.gold += current_item.sell_value
                             self.active_item = None
                             continue
                         
@@ -211,15 +212,21 @@ class Game():
                                 else:
                                     snap_condition = False
 
+                        # character not enough money TODO: Implement Info for player
+                        if self.original_holder.type == SHOP and (self.character.gold - current_item.gold_value) < 0:
+                            snap_condition = False
+
                         # snap item to holder
                         if snap_condition:
-                            current_item.rect.center = closest_holder.rect.center
-                            current_item.x, current_item.y = closest_holder.rect.center
 
                             # add new item where bought item was
                             if self.original_holder.type == SHOP:
                                 self.shop_window.shop_item_list.remove(current_item)
                                 self.shop_window.create_new_item(self.original_holder)
+                                self.character.gold += -current_item.gold_value
+
+                            current_item.rect.center = closest_holder.rect.center
+                            current_item.x, current_item.y = closest_holder.rect.center
 
                         else:
                             # return to origin
@@ -233,8 +240,7 @@ class Game():
                     if self.active_item != None:
                         rel_x = event.rel[0] / self.scale_factor
                         rel_y = event.rel[1] / self.scale_factor
-                        self.main_item_list[self.active_item].rect.move_ip(rel_x, rel_y)
-                        
+                        self.main_item_list[self.active_item].rect.move_ip(rel_x, rel_y)   
 
                 if event.type == pygame.VIDEORESIZE:
                     if not self.is_fullscreen:
@@ -253,8 +259,8 @@ class Game():
             for button in self.main_button_list:
                 button.draw(self.canvas, mouse_pos)
 
-            show_text(self.canvas, f"Gold: {self.character.gold}", x = 25, y = 15, color = "yellow")
-            show_text(self.canvas, f"EXP: {self.character.experience}", x = 25, y = 35, color = "green")
+            show_text(self.canvas, f"Gold: {round(self.character.gold, 2)}", x = 25, y = 15, color = "yellow")
+            show_text(self.canvas, f"EXP: {round(self.character.experience, 1)}", x = 25, y = 35, color = "green")
 
             show_text(self.canvas, f"Mouse: {mouse_pos}", x = 10, y = 850, color = "white")
 
@@ -277,7 +283,7 @@ class Game():
             elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                 self.character_window.draw(self.canvas, mouse_pos)
                 for holder in self.item_holder_list:
-                    if not holder.shop:
+                    if holder.type != SHOP:
                         holder.draw(self.canvas, mouse_pos)
             elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                 self.dungeon_window.draw(self.canvas, mouse_pos)
