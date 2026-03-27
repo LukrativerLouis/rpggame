@@ -22,19 +22,20 @@ class Game():
 
         self.canvas = pygame.Surface((self.settings.base_width, self.settings.base_height))
 
-        self.main_button_list = []
-        self.main_item_list = []
-        self.item_holder_list = []
-        self.active_item = None
-
         self.clock = pygame.time.Clock()
         self.running = True
+
+        self.main_item_list: list[Item] = []
+        self.active_item = None
+        self.main_button_list = []
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character, self)
         self.shop_window = Shop_Window(self.character, self.main_item_list, self.active_item)
         self.character_window = Character_Window(self.character, self.main_item_list, self.active_item)
         self.dungeon_window = Dungeon_Window(self.character)
+
+        self.item_holder_list: list[Item_Holder] = self.shop_window.item_holder_list + self.character_window.item_holder_list
 
         # dynamic display
 
@@ -54,12 +55,12 @@ class Game():
 
         self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_quit]
 
-    def set_items_to_visible(self):
-        for item in self.main_item_list:
+    def set_items_to_visible(self, item_list):
+        for item in item_list:
             item.visible = True
 
-    def set_items_to_invisible(self):
-        for item in self.main_item_list:
+    def set_items_to_invisible(self, item_list):
+        for item in item_list:
             item.visible = False
 
     def quit_game(self):
@@ -129,15 +130,6 @@ class Game():
 
             mouse_pos = self.get_virtual_mouse_pos()
 
-            self.item_holder_list = []
-
-            if self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
-                self.item_holder_list.extend(self.character_window.character_blueprint.item_holder_list)
-
-            elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
-                self.item_holder_list.extend(self.character_window.character_blueprint.item_holder_list)
-                self.item_holder_list.extend(self.shop_window.item_holder_list)
-
             # event handling
 
             for event in pygame.event.get():
@@ -163,6 +155,14 @@ class Game():
                     for num, item in enumerate(self.main_item_list):
                         if item.rect.collidepoint(mouse_pos) and item.visible:
                             self.active_item = num
+                            self.original_holder = None
+
+                            for h in self.item_holder_list:
+                                if h.type == self.main_item_list[self.active_item].type or h.type == INVENTORY:
+                                    h.highlight = True 
+                                
+                                if h.rect.colliderect(item.rect):
+                                    self.original_holder = h
                             break
 
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
@@ -184,15 +184,49 @@ class Game():
                                 min_dist = dist
                                 closest_holder = holder
 
-                        # if snap or not
-                        if closest_holder and min_dist < max_snap_distance:
-                            # snapped to item_holder
+                        snap_condition = True
+
+                        # if snap or not, not end up in shop
+                        if not (closest_holder and min_dist < max_snap_distance):
+                            snap_condition = False
+
+                        # delete item over shop
+                        if closest_holder.type == SHOP and self.original_holder.type != SHOP:
+                            self.main_item_list.remove(current_item)
+                            for h in self.item_holder_list:
+                                h.highlight = False
+                            self.active_item = None
+                            continue
+                        
+                        # item doesnt match type not snap
+                        if not (closest_holder.type == current_item.type or closest_holder.type == INVENTORY):
+                            snap_condition = False
+
+                        # if item already has a spot - flip
+                        for item in self.main_item_list:
+                            if item.rect.colliderect(closest_holder.rect) and item != current_item:
+                                if self.original_holder.type != SHOP:
+                                    item.rect.center = self.original_holder.rect.center
+                                    item.x, item.y = self.original_holder.rect.x, self.original_holder.rect.x
+                                else:
+                                    snap_condition = False
+
+                        # snap item to holder
+                        if snap_condition:
                             current_item.rect.center = closest_holder.rect.center
                             current_item.x, current_item.y = closest_holder.rect.center
-                        else:
-                            # returned to origin
-                            current_item.rect.center = (current_item.x, current_item.y)
 
+                            # add new item where bought item was
+                            if self.original_holder.type == SHOP:
+                                self.shop_window.shop_item_list.remove(current_item)
+                                self.shop_window.create_new_item(self.original_holder)
+
+                        else:
+                            # return to origin
+                            current_item.rect.center = (current_item.x, current_item.y)
+                        
+                        for h in self.item_holder_list:
+                           h.highlight = False
                         self.active_item = None
 
                 if event.type == pygame.MOUSEMOTION:
@@ -238,19 +272,23 @@ class Game():
                 self.quest_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
                 self.shop_window.draw(self.canvas, mouse_pos)
-                self.item_holder_list = self.shop_window.item_holder_list
+                for holder in self.item_holder_list:
+                    holder.draw(self.canvas, mouse_pos)
             elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                 self.character_window.draw(self.canvas, mouse_pos)
-                self.item_holder_list = self.character_window.item_holder_list
+                for holder in self.item_holder_list:
+                    if not holder.shop:
+                        holder.draw(self.canvas, mouse_pos)
             elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                 self.dungeon_window.draw(self.canvas, mouse_pos)
-            else:
-                self.item_holder_list = []
 
-            if self.main_window_state in [SHOP_MAIN_WINDOW_STATE, CHARACTER_MAIN_WINDOW_STATE]:
-                self.set_items_to_visible()
+            if self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
+                self.set_items_to_visible(self.character_window.main_item_list)
+                self.set_items_to_invisible(self.shop_window.shop_item_list)
+            elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
+                self.set_items_to_visible(self.main_item_list)
             else:
-                self.set_items_to_invisible()
+                self.set_items_to_invisible(self.main_item_list)
 
             for item in self.main_item_list:
                 if item.visible:
