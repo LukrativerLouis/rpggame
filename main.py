@@ -192,7 +192,7 @@ class Game():
                     if self.active_item is not None:
                         current_item = self.main_item_list[self.active_item]
 
-                        max_snap_distance = 150
+                        max_snap_distance = 100
                         closest_holder = None
                         min_dist = float("inf")
 
@@ -209,21 +209,29 @@ class Game():
 
                         snap_condition = True
 
-                        occupying_item = None
-
-                        move_item_to_inventory = False
-
-                        for item in self.main_item_list:
-                            if item.rect.colliderect(closest_holder.rect) and item != current_item:
-                                occupying_item = item
-                                break
-
-                        # if snap or not
-                        if not (closest_holder and min_dist < max_snap_distance):
+                        # check if really halfway in shop to sell
+                        if closest_holder:
+                            if closest_holder.type == SHOP:
+                                if not closest_holder.rect.collidepoint(current_item.rect.center):
+                                    snap_condition = False
+                            else:
+                                if min_dist >= max_snap_distance:
+                                    snap_condition = False
+                        else:
                             snap_condition = False
 
-                        # delete item over shop
-                        if closest_holder.type == SHOP and self.original_holder.type != SHOP:
+                        occupying_item = None
+                        move_item_to_inventory = False
+
+                        # check if new slot is full
+                        if snap_condition:
+                            for item in self.main_item_list:
+                                if item.rect.colliderect(closest_holder.rect) and item != current_item:
+                                    occupying_item = item
+                                    break
+
+                        # delete item when over shop
+                        if snap_condition and closest_holder.type == SHOP and self.original_holder.type != SHOP:
                             self.remove_item_from_holder(current_item, self.original_holder)
                             self.character.calculate_player_stats()
                             self.main_item_list.remove(current_item)
@@ -234,11 +242,11 @@ class Game():
                             continue
                         
                         # item doesnt match type not snap
-                        if closest_holder.type != current_item.type and closest_holder.type != INVENTORY:
+                        if snap_condition and closest_holder.type != current_item.type and closest_holder.type != INVENTORY:
                             snap_condition = False
 
                         # character not enough money TODO: Implement Info for player
-                        if self.original_holder.type == SHOP and (self.character.gold - current_item.gold_value) < 0:
+                        if snap_condition and self.original_holder.type == SHOP and (self.character.gold - current_item.gold_value) < 0:
                             snap_condition = False
 
                         if occupying_item:
@@ -261,21 +269,19 @@ class Game():
                                 self.character.gold += -current_item.gold_value
 
                             if occupying_item:
+                                new_holder = None
+
                                 if move_item_to_inventory:
-                                    free_holder = self.get_free_inventory_slot()
-
-                                    self.remove_item_from_holder(occupying_item, closest_holder)
-                                    self.add_item_to_holder(occupying_item, free_holder)
-
-                                    occupying_item.rect.center = free_holder.rect.center
-                                    occupying_item.x, occupying_item.y = occupying_item.rect.center
+                                    new_holder = self.get_free_inventory_slot()
                                 else:
-                                    # check condition to remove and add for old item
-                                    self.remove_item_from_holder(occupying_item, closest_holder)
-                                    self.add_item_to_holder(occupying_item, self.original_holder)
-                                    # set old item to old item slot
-                                    occupying_item.rect.center = self.original_holder.rect.center
-                                    occupying_item.x, occupying_item.y = occupying_item.rect.center
+                                    new_holder = self.original_holder
+
+                                # check condition to remove and add for old item
+                                self.remove_item_from_holder(occupying_item, closest_holder)
+                                self.add_item_to_holder(occupying_item, new_holder)
+                                # set old item to old item slot
+                                occupying_item.rect.center = new_holder.rect.center
+                                occupying_item.x, occupying_item.y = occupying_item.rect.center
 
                             # check condition to remove and add for current item
                             self.remove_item_from_holder(current_item, self.original_holder)
