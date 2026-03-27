@@ -200,7 +200,7 @@ class Game():
                             continue
                         
                         # item doesnt match type not snap
-                        if not (closest_holder.type == current_item.type or closest_holder.type == INVENTORY):
+                        if not closest_holder.type == current_item.type or closest_holder.type == INVENTORY:
                             snap_condition = False
 
                         # if item already has a spot - flip
