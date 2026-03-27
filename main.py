@@ -44,9 +44,9 @@ class Game():
         self.offset_y = 0
 
         self.calc_scale()
-        self.create_objects()
+        self.create_buttons()
 
-    def create_objects(self):
+    def create_buttons(self):
         btn_quest = Button(position = (100, 100), size = (150, 50), text = "Questboard", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
         btn_shop = Button(position = (100, 170), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
         btn_character = Button(position = (100, 240), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
@@ -62,6 +62,20 @@ class Game():
     def set_items_to_invisible(self, item_list):
         for item in item_list:
             item.visible = False
+
+    def remove_item_from_holder(self, item, holder):
+        if holder.type == SHOP and item in self.shop_window.shop_item_list:
+            self.shop_window.shop_item_list.remove(item)
+        elif holder.type == INVENTORY and item in self.character.inventory:
+            self.character.inventory.remove(item)
+        elif holder.type in LIST_OF_EQUIPMENT_TYPES and item in self.character.equipment:
+            self.character.equipment.remove(item)
+
+    def add_item_to_holder(self, item, holder):
+        if holder.type == INVENTORY and item not in self.character.inventory:
+            self.character.inventory.append(item)
+        elif holder.type in LIST_OF_EQUIPMENT_TYPES and item not in self.character.equipment:
+            self.character.equipment.append(item)
 
     def quit_game(self):
         self.running = False
@@ -186,12 +200,21 @@ class Game():
 
                         snap_condition = True
 
-                        # if snap or not, not end up in shop
+                        occupying_item = None
+
+                        for item in self.main_item_list:
+                            if item.rect.colliderect(closest_holder.rect) and item != current_item:
+                                occupying_item = item
+                                break
+
+                        # if snap or not
                         if not (closest_holder and min_dist < max_snap_distance):
                             snap_condition = False
 
                         # delete item over shop
                         if closest_holder.type == SHOP and self.original_holder.type != SHOP:
+                            self.remove_item_from_holder(current_item, self.original_holder)
+                            self.character.calculate_player_stats()
                             self.main_item_list.remove(current_item)
                             for h in self.item_holder_list:
                                 h.highlight = False
@@ -200,33 +223,47 @@ class Game():
                             continue
                         
                         # item doesnt match type not snap
-                        if not closest_holder.type == current_item.type or closest_holder.type == INVENTORY:
+                        if closest_holder.type != current_item.type and closest_holder.type != INVENTORY:
                             snap_condition = False
-
-                        # if item already has a spot - flip
-                        for item in self.main_item_list:
-                            if item.rect.colliderect(closest_holder.rect) and item != current_item:
-                                if self.original_holder.type != SHOP:
-                                    item.rect.center = self.original_holder.rect.center
-                                    item.x, item.y = self.original_holder.rect.x, self.original_holder.rect.x
-                                else:
-                                    snap_condition = False
 
                         # character not enough money TODO: Implement Info for player
                         if self.original_holder.type == SHOP and (self.character.gold - current_item.gold_value) < 0:
                             snap_condition = False
+
+                        if occupying_item:
+                            # shop item has no slot because slot is occupied
+                            if self.original_holder.type == SHOP:
+                                snap_condition = False
+                            # cant swap items if no type match
+                            elif occupying_item.type != self.original_holder.type and self.original_holder.type != INVENTORY:
+                                snap_condition = False
 
                         # snap item to holder
                         if snap_condition:
 
                             # add new item where bought item was
                             if self.original_holder.type == SHOP:
-                                self.shop_window.shop_item_list.remove(current_item)
                                 self.shop_window.create_new_item(self.original_holder)
                                 self.character.gold += -current_item.gold_value
 
+                            if occupying_item:
+                                # check condition to remove and add for old item
+                                self.remove_item_from_holder(occupying_item, closest_holder)
+                                self.add_item_to_holder(occupying_item, self.original_holder)
+                                # set old item to old item slot
+                                occupying_item.rect.center = self.original_holder.rect.center
+                                occupying_item.x, occupying_item.y = occupying_item.rect.center
+
+
+                            # check condition to remove and add for current item
+                            self.remove_item_from_holder(current_item, self.original_holder)
+                            self.add_item_to_holder(current_item, closest_holder)
+
+                            # set new item to new item slot
                             current_item.rect.center = closest_holder.rect.center
-                            current_item.x, current_item.y = closest_holder.rect.center
+                            current_item.x, current_item.y = current_item.rect.center
+
+                            self.character.calculate_player_stats()
 
                         else:
                             # return to origin

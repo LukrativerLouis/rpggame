@@ -81,6 +81,10 @@ RING = "ring"
 EXTRA3 = "extra3"
 EXTRA4 = "extra4"
 
+LIST_OF_EQUIPMENT_TYPES = [
+    WEAPON, HELMET, CHEST_PLATE, LEGGINGS, SHOES, ACCESSORIES, AMULET, RING, EXTRA3, EXTRA4
+]
+
 # item_holder types
 # all types not used for items
 
