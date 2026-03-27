@@ -85,11 +85,6 @@ class Character_Blueprint:
         else:
             self.show_exp_bar_tooltips = False
 
-        # stats
-
-        for holder in self.item_holder_list:
-            holder.draw(canvas, mouse_pos)
-
         stat_rectangle = create_rectangle(canvas, MAIN_START + main_side_padding + ITEM_HOLDER_SIZE + spacer_padding, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 3 , ITEM_HOLDER_SIZE * 2 + spacer_padding, ITEM_HOLDER_SIZE, 2, "red")
 
         # health

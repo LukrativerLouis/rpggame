@@ -342,14 +342,14 @@ class Game():
             elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
                 self.quest_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
-                self.shop_window.draw(self.canvas, mouse_pos)
                 for holder in self.item_holder_list:
                     holder.draw(self.canvas, mouse_pos)
+                self.shop_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
-                self.character_window.draw(self.canvas, mouse_pos)
                 for holder in self.item_holder_list:
                     if holder.type != SHOP:
                         holder.draw(self.canvas, mouse_pos)
+                self.character_window.draw(self.canvas, mouse_pos)
             elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                 self.dungeon_window.draw(self.canvas, mouse_pos)
 
