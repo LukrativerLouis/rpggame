@@ -77,6 +77,15 @@ class Game():
         elif holder.type in LIST_OF_EQUIPMENT_TYPES and item not in self.character.equipment:
             self.character.equipment.append(item)
 
+    def get_free_inventory_slot(self):
+        for holder in self.item_holder_list:
+            if holder.type == INVENTORY:
+                is_occupied = any(item.rect.colliderect(holder.rect) for item in self.main_item_list)
+
+                if not is_occupied:
+                    return holder
+        return None
+
     def quit_game(self):
         self.running = False
 
@@ -202,6 +211,8 @@ class Game():
 
                         occupying_item = None
 
+                        move_item_to_inventory = False
+
                         for item in self.main_item_list:
                             if item.rect.colliderect(closest_holder.rect) and item != current_item:
                                 occupying_item = item
@@ -233,7 +244,10 @@ class Game():
                         if occupying_item:
                             # shop item has no slot because slot is occupied
                             if self.original_holder.type == SHOP:
-                                snap_condition = False
+                                if self.get_free_inventory_slot() is not None:
+                                    move_item_to_inventory = True
+                                else:
+                                    snap_condition = False
                             # cant swap items if no type match
                             elif occupying_item.type != self.original_holder.type and self.original_holder.type != INVENTORY:
                                 snap_condition = False
@@ -247,13 +261,21 @@ class Game():
                                 self.character.gold += -current_item.gold_value
 
                             if occupying_item:
-                                # check condition to remove and add for old item
-                                self.remove_item_from_holder(occupying_item, closest_holder)
-                                self.add_item_to_holder(occupying_item, self.original_holder)
-                                # set old item to old item slot
-                                occupying_item.rect.center = self.original_holder.rect.center
-                                occupying_item.x, occupying_item.y = occupying_item.rect.center
+                                if move_item_to_inventory:
+                                    free_holder = self.get_free_inventory_slot()
 
+                                    self.remove_item_from_holder(occupying_item, closest_holder)
+                                    self.add_item_to_holder(occupying_item, free_holder)
+
+                                    occupying_item.rect.center = free_holder.rect.center
+                                    occupying_item.x, occupying_item.y = occupying_item.rect.center
+                                else:
+                                    # check condition to remove and add for old item
+                                    self.remove_item_from_holder(occupying_item, closest_holder)
+                                    self.add_item_to_holder(occupying_item, self.original_holder)
+                                    # set old item to old item slot
+                                    occupying_item.rect.center = self.original_holder.rect.center
+                                    occupying_item.x, occupying_item.y = occupying_item.rect.center
 
                             # check condition to remove and add for current item
                             self.remove_item_from_holder(current_item, self.original_holder)
