@@ -48,8 +48,8 @@ class Game():
 
     def create_buttons(self):
         btn_quest = Button(position = (100, 100), size = (150, 50), text = "Questboard", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
-        btn_shop = Button(position = (100, 170), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
-        btn_character = Button(position = (100, 240), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
+        btn_character = Button(position = (100, 170), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
+        btn_shop = Button(position = (100, 240), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
         btn_dungeon = Button(position = (100, 310), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
         btn_quit = Button(position=(100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
 
@@ -325,7 +325,6 @@ class Game():
                 button.draw(self.canvas, mouse_pos)
 
             show_text(self.canvas, f"Gold: {round(self.character.gold, 2)}", x = 25, y = 15, color = "yellow")
-            show_text(self.canvas, f"EXP: {round(self.character.experience, 1)}", x = 25, y = 35, color = "green")
 
             show_text(self.canvas, f"Mouse: {mouse_pos}", x = 10, y = 850, color = "white")
 
