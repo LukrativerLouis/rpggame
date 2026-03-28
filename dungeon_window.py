@@ -50,7 +50,6 @@ class Dungeon_Window:
         self.beaten_dungeon_monster[self.current_dungeon_selected] += 1
         self.current_dungeon_monster: Dungeon_Monster = dungeon_monster_list[self.current_dungeon_selected][self.beaten_dungeon_monster[self.current_dungeon_selected] - 1]
 
-
     def __start_fight(self):
         self.fight_started = True
         if self.fight_window is None:

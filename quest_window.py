@@ -94,7 +94,6 @@ class Quest_Window:
         self.fight_window = None
 
     def __start_fight(self):
-
         self.fight_started = True
         if self.fight_window is None:
             self.character.current_health = self.character.max_health

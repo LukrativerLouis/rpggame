@@ -174,6 +174,8 @@ class Game():
                 elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                     self.dungeon_window.handle_events(event, mouse_pos)
 
+                # start item events
+
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.main_item_list != None:
                     for num, item in enumerate(self.main_item_list):
                         if item.rect.collidepoint(mouse_pos) and item.visible:
@@ -187,6 +189,8 @@ class Game():
                                 if h.rect.colliderect(item.rect):
                                     self.original_holder = h
                             break
+
+                # item release events
 
                 if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                     if self.active_item is not None:

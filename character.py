@@ -11,7 +11,7 @@ class Character:
         self.magic_damage = 0
         self.armor = 0
         self.magic_resist = 0
-        self.class_type = None
+        self.class_type = WARRIOR
         self.max_health = 20
         self.current_health = self.max_health
         self.attack_score = 0
@@ -47,6 +47,8 @@ class Character:
         elif self.item_stats_calculated_list:
             self.clear_character_stats()
         
+        self.calculate_damage()
+        
     def clear_character_stats(self):
         self.physical_damage, self.magic_damage, self.armor, self.magic_resist = self.get_base_character_values()
         self.item_stats_calculated_list.clear()
@@ -58,9 +60,9 @@ class Character:
     def calculate_damage(self):
         if self.class_type:
             if self.class_type == WARRIOR or self.class_type == ARCHER:
-                self.damage == self.physical_damage
+                self.damage = self.physical_damage
             elif self.class_type == MAGE:
-                self.damage == self.magic_damage
+                self.damage = self.magic_damage
 
 class Enemy:
     def __init__(self, level = 1, damage = 1, max_health = 10):
