@@ -29,6 +29,12 @@ class Character:
         self.gold += new_gold
         self.experience += new_exp
 
+    def check_level_up(self):
+        if self.experience >= self.required_experience:
+            self.level += 1
+            self.experience -= self.required_experience
+            self.required_experience = round(self.required_experience * 1.1)
+
     def get_item_gold_value(self):
         # maybe give type (legendary or common or uncommon or something)
         return self.level

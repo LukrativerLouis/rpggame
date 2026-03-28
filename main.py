@@ -162,6 +162,10 @@ class Game():
                 for button in self.main_button_list:
                     button.handle_event(event, mouse_pos)
 
+                # character events
+
+                self.character.check_level_up()
+
                 # event handling window states
                 if self.main_window_state == DEFAULT_MAIN_WINDOW_STATE:
                     pass

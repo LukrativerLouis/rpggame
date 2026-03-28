@@ -23,9 +23,9 @@ class Character_Window:
 class Character_Blueprint:
     def __init__(self, character: Character):
         self.character = character        
-        self.exp_bar_length = 370
+        self.exp_bar_width = 395
         self.item_holder_list = []
-        self.character_exp_bar_ratio = self.character.required_experience / self.exp_bar_length
+        self.character_exp_bar_ratio = self.character.required_experience / self.exp_bar_width
         self.show_exp_bar_tooltips = False
         self.character_window_x = 0
         self.character_window_y = 0
@@ -71,13 +71,12 @@ class Character_Blueprint:
 
         character_rect_y = character_rectangle.y + character_rectangle.height - 50
         character_rect_x = character_rectangle.x + spacer_padding
-        character_exp_bar_width = 395
         character_exp_bar_height = 30
 
-        dynamic_width = max(0, self.character.experience / self.character_exp_bar_ratio)
+        dynamic_width = max(0, self.character.experience / self.character_exp_bar_ratio - 2)
 
         create_rectangle(canvas, character_rect_x, character_rect_y, dynamic_width, character_exp_bar_height, 0, "lightgreen")
-        exp_bar = create_rectangle(canvas, character_rect_x, character_rect_y, character_exp_bar_width, character_exp_bar_height, 2, "cyan")
+        exp_bar = create_rectangle(canvas, character_rect_x, character_rect_y, self.exp_bar_width, character_exp_bar_height, 2, "cyan")
         show_text(canvas, f"Level: {self.character.level}", exp_bar.x + exp_bar.width / 2, exp_bar.y + exp_bar.height / 2, "white", True)
 
         if exp_bar.collidepoint(mouse_pos):
