@@ -231,7 +231,7 @@ class Game():
                                     break
 
                         # delete item when over shop
-                        if snap_condition and closest_holder.type == SHOP and self.original_holder.type != SHOP:
+                        if snap_condition and closest_holder.type == SHOP and self.original_holder.type != SHOP and self.main_window_state == SHOP_MAIN_WINDOW_STATE:
                             self.remove_item_from_holder(current_item, self.original_holder)
                             self.character.calculate_player_stats()
                             self.main_item_list.remove(current_item)
