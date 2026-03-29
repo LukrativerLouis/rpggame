@@ -19,6 +19,8 @@ class Fight_Window:
 
         # ui
         self.health_bar_length = 370
+        self.character_visual_health = self.character.current_health
+        self.enemy_visual_health = self.enemy.current_health
         self.character_health_bar_ratio = self.character.max_health / self.health_bar_length
         self.enemy_health_bar_ratio = self.enemy.max_health / self.health_bar_length
 
@@ -26,6 +28,8 @@ class Fight_Window:
         self.initial_cooldown = 0.5
         self.attack_cooldown = 1
         self.start_time = pygame.time.get_ticks()
+
+        self.last_frame_time = pygame.time.get_ticks()
 
         # fight states
         self.fight_won = False
@@ -58,8 +62,10 @@ class Fight_Window:
             attacker_type, damage = self.battle_log[self.current_log_index]
 
             if attacker_type == CHARACTER:
+                self.enemy_visual_health = 0
                 self.enemy.current_health -= damage
             else:
+                self.character_visual_health = 0
                 self.character.current_health -= damage
             self.current_log_index += 1
 
@@ -128,8 +134,10 @@ class Fight_Window:
         stats_offset = 450
 
         player_rect_border = 5
-        player_health_bar_width = 2
         player_rect_height = 400
+
+        health_bar_height = 30
+        health_bar_border = 2
 
         # quest background
         create_rectangle(canvas, 200, 5, 1715, 1070, 0, "cadetblue")
@@ -145,12 +153,40 @@ class Fight_Window:
         create_rectangle(canvas, character_rect_x, base_y, player_rect_width, player_rect_height, player_rect_border, "blue3")
         create_rectangle(canvas, character_rect_x + player_rect_border, base_y + player_rect_border, player_rect_width - player_rect_border * 2, player_rect_height - player_rect_border * 2, 0, "black")
 
-        # character health bar
-        character_health_y = base_y + health_bar_offset
-        character_health_width = max(0, self.character.current_health / self.character_health_bar_ratio - player_health_bar_width * 2)
-        create_rectangle(canvas, character_rect_x, character_health_y, self.health_bar_length, 30, player_health_bar_width, "black")
-        create_rectangle(canvas, character_rect_x + player_health_bar_width, character_health_y + player_health_bar_width, character_health_width, 26, 0, "red")
-        show_text(canvas, f"{self.character.current_health}/{self.character.max_health}", 300 + self.health_bar_length / 2, character_health_y + 30 / 2, "white", True)
+        current_time = pygame.time.get_ticks()
+        dt = (current_time - self.last_frame_time) / 1000.0
+        self.last_frame_time = current_time
+
+        character_constant_speed = self.enemy.damage
+        enemy_constant_speed = self.character.damage
+
+        # Character health Animation
+        if self.character_visual_health > self.character.current_health:
+            self.character_visual_health -= character_constant_speed * dt
+            if self.character_visual_health < self.character.current_health:
+                self.character_visual_health = self.character.current_health
+        elif self.character_visual_health < self.character.current_health:
+            self.character_visual_health = self.character.current_health
+
+        # Enemy health Animation
+        if self.enemy_visual_health > self.enemy.current_health:
+            self.enemy_visual_health -= enemy_constant_speed * dt
+            if self.enemy_visual_health < self.enemy.current_health:
+                self.enemy_visual_health = self.enemy.current_health
+        elif self.enemy_visual_health < self.enemy.current_health:
+            self.enemy_visual_health = self.enemy.current_health
+
+        self.character_visual_health = draw_health_bar(
+            canvas,
+            character_rect_x,
+            base_y + health_bar_offset,
+            self.character_visual_health,
+            self.character.current_health,
+            self.character.max_health,
+            self.health_bar_length,
+            health_bar_height,
+            health_bar_border,
+        )
 
         # character stats
         character_stats_y = base_y + stats_offset
@@ -161,12 +197,17 @@ class Fight_Window:
         create_rectangle(canvas, enemy_rect_x, base_y, player_rect_width, player_rect_height, player_rect_border, "blue3")
         create_rectangle(canvas, enemy_rect_x + player_rect_border, base_y + player_rect_border, player_rect_width - player_rect_border * 2, player_rect_height - player_rect_border * 2, 0, "black")
 
-        # enemy health bar
-        enemy_health_y = base_y + health_bar_offset
-        enemy_health_width = max(0, self.enemy.current_health / self.enemy_health_bar_ratio - player_health_bar_width * 2)
-        create_rectangle(canvas, enemy_rect_x, enemy_health_y, self.health_bar_length, 30, 2, "black")
-        create_rectangle(canvas, enemy_rect_x + player_health_bar_width, enemy_health_y + player_health_bar_width, enemy_health_width, 26, 0, "red")
-        show_text(canvas, f"{self.enemy.current_health}/{self.enemy.max_health}", enemy_rect_x + self.health_bar_length / 2, enemy_health_y + 30 / 2, "white", True)
+        self.enemy_visual_health = draw_health_bar(
+            canvas,
+            enemy_rect_x,
+            base_y + health_bar_offset,
+            self.enemy_visual_health,
+            self.enemy.current_health,
+            self.enemy.max_health,
+            self.health_bar_length,
+            health_bar_height,
+            health_bar_border,
+        )
 
         # enemy stats
         enemy_stats_y = base_y + stats_offset
@@ -209,4 +250,3 @@ class Fight_Window:
         else:
             for button in self.fight_window_button_list:
                 button.handle_event(event, mouse_pos)
-                

@@ -6,13 +6,13 @@ class Character:
         self.experience = 0
         self.required_experience = 100
         self.level = 1
-        self.damage = 0
+        self.damage = 5
         self.physical_damage = 0
         self.magic_damage = 0
         self.armor = 0
         self.magic_resist = 0
         self.class_type = WARRIOR
-        self.max_health = 20
+        self.max_health = 100
         self.current_health = self.max_health
         self.attack_score = 0
         self.base_character_value_list = {

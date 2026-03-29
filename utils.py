@@ -108,3 +108,23 @@ def debug(canvas, info, y, x, color, center = False):
 
 def show_text(canvas, info, x = 100, y = 100, color= "Green", center = False):
     debug(canvas, info, y, x, color, center)
+
+def draw_health_bar(canvas, x, y, visual_val, actual_val, max_val, bar_width, bar_height, border_value):
+    ratio = bar_width / max_val if max_val > 0 else 0
+
+    yellow_width = visual_val * ratio
+    red_width = actual_val * ratio
+
+    border = create_rectangle(canvas, x, y, bar_width, bar_height, border_value, "black")
+
+    if yellow_width > 0:
+        w = max(0, yellow_width - border_value * 2)
+        create_rectangle(canvas, x + border_value, y + border_value, w, bar_height - border_value * 2, 0, "yellow")
+
+    if red_width > 0:
+        w = max(0, red_width - border_value * 2)
+        create_rectangle(canvas, x + border_value, y + border_value, w, bar_height - border_value * 2, 0, "red")
+
+    show_text(canvas, f"{int(actual_val)}/{int(max_val)}", border.centerx, border.centery, "white", True)
+
+    return visual_val

@@ -31,7 +31,7 @@ dungeon_monster_list = {
     ], 
 
     DUNGEON_2: [
-        Dungeon_Monster(name="Enemy 1", description="Not that scary only number 1", gold=5, experience=100, item="randomItemID1", level=10, damage=10, max_health=100),
+        Dungeon_Monster(name="Enemy 1", description="Not that scary only number 1", gold=5, experience=100, item="randomItemID1", level=10, damage=10, max_health=10000),
         Dungeon_Monster(name="Enemy 2", description="Not that scary only number 2", gold=10, experience=1000, item="randomItemID2", level=12, damage=30, max_health=1000),
         Dungeon_Monster(name="Enemy 3", description="Not that scary only number 3", gold=20, experience=2000, item="randomItemID3", level=15, damage=50, max_health=3000),
         Dungeon_Monster(name="Enemy 4", description="Not that scary only number 4", gold=30, experience=3000, item="randomItemID4", level=20, damage=50, max_health=4000),
