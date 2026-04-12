@@ -1,4 +1,6 @@
 import pygame
+import asyncio
+import sys
 from character import *
 from character_window import *
 from shop_window import *
@@ -6,15 +8,20 @@ from dungeon_window import *
 from quest_window import *
 from settings import *
 from utils import *
-import math
 
 class Game():
     def __init__(self):
         pygame.init()
+        self.is_web = sys.platform == "emscripten"
+
         self.settings = Settings()
         self.character = Character()
 
-        self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height), pygame.RESIZABLE | pygame.DOUBLEBUF)
+        if self.is_web:
+            self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height))
+        else: 
+            self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height), pygame.RESIZABLE | pygame.DOUBLEBUF)
+        
         pygame.display.set_caption(self.settings.title)
 
         self.is_fullscreen = False
@@ -43,7 +50,8 @@ class Game():
         self.offset_x = 0
         self.offset_y = 0
 
-        self.calc_scale()
+        if not self.is_web:
+            self.calc_scale()
         self.create_buttons()
 
     def create_buttons(self):
@@ -87,6 +95,8 @@ class Game():
         return None
 
     def quit_game(self):
+        if self.is_web:
+            return
         self.running = False
 
     def calc_scale(self):
@@ -128,6 +138,8 @@ class Game():
         return (virtual_x, virtual_y)
     
     def toggle_fullscreen(self):
+        if self.is_web:
+           return 
 
         self.is_fullscreen = not self.is_fullscreen
 
@@ -147,7 +159,7 @@ class Game():
         else:
             self.main_window_state = new_window_state
 
-    def start(self):
+    async def start(self):
 
         while self.running:
 
@@ -384,5 +396,11 @@ class Game():
             pygame.display.flip()
             self.clock.tick(self.settings.fps)
 
+            await asyncio.sleep(0)
+
+async def main():
+    game = Game()
+    await game.start()
+
 if __name__ == "__main__":
-    Game().start()
+    asyncio.run(main())
