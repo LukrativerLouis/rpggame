@@ -1,13 +1,15 @@
 from item import *
 
 class Character:
-    def __init__(self):
+    def __init__(self, name, image, gold, level):
+        self.name = name
+        self.image = image
         self.current_stamina = 8
         self.max_stamina = 100
-        self.gold = 100
+        self.gold = gold
         self.experience = 0
         self.required_experience = 100
-        self.level = 1
+        self.level = level
         self.damage = 5
         self.physical_damage = 0
         self.magic_damage = 0

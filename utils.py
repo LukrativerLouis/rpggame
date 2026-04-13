@@ -1,7 +1,5 @@
 import pygame
 
-import pygame
-
 class Button:
     def __init__(self, position, size, color=[100, 100, 100], change_color=None, func=None, text='', font="arial", font_size=16, font_color=[0, 0, 0]):
         self.center_pos = pygame.Vector2(position)

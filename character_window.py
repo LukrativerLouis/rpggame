@@ -16,8 +16,10 @@ class Character_Window:
     def draw(self, canvas, mouse_pos, active_item):
         self.character_blueprint.draw(canvas, mouse_pos, active_item)
 
-    def handle_events(self, event, mouse_pos):
-        self.character_blueprint.handle_events(event, mouse_pos)
+    def handle_events(self, event, mouse_pos, character):
+        if self.character != character:
+            self.character = character
+        self.character_blueprint.handle_events(event, mouse_pos, character)
 
 class Character_Blueprint:
     def __init__(self, character: Character):
@@ -108,5 +110,6 @@ class Character_Blueprint:
         if self.show_exp_bar_tooltips and active_item == None:
             create_tooltip(canvas, exp_bar.x + exp_bar.width / 2 - 30, exp_bar.y + exp_bar.height + spacer_padding, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "white", "gray")
 
-    def handle_events(self, event, mouse_pos):
-        pass
+    def handle_events(self, event, mouse_pos, character):
+        if self.character != character:
+            self.character = character

@@ -195,7 +195,10 @@ class Quest_Window:
             if self.fight_started:
                 self.fight_window.draw(canvas, mouse_pos)
     
-    def handle_events(self, event,  mouse_pos):
+    def handle_events(self, event,  mouse_pos, character):
+        if self.character != character:
+            self.character = character
+
         for button in self.quest_button_list:
             button.handle_event(event, mouse_pos)
         if self.show_dialog_window and self.selected_quest is not None:

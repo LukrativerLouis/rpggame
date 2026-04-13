@@ -50,7 +50,10 @@ class Shop_Window():
         for holder in self.item_holder_list:
             holder.draw(canvas, mouse_pos)
 
-    def handle_events(self, event, mouse_pos):
-        self.character_blueprint.handle_events(event, mouse_pos)
+    def handle_events(self, event, mouse_pos, character):
+        if self.character != character:
+            self.character = character
+
+        self.character_blueprint.handle_events(event, mouse_pos, character)
         self.refresh_buttom.handle_event(event, mouse_pos)
 

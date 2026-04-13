@@ -6,6 +6,12 @@ MAIN_START = 195
 MAIN_END = 1725
 ITEM_SIZE = 180
 ITEM_HOLDER_SIZE = 200
+
+MENU_STATE = "menu_state"
+OPTIONS_STATE = "options_state"
+CHARACTER_SLOTS_STATE = "character_slots_state"
+GAME_STATE = "game_state"
+
 DEFAULT_MAIN_WINDOW_STATE = "Default_Main_Window_State"
 QUEST_MAIN_WINDOW_STATE = "Quest_Main_Window_State"
 DUNGEON_MAIN_WINDOW_STATE = "Dungeon_Main_Window_State"
