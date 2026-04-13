@@ -2,6 +2,8 @@ from item import *
 
 class Character:
     def __init__(self):
+        self.current_stamina = 8
+        self.max_stamina = 100
         self.gold = 100
         self.experience = 0
         self.required_experience = 100

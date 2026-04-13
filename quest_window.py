@@ -45,6 +45,8 @@ class Quest_Window:
             self.selected_quest_index = -1
 
     def __cancel_quest(self):
+        # TODO: Find out if you want to refund the cost
+        self.character.current_stamina += self.selected_quest.stamina_cost
         self.quest_started = False
         self.__close_dialog_window(False)
 
@@ -72,11 +74,15 @@ class Quest_Window:
         return [button_cancel_quest, button_skip_quest]
     
     def __start_quest(self):
-        self.quest_started = True
-        self.start_fight_early = False
-        self.countdown_bar_total_time = self.selected_quest.duration
-        self.countdown_bar_start_time = pygame.time.get_ticks()
-        self.__close_dialog_window(True)
+        if self.character.current_stamina - self.selected_quest.stamina_cost >= 0:
+            self.character.current_stamina -= self.selected_quest.stamina_cost
+            self.quest_started = True
+            self.start_fight_early = False
+            self.countdown_bar_total_time = self.selected_quest.duration
+            self.countdown_bar_start_time = pygame.time.get_ticks()
+            self.__close_dialog_window(True)
+        else:
+            return
 
     def __quest_completed(self):
         if self.selected_quest_index == 0:
@@ -110,6 +116,7 @@ class Quest_Window:
         show_text(canvas, self.selected_quest.description, 1000, 200, "darkgoldenrod1")
         show_text(canvas, f"Experience: {self.selected_quest.experience}", 1000, 400, "green")
         show_text(canvas, f"Gold: {self.selected_quest.gold}", 1000, 450, "yellow")
+        show_text(canvas, f"Stamina-Cost: {self.selected_quest.stamina_cost}", 1000, 500, "darkgoldenrod2")
 
     def __draw_quest_traveling_screen(self, canvas):
         countdown_bar_x = 300
@@ -151,12 +158,27 @@ class Quest_Window:
             if not self.start_fight_early:
                 self.__start_fight()
 
+    def __draw_stamina_bar(self, canvas):
+
+        stamina_bar_x = 400
+        stamina_bar_y = 850
+        stamina_bar_width = 1000
+        stamina_bar_heigth = 60
+        stamina_bar_border = 4
+
+        current_stamina = self.character.current_stamina
+        max_stamina = self.character.max_stamina
+
+        draw_progression_bar(canvas, stamina_bar_x, stamina_bar_y, current_stamina, max_stamina, stamina_bar_width, stamina_bar_heigth, stamina_bar_border, "darkgoldenrod2", "gray", "white", "Stamina")
+
     def draw(self, canvas, mouse_pos):
         # temp quest board
         create_rectangle(canvas, 300, 100, 500, 400, 0, "gray")
 
         for button in self.quest_button_list:
             button.draw(canvas, mouse_pos)
+
+        self.__draw_stamina_bar(canvas)
 
         if self.show_dialog_window and self.selected_quest is not None:
             self.__draw_quest_window(canvas)

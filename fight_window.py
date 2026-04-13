@@ -28,7 +28,6 @@ class Fight_Window:
         self.initial_cooldown = 0.5
         self.attack_cooldown = 1
         self.start_time = pygame.time.get_ticks()
-
         self.last_frame_time = pygame.time.get_ticks()
 
         # fight states

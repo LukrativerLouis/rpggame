@@ -128,3 +128,19 @@ def draw_health_bar(canvas, x, y, visual_val, actual_val, max_val, bar_width, ba
     show_text(canvas, f"{int(actual_val)}/{int(max_val)}", border.centerx, border.centery, "white", True)
 
     return visual_val
+
+def draw_progression_bar(canvas, x, y, actual_val, max_val, bar_width, bar_height, border_value, bar_color_string = "red", border_color = "black", text_color = "white", extra_text = None):
+    ratio = bar_width / max_val if max_val > 0 else 0
+
+    red_width = actual_val * ratio
+
+    border = create_rectangle(canvas, x, y, bar_width, bar_height, border_value, border_color)
+
+    if red_width > 0:
+        w = max(0, red_width - border_value * 2)
+        create_rectangle(canvas, x + border_value, y + border_value, w, bar_height - border_value * 2, 0, bar_color_string)
+
+    if extra_text:
+        show_text(canvas, f"{extra_text}: {int(actual_val)}/{int(max_val)}", border.centerx, border.centery, text_color, True)
+    else:
+        show_text(canvas, f"{int(actual_val)}/{int(max_val)}", border.centerx, border.centery, text_color, True)

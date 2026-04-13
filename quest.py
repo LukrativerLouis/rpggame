@@ -10,6 +10,7 @@ class Quest():
         self.experience = 0
         self.item = 0
         self.duration = 0 # duration in seconds
+        self.stamina_cost = 0
         self.enemy = Enemy()
 
         if self.quest_type == EXPERIENCE_QUEST_TYPE:
@@ -17,21 +18,25 @@ class Quest():
             self.gold = 1
             self.item = 0
             self.duration = 5
+            self.stamina_cost = 1
         elif self.quest_type == GOLD_QUEST_TYPE:
             self.experience = 1
             self.gold = 10
             self.item = 0
             self.duration = 10
+            self.stamina_cost = 2
         elif self.quest_type == ITEM_QUEST_TYPE:
             self.experience = 1
             self.gold = 1
             self.item = 0
             self.duration = 15
+            self.stamina_cost = 2
         elif self.quest_type == DANGEROUS_QUEST_TYPE:
             self.experience = 20
             self.gold = 20
             self.item = 0
             self.duration = 20
+            self.stamina_cost = 10
 
 quests_list = {
     EXPERIENCE_QUEST_TYPE: [
