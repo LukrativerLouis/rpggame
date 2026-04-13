@@ -38,8 +38,8 @@ class Game():
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character, self)
-        self.shop_window = Shop_Window(self.character, self.main_item_list, self.active_item)
-        self.character_window = Character_Window(self.character, self.main_item_list, self.active_item)
+        self.shop_window = Shop_Window(self.character, self.main_item_list)
+        self.character_window = Character_Window(self.character, self.main_item_list)
         self.dungeon_window = Dungeon_Window(self.character)
 
         self.item_holder_list: list[Item_Holder] = self.shop_window.item_holder_list + self.character_window.item_holder_list
@@ -363,12 +363,12 @@ class Game():
             elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
                 for holder in self.item_holder_list:
                     holder.draw(self.canvas, mouse_pos)
-                self.shop_window.draw(self.canvas, mouse_pos)
+                self.shop_window.draw(self.canvas, mouse_pos, self.active_item)
             elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                 for holder in self.item_holder_list:
                     if holder.type != SHOP:
                         holder.draw(self.canvas, mouse_pos)
-                self.character_window.draw(self.canvas, mouse_pos)
+                self.character_window.draw(self.canvas, mouse_pos, self.active_item)
             elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                 self.dungeon_window.draw(self.canvas, mouse_pos)
 

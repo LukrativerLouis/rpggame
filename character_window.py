@@ -4,25 +4,24 @@ from character import *
 from item import *
 
 class Character_Window:
-    def __init__(self, character: Character, main_item_list, active_item):
+    def __init__(self, character: Character, main_item_list):
         self.character = character
-        self.character_blueprint = Character_Blueprint(character)
         self.main_item_list = main_item_list
-        self.active_item = active_item
+        self.character_blueprint = Character_Blueprint(character)
 
     @property
     def item_holder_list(self):
         return self.character_blueprint.item_holder_list
 
-    def draw(self, canvas, mouse_pos):
-        self.character_blueprint.draw(canvas, mouse_pos)
+    def draw(self, canvas, mouse_pos, active_item):
+        self.character_blueprint.draw(canvas, mouse_pos, active_item)
 
     def handle_events(self, event, mouse_pos):
         self.character_blueprint.handle_events(event, mouse_pos)
 
 class Character_Blueprint:
     def __init__(self, character: Character):
-        self.character = character        
+        self.character = character 
         self.exp_bar_width = 395
         self.item_holder_list = []
         self.character_exp_bar_ratio = self.character.required_experience / self.exp_bar_width
@@ -59,7 +58,7 @@ class Character_Blueprint:
 
         self.item_holder_list = [self.helmet_slot, self.plate_slot, self.legs_slot, self.shoes_slot, self.weapon_slot, self.acc_rect_slot, self.amulet_slot, self.ring_slot, self.extra3_slot, self.extra4_slot, self.inv_1_slot, self.inv_2_slot, self.inv_3_slot]
 
-    def draw(self, canvas, mouse_pos):
+    def draw(self, canvas, mouse_pos, active_item):
         main_side_padding = 20
         spacer_padding = 5
         text_padding = 30
@@ -106,7 +105,7 @@ class Character_Blueprint:
 
         # tooltip
 
-        if self.show_exp_bar_tooltips:
+        if self.show_exp_bar_tooltips and active_item == None:
             create_tooltip(canvas, exp_bar.x + exp_bar.width / 2 - 30, exp_bar.y + exp_bar.height + spacer_padding, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "white", "gray")
 
     def handle_events(self, event, mouse_pos):

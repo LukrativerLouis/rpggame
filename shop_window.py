@@ -2,11 +2,10 @@ from character_window import *
 from item import *
 
 class Shop_Window():
-    def __init__(self, character: Character, main_item_list, active_item):
+    def __init__(self, character: Character, main_item_list):
         self.character = character
         self.main_item_list: list[Item] = main_item_list
         self.shop_item_list = []
-        self.active_item = active_item
         self.item_holder_list = []
         self.character_blueprint = Character_Blueprint(self.character)
         self.setup_shop_slots()
@@ -43,8 +42,8 @@ class Shop_Window():
         self.shop_item_list.clear()
         self.__create_all_items()
 
-    def draw(self, canvas, mouse_pos):
-        self.character_blueprint.draw(canvas, mouse_pos)
+    def draw(self, canvas, mouse_pos, active_item):
+        self.character_blueprint.draw(canvas, mouse_pos, active_item)
 
         self.refresh_buttom.draw(canvas, mouse_pos)
 
