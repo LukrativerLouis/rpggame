@@ -26,7 +26,6 @@ class Character_Blueprint:
         self.character = character 
         self.exp_bar_width = 395
         self.item_holder_list = []
-        self.character_exp_bar_ratio = self.character.required_experience / self.exp_bar_width
         self.show_exp_bar_tooltips = False
         self.character_window_x = 0
         self.character_window_y = 0
@@ -74,7 +73,8 @@ class Character_Blueprint:
         character_rect_x = character_rectangle.x + spacer_padding
         character_exp_bar_height = 30
 
-        dynamic_width = max(0, self.character.experience / self.character_exp_bar_ratio - 2)
+        character_exp_bar_ratio  = self.character.required_experience / self.exp_bar_width
+        dynamic_width = max(0, self.character.experience / character_exp_bar_ratio - 2)
 
         create_rectangle(canvas, character_rect_x, character_rect_y, dynamic_width, character_exp_bar_height, 0, "lightgreen")
         exp_bar = create_rectangle(canvas, character_rect_x, character_rect_y, self.exp_bar_width, character_exp_bar_height, 2, "cyan")

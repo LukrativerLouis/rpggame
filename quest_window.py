@@ -7,7 +7,7 @@ from utils import *
 class Quest_Window:
     def __init__(self, character: Character, level):
         self.show_dialog_window = False
-        self.quest_list = [Quest(EXPERIENCE_QUEST_TYPE), Quest(GOLD_QUEST_TYPE), Quest(DANGEROUS_QUEST_TYPE)]
+        self.quest_list = []
         self.selected_quest: Quest = None
         self.selected_quest_index = -1
         self.quest_button_list = self.__create_quest_window_buttons()
@@ -25,6 +25,15 @@ class Quest_Window:
         self.character = character
         self.fight_window = None
         self.level = level
+
+        self.create_quests()
+
+    def create_quests(self):
+        quest_list = []
+        for i in range(3):
+            quest_list.append(get_quest(self.character.level))
+        
+        self.quest_list = quest_list
 
     def __toggle_dialog_window(self, show_quest_index = -1):
         current_selected_quest = self.quest_list[show_quest_index]
@@ -141,7 +150,7 @@ class Quest_Window:
 
         create_rectangle(canvas, countdown_bar_x + countdown_bar_border, countdown_bar_y + countdown_bar_border, self.countdown_bar_length_current - countdown_bar_border * 2, self.countdown_bar_progress - countdown_bar_border * 2, 0, "cyan4")
 
-        show_text(canvas, f"{self.countdown_bar_remaining_time:.1f}s", countdown_bar_x + self.countdown_bar_length / 2, countdown_bar_y + countdown_bar_height / 2, "darkgoldenrod", True)
+        show_text(canvas, f"{self.countdown_bar_remaining_time:.1f}s/{self.selected_quest.duration:.1f}s", countdown_bar_x + self.countdown_bar_length / 2, countdown_bar_y + countdown_bar_height / 2, "darkgoldenrod", True)
 
     def __animate_countdown_bar(self):
 
@@ -198,6 +207,7 @@ class Quest_Window:
     def handle_events(self, event,  mouse_pos, character):
         if self.character != character:
             self.character = character
+            self.create_quests()
 
         for button in self.quest_button_list:
             button.handle_event(event, mouse_pos)

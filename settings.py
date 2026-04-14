@@ -20,6 +20,9 @@ SHOP_MAIN_WINDOW_STATE = "Shop_Main_Window_State"
 
 SELL_FACTOR = 0.3
 
+CHARACTER_BASE_XP = 100
+XP_MULTIPLIER = 1.5
+
 CHARACTER = "character"
 ENEMY = "enemy"
 
@@ -28,10 +31,17 @@ GOLD_QUEST_TYPE = "gold_quest_type"
 ITEM_QUEST_TYPE = "item_quest_type"
 DANGEROUS_QUEST_TYPE = "dangerous_quest_type"
 
+# class types
+
+WARRIOR = "warrior"
+MAGE = "mage"
+ARCHER = "archer"
+
+CLASS_TYPE_LIST = [WARRIOR, MAGE, ARCHER]
+
 # Const for Language selector
 ENGLISH = "english"
 GERMAN = "german"
-LANGUAGE = ENGLISH
 
 translations = {
     ENGLISH: {
@@ -40,12 +50,13 @@ translations = {
     }
 }
 
-def translate(key):
-    return translations.get(LANGUAGE, {}).get(key, f"[{key}]")
-
 class Settings:
     def __init__(self):
         self.base_width = INITIAL_SCREEN_WIDTH
         self.base_height = INITIAL_SCREEN_HEIGHT
+        self.language = ENGLISH
         self.fps = FPS
         self.title = "RPG Adventure"
+
+    def translate(self, key):
+        return translations.get(self.language, {}).get(key, f"[{key}]")

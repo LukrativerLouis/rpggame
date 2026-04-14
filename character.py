@@ -4,20 +4,23 @@ class Character:
     def __init__(self, name, image, gold, level):
         self.name = name
         self.image = image
-        self.current_stamina = 8
+        self.current_stamina = 50
         self.max_stamina = 100
         self.gold = gold
         self.experience = 0
-        self.required_experience = 100
+        self.required_experience = CHARACTER_BASE_XP
         self.level = level
-        self.damage = 5
+        self.damage = 10
         self.physical_damage = 0
         self.magic_damage = 0
         self.armor = 0
         self.magic_resist = 0
         self.class_type = WARRIOR
-        self.max_health = 100
+        self.max_health = 10
         self.current_health = self.max_health
+        self.crit_chance = 0
+        self.crit_damage = 0
+        self.speed = 0
         self.attack_score = 0
         self.base_character_value_list = {
             "physical_damage": 0,
@@ -34,10 +37,17 @@ class Character:
         self.experience += new_exp
 
     def check_level_up(self):
+
+        if self.required_experience != self.calculate_required_exp():
+            self.required_experience = self.calculate_required_exp()
+
         if self.experience >= self.required_experience:
             self.level += 1
             self.experience -= self.required_experience
-            self.required_experience = round(self.required_experience * 1.1)
+            self.required_experience = self.calculate_required_exp()
+
+    def calculate_required_exp(self):
+        return round(CHARACTER_BASE_XP * (pow(XP_MULTIPLIER, self.level - 1)))
 
     def get_item_gold_value(self):
         # maybe give type (legendary or common or uncommon or something)
@@ -75,15 +85,21 @@ class Character:
                 self.damage = self.magic_damage
 
 class Enemy:
-    def __init__(self, level = 1, damage = 1, max_health = 10):
+    def __init__(self, class_type, level = 1, physical_damage = 1, magic_damage = 1, max_health = 10):
+        self.class_type = class_type
         self.level = level
-        self.damage = damage
+        self.damage = 0
+        self.physical_damage = physical_damage
+        self.magic_damage = magic_damage
         self.max_health = max_health
         self.current_health = max_health
         self.attack_score = 0
 
-# class types
+        self.calculate_damage()
 
-WARRIOR = "warrior"
-MAGE = "mage"
-ARCHER = "archer"
+    def calculate_damage(self):
+        if self.class_type:
+            if self.class_type == WARRIOR or self.class_type == ARCHER:
+                self.damage = self.physical_damage
+            elif self.class_type == MAGE:
+                self.damage = self.magic_damage

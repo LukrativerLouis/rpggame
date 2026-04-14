@@ -17,7 +17,7 @@ class Game():
 
         self.settings = Settings()
         self.menu = Menu(self.settings, self)
-        self.character_list: list[Character] = [Character("Louis", None, gold = 1, level = 1), Character("Jimbo", None, gold = 10, level = 2), Character("MitVielHass", None, gold = 100, level = 3)]
+        self.character_list: list[Character] = [Character("Louis", None, gold = 1, level = 1), Character("Jimbo", None, gold = 10, level = 10), Character("MitVielHass", None, gold = 100, level = 3)]
         self.character = self.character_list[self.menu.character_slot]
 
         if self.is_web:
@@ -39,6 +39,7 @@ class Game():
         self.active_item = None
         self.main_button_list = []
 
+        # this is to ensure what main menu is shown: Menu, Options, Game, Character_Slots
         self.menu_state = MENU_STATE
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
@@ -104,12 +105,17 @@ class Game():
             return
         self.running = False
 
-    def calc_scale(self):
+    def calc_scale(self, new_screen_w = None, new_screen_h = None):
         """
         Calculates how much to scale the game to fit the window
         while maintaining aspect ratio.
         """
-        screen_w, screen_h = self.screen.get_size()
+        
+        if new_screen_w and new_screen_h:
+            screen_w, screen_h = new_screen_w, new_screen_h
+        else:
+            screen_w, screen_h = self.screen.get_size()
+
         base_w, base_h = self.settings.base_width, self.settings.base_height
 
         self.scale_factor = min(screen_w / base_w, screen_h / base_h)
@@ -365,7 +371,7 @@ class Game():
                 self.menu.draw_character_slots(self.canvas, mouse_pos)
 
             elif self.menu_state == OPTIONS_STATE:
-                pass
+                self.menu.draw_options(self.canvas, mouse_pos)
 
             elif self.menu_state == GAME_STATE:
 
