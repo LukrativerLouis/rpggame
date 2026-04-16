@@ -142,3 +142,142 @@ def draw_progression_bar(canvas, x, y, actual_val, max_val, bar_width, bar_heigh
         show_text(canvas, f"{extra_text}: {int(actual_val)}/{int(max_val)}", border.centerx, border.centery, text_color, True)
     else:
         show_text(canvas, f"{int(actual_val)}/{int(max_val)}", border.centerx, border.centery, text_color, True)
+
+class SliderToggle:
+    def __init__(self, pos, size, font, label, initial_state=False, on_toggle=None, bg_on = "green", bg_off = "red", knob_color = "white", text_color = "black"):
+        self.font = font
+        self.label = label
+        self.state = initial_state
+        self.on_toggle = on_toggle
+
+        self.width, self.height = size
+        self.center_x, self.center_y = pos
+
+        self.anim_progress = 1.0 if self.state else 0.0
+        self.anim_speed = 0.15
+
+        self.bg_on = pygame.Color(bg_on)
+        self.bg_off = pygame.Color(bg_off)
+        self.knob_color = pygame.Color(knob_color)
+        self.text_color = pygame.Color(text_color)
+
+        self.text_surface = self.font.render(self.label, True, self.text_color)
+        self.text_rect = self.text_surface.get_rect()
+        
+        spacing = 20
+
+        total_width = self.text_rect.width + spacing + self.width
+        left_edge = self.center_x - total_width // 2
+
+        self.text_rect.midleft = (left_edge, self.center_y)
+
+        self.slider_rect = pygame.Rect(
+            self.text_rect.right + spacing,
+            self.center_y - self.height // 2,
+            self.width,
+            self.height
+        )
+        self.knob_radius = self.height // 2 - 4
+
+    def toggle(self):
+        self.state = not self.state
+        if self.on_toggle:
+            self.on_toggle(self.state)
+
+    def handle_event(self, pos):
+        if self.slider_rect.collidepoint(pos):
+            self.toggle()
+
+    def update(self, pos):
+        target = 1.0 if self.state else 0.0
+        if self.anim_progress < target:
+            self.anim_progress = min(self.anim_progress + self.anim_speed, target)
+        elif self.anim_progress > target:
+            self.anim_progress = max(self.anim_progress - self.anim_speed, target)
+        
+        self.center_x, self.center_y = pos
+
+    def draw(self, screen):
+        # Text
+        screen.blit(self.text_surface, self.text_rect)
+
+        # Hintergrund des Sliders
+        bg_color = self.bg_on.lerp(self.bg_off, 1.0 - self.anim_progress)
+        pygame.draw.rect(screen, bg_color, self.slider_rect, border_radius=self.height // 2)
+
+        # Knopf
+        knob_x = self.slider_rect.left + int(self.anim_progress * (self.width - self.height)) + self.height // 2
+        knob_center = (knob_x, self.slider_rect.centery)
+        pygame.draw.circle(screen, self.knob_color, knob_center, self.knob_radius)
+
+    def get_state(self):
+        return self.state
+
+class VolumeSlider:
+    def __init__(self, center_pos, size, font, label, initial_value=50, on_change=None, text_color = "black", slider_color = "white", slider_picker_color = "black"):
+        self.center_x, self.y = center_pos
+        self.slider_width, self.slider_height = size
+        self.font = font
+        self.label = label
+        self.value = initial_value  # 0 - 100
+        self.on_change = on_change
+        self.text_color = text_color
+        self.slider_color = slider_color
+        self.slider_picker_color = slider_picker_color
+        self.dragging = False
+
+        self.label_surface = self.font.render(self.label, True, self.text_color)
+        self.label_rect = self.label_surface.get_rect()
+
+        self.total_width = self.label_rect.width + 20 + self.slider_width + 40
+
+        self.x = self.center_x - self.total_width // 2
+
+        self._recalculate_rects()
+
+    def _recalculate_rects(self):
+        self.label_rect.topleft = (self.x, self.y)
+
+        self.slider_x = self.label_rect.right + 20
+        self.slider_y = self.y + self.label_rect.height // 2 - self.slider_height // 2
+        self.handle_rect = pygame.Rect(
+            self.slider_x + (self.slider_width * self.value / 100),
+            self.slider_y,
+            10,
+            self.slider_height
+        )
+
+    def set_position(self, center_pos):
+        self.center_x, self.y = center_pos
+        self.x = self.center_x - self.total_width // 2
+        self._recalculate_rects()
+
+    def draw(self, surface):
+        surface.blit(self.label_surface, self.label_rect)
+
+        pygame.draw.rect(
+            surface,
+            self.slider_color,
+            (self.slider_x, self.slider_y + self.slider_height // 2 - 3, self.slider_width, 6),
+            border_radius=3
+        )
+
+        pygame.draw.rect(surface, self.slider_picker_color, self.handle_rect)
+
+        value_surface = self.font.render(f"{self.value}", True, self.slider_picker_color)
+        surface.blit(value_surface, (self.slider_x + self.slider_width + 15, self.slider_y - 2))
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.handle_rect.collidepoint(event.pos):
+            self.dragging = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.dragging = False
+        elif event.type == pygame.MOUSEMOTION and self.dragging:
+            new_x = min(max(event.pos[0], self.slider_x), self.slider_x + self.slider_width)
+            self.handle_rect.x = new_x
+            self.value = int(((self.handle_rect.x - self.slider_x) / self.slider_width) * 100)
+            if self.on_change:
+                self.on_change(self.value)
+
+def get_font(size):
+    return pygame.font.Font(None, size)

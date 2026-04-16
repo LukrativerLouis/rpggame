@@ -1,3 +1,6 @@
+import pygame
+import json
+import base64
 
 INITIAL_SCREEN_WIDTH = 1920
 INITIAL_SCREEN_HEIGHT = 1080
@@ -31,6 +34,10 @@ GOLD_QUEST_TYPE = "gold_quest_type"
 ITEM_QUEST_TYPE = "item_quest_type"
 DANGEROUS_QUEST_TYPE = "dangerous_quest_type"
 
+# file paths
+
+SAVE_FILE_PATH = "data/data.json"
+
 # class types
 
 WARRIOR = "warrior"
@@ -58,5 +65,86 @@ class Settings:
         self.fps = FPS
         self.title = "RPG Adventure"
 
+        self.sounds = {
+            #"Test": pygame.mixer.Sound("TestPath")
+        }
+        self.current_music_path = None
+        self.music_volume = 0.05
+        self.sound_volume = 0.1
+        self.music_on = True
+        self.sounds_on = False
+        self.debug = False
+
     def translate(self, key):
         return translations.get(self.language, {}).get(key, f"[{key}]")
+
+    def on_toggle_sound(self, state):
+        self.sounds_on = state
+        self.save_progress()
+
+    def on_toggle_music(self, state):
+        self.music_on = state
+        self.save_progress()
+        #if self.settings.music_on:
+        #    self.settings.play_music(MENU_MUSIC_PATH)
+        #else:
+        #    pygame.mixer.music.stop()
+
+    def on_music_volume_change(self, value):
+        self.music_volume = value / 100
+        if self.music_on:
+            pygame.mixer.music.set_volume(self.music_volume)
+        self.save_progress()
+
+    def on_sound_volume_change(self, value):
+        self.sound_volume = value / 100
+        self.save_progress()
+    
+    def save_progress(self):
+        data = json.dumps({
+            "music" : self.music_on, 
+            "sound" : self.sounds_on, 
+            "sound_volume": self.sound_volume, 
+            "music_volume": self.music_volume, 
+            })
+        encoded = base64.b64encode(data.encode()).decode()
+        with open(SAVE_FILE_PATH, "w") as f:
+            f.write(encoded)
+
+    def load_progress(self):
+        try:
+            with open(SAVE_FILE_PATH, "r") as f:
+                encoded = f.read()
+                data = base64.b64decode(encoded).decode()
+
+                self.music_on = json.loads(data).get("music")
+                self.sounds_on = json.loads(data).get("sound")
+                self.sound_volume = json.loads(data).get("sound_volume")
+                self.music_volume = json.loads(data).get("music_volume")
+        except:
+            self.save_progress()
+            return self.load_progress()
+    
+    def pause_music(self):
+        pygame.mixer.music.pause()
+
+    def resume_music(self):
+        pygame.mixer.music.unpause()
+
+    def play_sound(self, name):
+        if self.sounds_on:
+            sound = self.sounds.get(name)
+            if sound:
+                sound.set_volume(self.sound_volume)
+                sound.play()
+
+    def play_music(self, file_path):
+        if self.music_on:
+            if self.current_music_path != file_path or not pygame.mixer.music.get_busy():
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load(file_path)
+                pygame.mixer.music.set_volume(self.music_volume)
+                pygame.mixer.music.play(-1, 0.0, 5000)
+                self.current_music_path = file_path
+        else:
+            pygame.mixer.music.stop()

@@ -16,6 +16,7 @@ class Game():
         self.is_web = sys.platform == "emscripten"
 
         self.settings = Settings()
+        self.settings.load_progress()
         self.menu = Menu(self.settings, self)
         self.character_list: list[Character] = [Character("Louis", None, gold = 1, level = 1), Character("Jimbo", None, gold = 10, level = 10), Character("MitVielHass", None, gold = 100, level = 3)]
         self.character = self.character_list[self.menu.character_slot]
@@ -194,7 +195,7 @@ class Game():
                     self.menu.handle_events(event, mouse_pos)
 
                 elif self.menu_state == OPTIONS_STATE:
-                    pass
+                    self.menu.handle_options_events(event, mouse_pos)
 
                 elif self.menu_state == CHARACTER_SLOTS_STATE:
                     self.menu.handle_character_slot_events(event, mouse_pos)
@@ -355,9 +356,6 @@ class Game():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_F11:
                         self.toggle_fullscreen()
-                    if event.key == pygame.K_ESCAPE:
-                        pass
-                        #self.quit_game()
 
             # drawing
 
