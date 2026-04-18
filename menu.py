@@ -160,9 +160,8 @@ class Menu:
                     self.game.menu_state = GAME_STATE
 
     def handle_options_events(self, event, mouse_pos):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for toggle in self.options_toggle:
-                toggle.handle_event(mouse_pos)
+        for toggle in self.options_toggle:
+            toggle.handle_event(event, mouse_pos)
 
         for slider in self.options_slider:
             slider.handle_event(event)

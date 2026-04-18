@@ -184,8 +184,8 @@ class SliderToggle:
         if self.on_toggle:
             self.on_toggle(self.state)
 
-    def handle_event(self, pos):
-        if self.slider_rect.collidepoint(pos):
+    def handle_event(self, event, mouse_pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.slider_rect.collidepoint(mouse_pos):
             self.toggle()
 
     def update(self, pos):
