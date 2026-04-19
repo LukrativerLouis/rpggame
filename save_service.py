@@ -15,6 +15,8 @@ class Save_Service:
         self.music_volume = None
 
     def save_progress(self, game):
+        if game.is_web:
+            return
 
         raw_data = {
             "character_list": [ self.save_to_dict(char) for char in (game.character_list or [])],
