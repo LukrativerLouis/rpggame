@@ -137,9 +137,13 @@ class Menu:
 
     def create_character_and_change_state(self, character_slot):
         self.character_slot = character_slot
-        self.game.character_list[self.character_slot] = Character("Generic", None, 1, 1) 
-        self.game.character_slot = self.character_slot
+        new_char = Character("Generic", None, 1, 1) 
+        self.game.character_list[self.character_slot] = new_char
+        
         self.game.character = self.game.character_list[self.character_slot]
+        self.game.toggle_main_state(DEFAULT_MAIN_WINDOW_STATE)
+
+        self.game.sync_character_to_ui()
         self.change_menu_state(GAME_STATE)
 
     def handle_character_slot_events(self, event, mouse_pos):
@@ -155,8 +159,11 @@ class Menu:
                         self.cursor_focused = True
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             self.character_slot = i
+                            self.game.character_slot = self.character_slot
                             self.game.character = self.game.character_list[i]
                             self.cursor_focused = False
+                            self.game.toggle_main_state(DEFAULT_MAIN_WINDOW_STATE)
+                            self.game.sync_character_to_ui()
                             self.change_menu_state(GAME_STATE)
         
         if self.cursor_focused:

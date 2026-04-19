@@ -30,6 +30,7 @@ class Character:
         }
         self.inventory: list[Item] = []
         self.equipment: list[Item] = []
+        self.shop_items: list[Item] = []
         self.item_stats_calculated_list: list[Item] = []
 
     def adjust_gold_and_exp(self, new_gold = 0, new_exp = 0):
@@ -91,6 +92,7 @@ class Character:
 
         data["inventory"] = [item.to_dict() for item in self.inventory]
         data["equipment"] = [item.to_dict() for item in self.equipment]
+        data["shop_items"] = [item.to_dict() for item in self.shop_items]
         data["item_stats_calculated_list"] = None
         
         return data
@@ -100,6 +102,7 @@ class Character:
     def from_dict(cls, data):
         inventory_data = data.pop("inventory", [])
         equipment_data = data.pop("equipment", [])
+        shop_data = data.pop("shop_items", [])
 
         char = cls(
             name = data["name"],
@@ -113,6 +116,7 @@ class Character:
 
         char.inventory = [Item.from_dict(i) for i in inventory_data]
         char.equipment = [Item.from_dict(i) for i in equipment_data]
+        char.shop_items = [Item.from_dict(i) for i in shop_data]
 
         return char
 

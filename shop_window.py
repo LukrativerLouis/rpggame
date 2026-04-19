@@ -5,7 +5,6 @@ class Shop_Window():
     def __init__(self, character: Character, main_item_list):
         self.character = character
         self.main_item_list: list[Item] = main_item_list
-        self.shop_item_list = []
         self.item_holder_list = []
         self.character_blueprint = Character_Blueprint(self.character)
         self.setup_shop_slots()
@@ -22,24 +21,29 @@ class Shop_Window():
                 y = self.start_for_shop_y + (ITEM_HOLDER_SIZE + spacer_padding) * row
                 self.item_holder_list.append(Item_Holder(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, "blue", SHOP))
 
-    def __create_all_items(self):
-        for item_holder in self.item_holder_list:
-            id, name, physical_damage, magic_damage, armor, magic_resist, type, sub_type = getItemDetailsRandom()
-            item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, physical_damage, magic_damage, armor, magic_resist, self.character.get_item_gold_value() , type, sub_type, False)
-            self.main_item_list.append(item)
-            self.shop_item_list.append(item)
-
     def create_new_item(self, item_holder):
         id, name, physical_damage, magic_damage, armor, magic_resist, type, sub_type = getItemDetailsRandom()
         item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, physical_damage, magic_damage, armor, magic_resist,self.character.get_item_gold_value(), type, sub_type, False)
-        self.main_item_list.append(item)
-        self.shop_item_list.append(item)
+
+        self.character.shop_items.append(item)
+
+        if item not in self.main_item_list:
+            self.main_item_list.append(item)
+
+    def load_shop_items(self, items):
+        self.character.shop_items = items
+
+        for i, item in enumerate(self.character.shop_items):
+            if i < len(self.item_holder_list):
+                item.rect.center = self.item_holder_list[i].rect.center
+                item.x, item.y = item.rect.center
 
     def reroll_shop(self):
-        for item in self.shop_item_list:
-            self.main_item_list.remove(item)
-        self.shop_item_list.clear()
-        self.__create_all_items()
+        if not self.character: return
+
+        self.character.shop_items.clear()
+        for holder in self.item_holder_list:
+            self.create_new_item(holder)
 
     def draw(self, canvas, mouse_pos, active_item):
         self.character_blueprint.draw(canvas, mouse_pos, active_item)
@@ -52,7 +56,7 @@ class Shop_Window():
     def handle_events(self, event, mouse_pos, character):
         if self.character != character:
             self.character = character
-            self.__create_all_items()
+            self.character_blueprint.character = character
 
         self.character_blueprint.handle_events(event, mouse_pos, character)
         self.refresh_buttom.handle_event(event, mouse_pos)

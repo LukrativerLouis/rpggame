@@ -42,7 +42,22 @@ class Item():
     # dictionary stuff
 
     def to_dict(self):
-        return self.__dict__.copy()
+        return {
+            "id": self.id,
+            "width": self.width,
+            "height": self.height,
+            "name": self.name,
+            "physical_damage": self.physical_damage,
+            "magic_damage": self.magic_damage,
+            "armor": self.armor,
+            "magic_resist": self.magic_resist,
+            "gold_value": self.gold_value,
+            "type": self.type,
+            "sub_type": self.sub_type,
+            "visible": False,
+            "x": self.x,
+            "y": self.y
+        }
     
     @classmethod
     def from_dict(cls, data):

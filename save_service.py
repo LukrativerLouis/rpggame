@@ -17,10 +17,14 @@ class Save_Service:
     def save_progress(self, game):
         if game.is_web:
             return
+        
+        shop_data_to_save = []
+        for slot_shop in game.all_shops_data:
+            shop_data_to_save.append([self.save_to_dict(item) for item in slot_shop])
 
         raw_data = {
             "character_list": [ self.save_to_dict(char) for char in (game.character_list or [])],
-            "shop_list": [self.save_to_dict(item) for item in (game.shop_list or [])],
+            "shop_list": shop_data_to_save,
             "music": game.settings.music_on,
             "sound": game.settings.sounds_on,
             "sound_volume": game.settings.sound_volume,
@@ -48,13 +52,13 @@ class Save_Service:
                     else:
                         self.character_list.append(None)
 
-                item_dicts = data.get("shop_list", [])
-                self.shop_list = []
-                for item in item_dicts:
-                    if item is not None:
-                        self.shop_list.append(Item.from_dict(item))
-                    else:
-                        self.shop_list.append(None)
+                    item_slots = data.get("shop_list", [[], [], []])
+                    self.shop_list = [[], [], []]
+                    
+                    for i in range(len(item_slots)):
+                        for item_dict in item_slots[i]:
+                            if item_dict:
+                                self.shop_list[i].append(Item.from_dict(item_dict))
 
                 self.game.settings.music_on = data.get("music")
                 self.game.settings.sounds_on = data.get("sound")
@@ -63,17 +67,16 @@ class Save_Service:
 
         except FileNotFoundError:
             print("File not found")
+            self.shop_list = [[], [], []]
             #self.save_progress()
             #self.load_progress()
 
         except Exception as e:
             print(f"Error while loading the save file: {e}")
+            self.shop_list = [[], [], []]
 
     def save_to_dict(self, obj):
         try:
             return obj.to_dict()
         except AttributeError:
             return None # Oder ein Default-Dict
-
-    def refresh_data(self, game):
-        self.game = game

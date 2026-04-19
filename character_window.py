@@ -19,7 +19,8 @@ class Character_Window:
     def handle_events(self, event, mouse_pos, character):
         if self.character != character:
             self.character = character
-        self.character_blueprint.handle_events(event, mouse_pos, character)
+            self.character_blueprint = character
+        self.character_blueprint.handle_events(event, mouse_pos, self.character)
 
 class Character_Blueprint:
     def __init__(self, character: Character):

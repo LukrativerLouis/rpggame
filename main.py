@@ -16,17 +16,19 @@ class Game():
         pygame.init()
         self.is_web = sys.platform == "emscripten"
         self.settings = Settings()
-        self.save_service = Save_Service(self)
-        self.save_service.load_progress()
 
-        self.character_list: list[Character] = self.save_service.character_list
-        self.menu = Menu(self.settings, self)
-        self.shop_list = self.save_service.shop_list
-        self.character: Character = None
         if self.is_web:
             self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height))
         else: 
             self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height), pygame.RESIZABLE | pygame.DOUBLEBUF)
+        self.save_service = Save_Service(self)
+        self.save_service.load_progress()
+
+        self.all_shops_data = self.save_service.shop_list
+
+        self.character_list: list[Character] = self.save_service.character_list
+        self.menu = Menu(self.settings, self)
+        self.character: Character = None
         
         pygame.display.set_caption(self.settings.title)
 
@@ -68,9 +70,10 @@ class Game():
         btn_character = Button(position = (100, 170), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
         btn_shop = Button(position = (100, 240), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
         btn_dungeon = Button(position = (100, 310), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
+        btn_back = Button(position=(100, 925), size=(100, 50), text="Back", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.menu.change_menu_state(CHARACTER_SLOTS_STATE))
         btn_quit = Button(position=(100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
 
-        self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_quit]
+        self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_back, btn_quit]
 
     def set_items_to_visible(self, item_list):
         for item in item_list:
@@ -81,8 +84,8 @@ class Game():
             item.visible = False
 
     def remove_item_from_holder(self, item, holder):
-        if holder.type == SHOP and item in self.shop_window.shop_item_list:
-            self.shop_window.shop_item_list.remove(item)
+        if holder.type == SHOP and item in self.character.shop_items:
+            self.character.shop_items.remove(item)
         elif holder.type == INVENTORY and item in self.character.inventory:
             self.character.inventory.remove(item)
         elif holder.type in LIST_OF_EQUIPMENT_TYPES and item in self.character.equipment:
@@ -174,6 +177,32 @@ class Game():
         else:
             self.main_window_state = new_window_state
 
+    def sync_character_to_ui(self):
+        if not self.character:
+            return
+
+        self.main_item_list.clear()
+        
+        self.main_item_list.extend(self.character.inventory)
+        self.main_item_list.extend(self.character.equipment)
+        
+        if not hasattr(self.character, 'shop_items') or self.character.shop_items is None:
+            self.character.shop_items = []
+
+        if not self.character.shop_items:
+            self.shop_window.character = self.character
+            self.shop_window.reroll_shop()
+        else:
+            self.main_item_list.extend(self.character.shop_items)
+
+        self.shop_window.character = self.character
+        self.character_window.character = self.character
+        
+        for i, item in enumerate(self.character.shop_items):
+            if i < len(self.shop_window.item_holder_list):
+                item.rect.center = self.shop_window.item_holder_list[i].rect.center
+                item.x, item.y = item.rect.center
+
     async def start(self):
 
         while self.running:
@@ -188,8 +217,6 @@ class Game():
 
                 for button in self.main_button_list:
                     button.handle_event(event, mouse_pos)
-
-                self.save_service.refresh_data(self)
 
                 # event handling window states
                 if self.menu_state == MENU_STATE:
@@ -418,7 +445,7 @@ class Game():
 
                 if self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
                     self.set_items_to_visible(self.character_window.main_item_list)
-                    self.set_items_to_invisible(self.shop_window.shop_item_list)
+                    self.set_items_to_invisible(self.character.shop_items)
                 elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
                     self.set_items_to_visible(self.main_item_list)
                 else:
