@@ -58,6 +58,13 @@ class Button:
         draw_rect = draw_surf.get_rect(center=self.center_pos)
         surface.blit(draw_surf, draw_rect)
 
+    def set_function(self, new_func):
+        self.func = new_func
+
+    def set_pos(self, new_pos):
+        self.center_pos = pygame.Vector2(new_pos)
+        self.rect.center = new_pos
+
     def set_text(self, new_text):
         if self.txt != new_text:
             self.txt = new_text

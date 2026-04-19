@@ -42,7 +42,7 @@ class Game():
         self.active_item = None
         self.main_button_list = []
 
-        # this is to ensure what main menu is shown: Menu, Options, Game, Character_Slots
+        # this is to ensure what main menu is shown: Menu, Options, Game, Character_Slots, Character Add Screen
         self.menu_state = MENU_STATE
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
@@ -184,8 +184,7 @@ class Game():
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.save_service.save_progress(self)
-                    self.running = False
+                    self.quit_game()
 
                 for button in self.main_button_list:
                     button.handle_event(event, mouse_pos)

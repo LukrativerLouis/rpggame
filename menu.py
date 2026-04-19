@@ -39,15 +39,14 @@ class Menu:
         self.menu_button_list = [start_button, options_button, quit_buttton]
 
     def create_character_slot_buttons(self):
-        width = 300
-        height = 600
-        spacing = 20
-
-        center_x = INITIAL_SCREEN_WIDTH / 2 - width / 2
-        center_y = INITIAL_SCREEN_HEIGHT / 2 - height / 2
-
-        back_button = Button(position = (center_x + width / 2, center_y + height + spacing * 2), size = (150, 50), text = "Back", change_color = [150, 150, 150], func= lambda: self.change_menu_state(MENU_STATE))
+        center_x = INITIAL_SCREEN_WIDTH / 2
+        back_button = Button(position=(center_x, INITIAL_SCREEN_HEIGHT - 100), size=(150, 50), text="Back", change_color= [150, 150, 150], func=lambda: self.change_menu_state(MENU_STATE))
         self.character_slot_buttons = [back_button]
+
+        self.add_buttons = []
+        for i in range(3):
+            btn = Button(position=(0, 0), size=(50, 50), text="+", change_color= [150, 150, 150], func= lambda idx = i: self.create_character_and_change_state(idx)) 
+            self.add_buttons.append(btn)
 
     def change_menu_state(self, new_state):
         self.game.menu_state = new_state
@@ -110,7 +109,6 @@ class Menu:
         
         num_chars = len(self.game.character_list)
         total_width = (num_chars * width) + ((num_chars - 1) * spacing)
-        
         start_x = (INITIAL_SCREEN_WIDTH - total_width) / 2
         center_y = (INITIAL_SCREEN_HEIGHT - height) / 2
 
@@ -131,11 +129,11 @@ class Menu:
                 show_text(canvas, f"Level: {character.level}", slot_center_x, slot.y + 120, "green", True)
             else:
                 show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
-                add_character_button = Button(position= (slot_center_x, slot_center_y), size = (50, 50), text= "+", func= lambda test = i: self.create_character_and_change_state(test))
-                self.character_slot_buttons.append(add_character_button)
+                add_btn = self.add_buttons[i]
+                add_btn.set_pos((slot_center_x, slot_center_y))
+                add_btn.draw(canvas, mouse_pos)
 
-        for button in self.character_slot_buttons:
-            button.draw(canvas, mouse_pos)
+        self.character_slot_buttons[0].draw(canvas, mouse_pos)
 
     def create_character_and_change_state(self, character_slot):
         self.character_slot = character_slot
@@ -147,18 +145,18 @@ class Menu:
     def handle_character_slot_events(self, event, mouse_pos):
         self.cursor_focused = False
 
-        for button in self.character_slot_buttons:
-            button.handle_event(event, mouse_pos)
+        self.character_slot_buttons[0].handle_event(event, mouse_pos)
 
-        for num, character_slot in enumerate(self.character_slot_list):
-            if character_slot.collidepoint(mouse_pos) and self.game.character_list[num]:
-                self.cursor_focused = True
-                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-                    self.character_slot = num
-                    self.game.character = self.game.character_list[self.character_slot]
-                    self.change_menu_state(GAME_STATE)
+        for i, character in enumerate(self.game.character_list):
+                if not character:
+                    self.add_buttons[i].handle_event(event, mouse_pos)
+                else:
+                    if self.character_slot_list[i].collidepoint(mouse_pos):
+                        self.cursor_focused = True
+                        if event.type == pygame.MOUSEBUTTONDOWN:
+                            self.character_slot = i
+                            self.game.character = self.game.character_list[i]
+                            self.change_menu_state(GAME_STATE)
         
         if self.cursor_focused:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
