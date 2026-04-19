@@ -2,6 +2,7 @@ import pygame
 import asyncio
 import sys
 from character import *
+from save_service import *
 from menu import *
 from character_window import *
 from shop_window import *
@@ -14,13 +15,14 @@ class Game():
     def __init__(self):
         pygame.init()
         self.is_web = sys.platform == "emscripten"
-
         self.settings = Settings()
-        self.settings.load_progress()
-        self.menu = Menu(self.settings, self)
-        self.character_list: list[Character] = [Character("Louis", None, gold = 1, level = 1), Character("Jimbo", None, gold = 10, level = 10), Character("MitVielHass", None, gold = 100, level = 3)]
-        self.character = self.character_list[self.menu.character_slot]
+        self.save_service = Save_Service(self)
+        self.save_service.load_progress()
 
+        self.character_list: list[Character] = self.save_service.character_list
+        self.menu = Menu(self.settings, self)
+        self.shop_list = self.save_service.shop_list
+        self.character: Character = None
         if self.is_web:
             self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height))
         else: 
@@ -102,6 +104,7 @@ class Game():
         return None
 
     def quit_game(self):
+        self.save_service.save_progress(self)
         if self.is_web:
             return
         self.running = False
@@ -181,14 +184,13 @@ class Game():
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.save_service.save_progress(self)
                     self.running = False
 
                 for button in self.main_button_list:
                     button.handle_event(event, mouse_pos)
 
-                # character events
-
-                self.character.check_level_up()
+                self.save_service.refresh_data(self)
 
                 # event handling window states
                 if self.menu_state == MENU_STATE:
@@ -199,6 +201,10 @@ class Game():
 
                 elif self.menu_state == CHARACTER_SLOTS_STATE:
                     self.menu.handle_character_slot_events(event, mouse_pos)
+
+                elif self.menu_state == CHARACTER_ADD_STATE:
+                    pass
+                    #self.menu.handle_character_add_events(event, mouse_pos)
 
                 elif self.menu_state == GAME_STATE:
                     if self.main_window_state == DEFAULT_MAIN_WINDOW_STATE:
@@ -211,6 +217,10 @@ class Game():
                         self.character_window.handle_events(event, mouse_pos, self.character)
                     elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
                         self.dungeon_window.handle_events(event, mouse_pos, self.character)
+ 
+                    # character events
+
+                    self.character.check_level_up()
 
                     # start item events
 
@@ -362,11 +372,14 @@ class Game():
             self.canvas.fill("black")
 
             if self.menu_state == MENU_STATE:
-
                 self.menu.draw(self.canvas, mouse_pos)
 
             elif self.menu_state == CHARACTER_SLOTS_STATE:
                 self.menu.draw_character_slots(self.canvas, mouse_pos)
+
+            elif self.menu_state == CHARACTER_ADD_STATE:
+                pass
+                #self.menu.draw_character_add_screen(self.canvas, mouse_pos)
 
             elif self.menu_state == OPTIONS_STATE:
                 self.menu.draw_options(self.canvas, mouse_pos)

@@ -26,8 +26,6 @@ class Quest_Window:
         self.fight_window = None
         self.level = level
 
-        self.create_quests()
-
     def create_quests(self):
         quest_list = []
         for i in range(3):

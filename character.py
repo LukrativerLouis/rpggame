@@ -84,6 +84,38 @@ class Character:
             elif self.class_type == MAGE:
                 self.damage = self.magic_damage
 
+    # dictionary stuff
+
+    def to_dict(self):
+        data = self.__dict__.copy()
+
+        data["inventory"] = [item.to_dict() for item in self.inventory]
+        data["equipment"] = [item.to_dict() for item in self.equipment]
+        data["item_stats_calculated_list"] = None
+        
+        return data
+    
+    @classmethod
+
+    def from_dict(cls, data):
+        inventory_data = data.pop("inventory", [])
+        equipment_data = data.pop("equipment", [])
+
+        char = cls(
+            name = data["name"],
+            image = data["image"],
+            gold = data["gold"],
+            level = data["level"]
+        )
+
+        for key, value in data.items():
+            setattr(char, key, value)
+
+        char.inventory = [Item.from_dict(i) for i in inventory_data]
+        char.equipment = [Item.from_dict(i) for i in equipment_data]
+
+        return char
+
 class Enemy:
     def __init__(self, class_type, level = 1, physical_damage = 1, magic_damage = 1, max_health = 10):
         self.class_type = class_type

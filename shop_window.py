@@ -9,7 +9,6 @@ class Shop_Window():
         self.item_holder_list = []
         self.character_blueprint = Character_Blueprint(self.character)
         self.setup_shop_slots()
-        self.__create_all_items()
         self.refresh_buttom = Button(position = (self.start_for_shop_x + ITEM_HOLDER_SIZE + 5 + ITEM_HOLDER_SIZE / 2, self.start_for_shop_y - 50), size = (150, 50), color = (0, 0, 255), text = "reroll items", func = lambda: self.reroll_shop())
 
     def setup_shop_slots(self):
@@ -53,6 +52,7 @@ class Shop_Window():
     def handle_events(self, event, mouse_pos, character):
         if self.character != character:
             self.character = character
+            self.__create_all_items()
 
         self.character_blueprint.handle_events(event, mouse_pos, character)
         self.refresh_buttom.handle_event(event, mouse_pos)

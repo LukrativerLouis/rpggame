@@ -56,8 +56,8 @@ class Menu:
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
 
-        options_back = Button(position= (mid_x, mid_y + 120),size= (150, 50), text= "Back", change_color = [150, 150, 150], func= lambda: self.change_menu_state(MENU_STATE))
-        self.options_button = [options_back]
+        save_button = Button(position= (mid_x, mid_y + 120),size= (150, 50), text= "Save and close", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
+        self.options_button = [save_button]
 
     def create_options_slider(self):
         mid_x = self.settings.base_width / 2
@@ -87,6 +87,10 @@ class Menu:
 
         self.options_toggle = [MUSIC_TOGGLE, SOUND_TOGGLE]
 
+    def save_and_close(self, new_state):
+        self.game.save_service.save_progress(self.game)
+        self.change_menu_state(new_state)
+
     def draw_options(self, canvas, mouse_pos):
 
         for toggle in self.options_toggle:
@@ -103,38 +107,42 @@ class Menu:
         width = 300
         height = 600
         spacing = 20
+        
+        num_chars = len(self.game.character_list)
+        total_width = (num_chars * width) + ((num_chars - 1) * spacing)
+        
+        start_x = (INITIAL_SCREEN_WIDTH - total_width) / 2
+        center_y = (INITIAL_SCREEN_HEIGHT - height) / 2
 
-        center_x = INITIAL_SCREEN_WIDTH / 2 - width / 2
-        center_y = INITIAL_SCREEN_HEIGHT / 2 - height / 2
+        self.character_slot_list = []
 
-        first_character: Character = self.game.character_list[0]
+        for i, character in enumerate(self.game.character_list):
+            current_x = start_x + i * (width + spacing)
+            
+            slot = create_rectangle(canvas, current_x, center_y, width, height, 4, "gray")
+            self.character_slot_list.append(slot)
 
-        character_slot_1 = create_rectangle(canvas, center_x - width - spacing, center_y, width, height, 4, "gray")
+            slot_center_x = slot.x + slot.width / 2
+            slot_center_y = slot.y + slot.height / 2
 
-        show_text(canvas, "Slot 1", character_slot_1.x + character_slot_1.width / 2, character_slot_1.y + 20, "white", True)
-        show_text(canvas, f"{first_character.name}", character_slot_1.x + character_slot_1.width / 2, character_slot_1.y + 20 + 50, "white", True)
-        show_text(canvas, f"Level: {first_character.level}", character_slot_1.x + character_slot_1.width / 2, character_slot_1.y + 20 + 100, "green", True)
-
-        second_character: Character = self.game.character_list[1]
-
-        character_slot_2 = create_rectangle(canvas, center_x, center_y, width, height, 4, "gray")
-
-        show_text(canvas, "Slot 2", character_slot_2.x + character_slot_2.width / 2, character_slot_2.y + 20, "white", True)
-        show_text(canvas, f"{second_character.name}", character_slot_2.x + character_slot_2.width / 2, character_slot_2.y + 20 + 50, "white", True)
-        show_text(canvas, f"Level: {second_character.level}", character_slot_2.x + character_slot_2.width / 2, character_slot_2.y + 20 + 100, "green", True)
-
-        third_character: Character = self.game.character_list[2]
-
-        character_slot_3 = create_rectangle(canvas, center_x + width + spacing, center_y, width, height, 4, "gray")
-
-        show_text(canvas, "Slot 3", character_slot_3.x + character_slot_3.width / 2, character_slot_3.y + 20, "white", True)
-        show_text(canvas, f"{third_character.name}", character_slot_3.x + character_slot_3.width / 2, character_slot_3.y + 20 + 50, "white", True)
-        show_text(canvas, f"Level: {third_character.level}", character_slot_3.x + character_slot_3.width / 2, character_slot_3.y + 20 + 100, "green", True)
-
-        self.character_slot_list = [character_slot_1, character_slot_2, character_slot_3]
+            if character:
+                show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
+                show_text(canvas, f"{character.name}", slot_center_x, slot.y + 70, "white", True)
+                show_text(canvas, f"Level: {character.level}", slot_center_x, slot.y + 120, "green", True)
+            else:
+                show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
+                add_character_button = Button(position= (slot_center_x, slot_center_y), size = (50, 50), text= "+", func= lambda test = i: self.create_character_and_change_state(test))
+                self.character_slot_buttons.append(add_character_button)
 
         for button in self.character_slot_buttons:
             button.draw(canvas, mouse_pos)
+
+    def create_character_and_change_state(self, character_slot):
+        self.character_slot = character_slot
+        self.game.character_list[self.character_slot] = Character("Generic", None, 1, 1) 
+        self.game.character_slot = self.character_slot
+        self.game.character = self.game.character_list[self.character_slot]
+        self.change_menu_state(GAME_STATE)
 
     def handle_character_slot_events(self, event, mouse_pos):
         self.cursor_focused = False
@@ -142,22 +150,20 @@ class Menu:
         for button in self.character_slot_buttons:
             button.handle_event(event, mouse_pos)
 
-        for character_slot in self.character_slot_list:
-            if character_slot.collidepoint(mouse_pos):
+        for num, character_slot in enumerate(self.character_slot_list):
+            if character_slot.collidepoint(mouse_pos) and self.game.character_list[num]:
                 self.cursor_focused = True
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                    self.character_slot = num
+                    self.game.character = self.game.character_list[self.character_slot]
+                    self.change_menu_state(GAME_STATE)
         
         if self.cursor_focused:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         else:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for num, character_slot in enumerate(self.character_slot_list):
-                if character_slot.collidepoint(mouse_pos):
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-                    self.character_slot = num
-                    self.game.character = self.game.character_list[self.character_slot]
-                    self.game.menu_state = GAME_STATE
 
     def handle_options_events(self, event, mouse_pos):
         for toggle in self.options_toggle:
@@ -170,11 +176,9 @@ class Menu:
             button.handle_event(event, mouse_pos)
 
     def draw(self, canvas, mouse_pos):
-
         for button in self.menu_button_list:
             button.draw(canvas, mouse_pos)
 
     def handle_events(self, event, mouse_pos):
-
         for button in self.menu_button_list:
             button.handle_event(event, mouse_pos)

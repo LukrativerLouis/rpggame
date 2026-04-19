@@ -39,6 +39,15 @@ class Item():
         #TODO: Hover for TOOLTIPS
         pass
 
+    # dictionary stuff
+
+    def to_dict(self):
+        return self.__dict__.copy()
+    
+    @classmethod
+    def from_dict(cls, data):
+        return cls(**data)
+
 class Item_Holder():
     def __init__(self, x, y, width, height, color, type, highlight_color = "indigo"):
         self.x = x

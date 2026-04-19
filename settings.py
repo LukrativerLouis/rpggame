@@ -1,6 +1,4 @@
 import pygame
-import json
-import base64
 
 INITIAL_SCREEN_WIDTH = 1920
 INITIAL_SCREEN_HEIGHT = 1080
@@ -13,6 +11,7 @@ ITEM_HOLDER_SIZE = 200
 MENU_STATE = "menu_state"
 OPTIONS_STATE = "options_state"
 CHARACTER_SLOTS_STATE = "character_slots_state"
+CHARACTER_ADD_STATE = "character_add_state"
 GAME_STATE = "game_state"
 
 DEFAULT_MAIN_WINDOW_STATE = "Default_Main_Window_State"
@@ -80,11 +79,9 @@ class Settings:
 
     def on_toggle_sound(self, state):
         self.sounds_on = state
-        self.save_progress()
 
     def on_toggle_music(self, state):
         self.music_on = state
-        self.save_progress()
         #if self.settings.music_on:
         #    self.settings.play_music(MENU_MUSIC_PATH)
         #else:
@@ -94,36 +91,9 @@ class Settings:
         self.music_volume = value / 100
         if self.music_on:
             pygame.mixer.music.set_volume(self.music_volume)
-        self.save_progress()
 
     def on_sound_volume_change(self, value):
         self.sound_volume = value / 100
-        self.save_progress()
-    
-    def save_progress(self):
-        data = json.dumps({
-            "music" : self.music_on, 
-            "sound" : self.sounds_on, 
-            "sound_volume": self.sound_volume, 
-            "music_volume": self.music_volume, 
-            })
-        encoded = base64.b64encode(data.encode()).decode()
-        with open(SAVE_FILE_PATH, "w") as f:
-            f.write(encoded)
-
-    def load_progress(self):
-        try:
-            with open(SAVE_FILE_PATH, "r") as f:
-                encoded = f.read()
-                data = base64.b64decode(encoded).decode()
-
-                self.music_on = json.loads(data).get("music")
-                self.sounds_on = json.loads(data).get("sound")
-                self.sound_volume = json.loads(data).get("sound_volume")
-                self.music_volume = json.loads(data).get("music_volume")
-        except:
-            self.save_progress()
-            return self.load_progress()
     
     def pause_music(self):
         pygame.mixer.music.pause()
