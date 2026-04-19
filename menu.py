@@ -156,6 +156,7 @@ class Menu:
                         if event.type == pygame.MOUSEBUTTONDOWN:
                             self.character_slot = i
                             self.game.character = self.game.character_list[i]
+                            self.cursor_focused = False
                             self.change_menu_state(GAME_STATE)
         
         if self.cursor_focused:

@@ -5,7 +5,10 @@ class Button:
         self.center_pos = pygame.Vector2(position)
         self.size_original = pygame.Vector2(size)
         self.color = color
-        self.change_color = change_color if change_color else color
+        if change_color is None:
+            self.change_color = self._generate_hover_color(self.color)
+        else:
+            self.change_color = change_color
         self.func = func
         
         self.is_pressed = False
@@ -20,6 +23,14 @@ class Button:
         self.rect.center = position
         
         self.shrink_scale = 0.95
+
+    def _generate_hover_color(self, color):
+        brightness = sum(color[:3]) / 3
+        
+        if brightness > 200:
+            return [max(0, c - 40) for c in color]
+        else:
+            return [min(255, c + 40) for c in color]
 
     def handle_event(self, event, mouse_pos):
         self.is_hovered = self.rect.collidepoint(mouse_pos)
