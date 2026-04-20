@@ -285,13 +285,13 @@ class VolumeSlider:
         value_surface = self.font.render(f"{self.value}", True, self.slider_picker_color)
         surface.blit(value_surface, (self.slider_x + self.slider_width + 15, self.slider_y - 2))
 
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.handle_rect.collidepoint(event.pos):
+    def handle_event(self, event, mouse_pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.handle_rect.collidepoint(mouse_pos):
             self.dragging = True
         elif event.type == pygame.MOUSEBUTTONUP:
             self.dragging = False
         elif event.type == pygame.MOUSEMOTION and self.dragging:
-            new_x = min(max(event.pos[0], self.slider_x), self.slider_x + self.slider_width)
+            new_x = min(max(mouse_pos[0], self.slider_x), self.slider_x + self.slider_width)
             self.handle_rect.x = new_x
             self.value = int(((self.handle_rect.x - self.slider_x) / self.slider_width) * 100)
             if self.on_change:
@@ -299,3 +299,42 @@ class VolumeSlider:
 
 def get_font(size):
     return pygame.font.Font(None, size)
+
+class Text_Input_Box():
+    def __init__(self, x, y, width, height, background_color, border_color, text_color):
+        self.text = ""
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.background_color = background_color
+        self.border_color = border_color
+        self.text_color = text_color
+        self.focused = False
+        self.rect = pygame.rect.Rect(self.x, self.y, self.width, self.height)
+
+    def clear(self):
+        self.text = ""
+
+    def draw(self, canvas):
+        pygame.draw.rect(canvas, self.background_color, self.rect)
+        pygame.draw.rect(canvas, self.border_color, self.rect, 2)
+        show_text(canvas, self.text, self.rect.centerx, self.rect.centery, self.text_color, True)
+
+    def set_pos(self, x, y):
+        self.x = x
+        self.y = y
+        self.rect.center = (x, y)
+
+    def handle_event(self, event, mouse_pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(mouse_pos):
+            self.focused = True
+        elif event.type == pygame.MOUSEBUTTONDOWN and not self.rect.collidepoint(mouse_pos):
+            self.focused = False
+
+        if self.focused:
+            if event.type == pygame.TEXTINPUT and len(self.text) <= 20:
+                self.text += event.text
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
+                self.text = self.text[:-1]

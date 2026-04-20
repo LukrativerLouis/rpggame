@@ -10,6 +10,8 @@ class Menu:
         self.character_slot = 0
         self.character_list = None
         self.cursor_focused = False
+        self.character_add_text_editor = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black")
+        self.show_add_text_editor = False
         self.menu_button_list = []
         self.character_slot_list = []
         self.character_slot_buttons = []
@@ -45,10 +47,11 @@ class Menu:
 
         self.add_buttons = []
         for i in range(3):
-            btn = Button(position=(0, 0), size=(50, 50), text="+", change_color= [150, 150, 150], func= lambda idx = i: self.create_character_and_change_state(idx)) 
+            btn = Button(position=(0, 0), size=(50, 50), text="+", change_color= [150, 150, 150], func= lambda idx = i: self.show_text_editor(btn.rect.centerx, btn.rect.centery, idx))
             self.add_buttons.append(btn)
 
     def change_menu_state(self, new_state):
+        self.show_add_text_editor = False
         self.game.menu_state = new_state
 
     def create_options_menu_button(self):
@@ -85,6 +88,12 @@ class Menu:
                                     on_toggle=self.settings.on_toggle_sound, text_color= "white")
 
         self.options_toggle = [MUSIC_TOGGLE, SOUND_TOGGLE]
+
+    def show_text_editor(self, x, y, i):
+        self.character_slot = i
+        self.character_add_text_editor.clear()
+        self.character_add_text_editor.set_pos(x, y)
+        self.show_add_text_editor = True
 
     def save_and_close(self, new_state):
         self.game.save_service.save_progress(self.game)
@@ -129,20 +138,29 @@ class Menu:
                 show_text(canvas, f"Level: {character.level}", slot_center_x, slot.y + 120, "green", True)
             else:
                 show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
-                add_btn = self.add_buttons[i]
-                add_btn.set_pos((slot_center_x, slot_center_y))
-                add_btn.draw(canvas, mouse_pos)
+
+                if self.show_add_text_editor and self.character_slot == i:
+                    self.character_add_text_editor.set_pos(slot_center_x, slot_center_y)
+                    self.character_add_text_editor.draw(canvas)
+                else:
+                    add_btn = self.add_buttons[i]
+                    add_btn.set_pos((slot_center_x, slot_center_y))
+                    add_btn.draw(canvas, mouse_pos)
 
         self.character_slot_buttons[0].draw(canvas, mouse_pos)
 
-    def create_character_and_change_state(self, character_slot):
-        self.character_slot = character_slot
-        new_char = Character("Generic", None, 1, 1) 
-        self.game.character_list[self.character_slot] = new_char
-        
+    def create_character_and_change_state(self, character_slot = None):
+        if not character_slot:
+            chosen_name = self.character_add_text_editor.text
+            new_char = Character(chosen_name, None, 1, 1)
+            self.game.character_list[self.character_slot] = new_char
+        else:
+            self.character_slot = character_slot
+            self.game.character_slot = self.character_slot
+            self.game.character_list[self.character_slot] = self.game.character_list[self.character_slot]
+
         self.game.character = self.game.character_list[self.character_slot]
         self.game.toggle_main_state(DEFAULT_MAIN_WINDOW_STATE)
-
         self.game.sync_character_to_ui()
         self.change_menu_state(GAME_STATE)
 
@@ -153,21 +171,26 @@ class Menu:
         self.cursor_focused = False
 
         self.character_slot_buttons[0].handle_event(event, mouse_pos)
+            
+        if self.show_add_text_editor:
+            self.character_add_text_editor.handle_event(event, mouse_pos)
 
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                if len(self.character_add_text_editor.text) > 0:
+                    self.create_character_and_change_state(None)
+                    self.show_add_text_editor = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.show_add_text_editor = False
+        
         for i, character in enumerate(self.game.character_list):
-                if not character:
-                    self.add_buttons[i].handle_event(event, mouse_pos)
-                else:
-                    if self.character_slot_list[i].collidepoint(mouse_pos):
-                        self.cursor_focused = True
-                        if event.type == pygame.MOUSEBUTTONDOWN:
-                            self.character_slot = i
-                            self.game.character_slot = self.character_slot
-                            self.game.character = self.game.character_list[i]
-                            self.cursor_focused = False
-                            self.game.toggle_main_state(DEFAULT_MAIN_WINDOW_STATE)
-                            self.game.sync_character_to_ui()
-                            self.change_menu_state(GAME_STATE)
+            if not character:
+                self.add_buttons[i].handle_event(event, mouse_pos)
+            else:
+                if self.character_slot_list[i].collidepoint(mouse_pos):
+                    self.cursor_focused = True
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        self.cursor_focused = False
+                        self.create_character_and_change_state(i)
         
         if self.cursor_focused:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -179,7 +202,7 @@ class Menu:
             toggle.handle_event(event, mouse_pos)
 
         for slider in self.options_slider:
-            slider.handle_event(event)
+            slider.handle_event(event, mouse_pos)
 
         for button in self.options_button:
             button.handle_event(event, mouse_pos)
