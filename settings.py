@@ -7,6 +7,7 @@ MAIN_START = 195
 MAIN_END = 1725
 ITEM_SIZE = 180
 ITEM_HOLDER_SIZE = 200
+GAME_VERSION = "0.1.0.dev"
 
 MENU_STATE = "menu_state"
 OPTIONS_STATE = "options_state"

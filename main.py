@@ -107,9 +107,9 @@ class Game():
         return None
 
     def quit_game(self):
-        self.save_service.save_progress(self)
         if self.is_web:
             return
+        self.save_service.save_progress(self)
         self.running = False
 
     def calc_scale(self, new_screen_w = None, new_screen_h = None):
@@ -396,6 +396,9 @@ class Game():
             # drawing
 
             self.canvas.fill("black")
+
+            # global
+            show_text(self.canvas, f"{GAME_VERSION}", x = 10, y = 1050, color= "lightblue")
 
             if self.menu_state == MENU_STATE:
                 self.menu.draw(self.canvas, mouse_pos)
