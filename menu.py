@@ -147,6 +147,9 @@ class Menu:
         self.change_menu_state(GAME_STATE)
 
     def handle_character_slot_events(self, event, mouse_pos):
+        if not self.character_slot_list:
+            return
+
         self.cursor_focused = False
 
         self.character_slot_buttons[0].handle_event(event, mouse_pos)

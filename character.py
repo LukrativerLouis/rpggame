@@ -55,6 +55,9 @@ class Character:
         return self.level
     
     def calculate_player_stats(self):
+        if not self.item_stats_calculated_list:
+            self.item_stats_calculated_list = []
+
         if self.equipment:
             for item in self.equipment:
                 if item not in self.item_stats_calculated_list:
