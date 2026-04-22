@@ -162,17 +162,18 @@ def draw_progression_bar(canvas, x, y, actual_val, max_val, bar_width, bar_heigh
         show_text(canvas, f"{int(actual_val)}/{int(max_val)}", border.centerx, border.centery, text_color, True)
 
 class Toggle:
-    def __init__(self, pos, size, font, label, initial_state=False, on_toggle=None, bg_on = "green", bg_off = "red", knob_color = "white", text_color = "black"):
+    def __init__(self, pos, size, font, label, getter = None, initial_state=False, on_toggle=None, bg_on = "green", bg_off = "red", knob_color = "white", text_color = "black"):
         self.font = font
         self.label = label
-        self.state = initial_state
+        self.getter = getter
+        self.state = self.getter() if self.getter else initial_state
         self.on_toggle = on_toggle
 
         self.width, self.height = size
         self.center_x, self.center_y = pos
 
         self.anim_progress = 1.0 if self.state else 0.0
-        self.anim_speed = 0.15
+        self.anim_speed = 0.04
 
         self.bg_on = pygame.Color(bg_on)
         self.bg_off = pygame.Color(bg_off)
@@ -207,6 +208,10 @@ class Toggle:
             self.toggle()
 
     def update(self, pos):
+
+        if self.getter:
+            self.state = self.getter()
+
         target = 1.0 if self.state else 0.0
         if self.anim_progress < target:
             self.anim_progress = min(self.anim_progress + self.anim_speed, target)
@@ -345,3 +350,73 @@ class Text_Input_Box():
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_BACKSPACE:
                 self.text = self.text[:-1]
+
+class Drop_Down_Menu():
+    def __init__(self, x, y, item_list, width, height, bg_color, text_color, item_width, item_height, display_item = None, func = None):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.rect.Rect(self.x, self.y, self.width, self.height)
+        self.item_list = item_list
+        self.bg_color = bg_color
+        self.text_color = text_color
+        self.item_width = item_width
+        self.item_height = item_height
+        self.focused = False
+        self.selected_item = None
+        self.display_item = display_item
+        self.locked = False
+        self.func = func
+        self.drop_down_items = []
+        for i, item_text in enumerate(self.item_list):
+            item_y = self.rect.bottom + 2 + (i * (self.item_height + 2))
+            item = Drop_Down_Item(self.rect.x, item_y, self.item_width, self.item_height, item_text, self.bg_color, self.text_color)
+            self.drop_down_items.append(item)
+
+    def draw(self, canvas, mouse_pos):
+        if self.locked:
+            pygame.draw.rect(canvas, "orange", self.rect)
+        else:
+            pygame.draw.rect(canvas, self.bg_color, self.rect)
+        
+        blurb = self.selected_item if self.selected_item else (self.display_item if self.display_item else "-")
+        show_text(canvas, blurb, self.rect.centerx, self.rect.centery, self.text_color, True)
+
+        if self.focused and not self.locked:
+            for item in self.drop_down_items:
+                item.draw(canvas)
+
+    def handle_event(self, event, mouse_pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and not self.locked:
+            if self.rect.collidepoint(mouse_pos):
+                self.focused = not self.focused
+            
+            elif self.focused and not self.locked:
+                for item in self.drop_down_items:
+                    if item.rect.collidepoint(mouse_pos):
+                        self.selected_item = item.text
+
+                        if self.func:
+                            self.func(item.text)
+                        
+                        self.focused = False
+                        break
+
+                self.focused = False
+
+class Drop_Down_Item():
+    def __init__(self, x, y, width, height, text, color, text_color):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.rect.Rect(self.x, self.y, self.width, self.height)
+        self.color = color
+        self.text = text
+        self.text_color = text_color
+
+    def draw(self, canvas):
+        pygame.draw.rect(canvas, self.color, self.rect)
+        pygame.draw.rect(canvas, (200, 200, 200), self.rect, 1)
+        show_text(canvas, self.text, self.rect.centerx, self.rect.centery, self.text_color, True)

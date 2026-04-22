@@ -29,6 +29,9 @@ class Save_Service:
             "sound": game.settings.sounds_on,
             "sound_volume": game.settings.sound_volume,
             "music_volume": game.settings.music_volume,
+            "forced_width": game.settings.forced_width,
+            "forced_height": game.settings.forced_height,
+            "toggle_fullscreen": game.is_fullscreen
         }
         
         data_string = json.dumps(raw_data, indent=4)
@@ -64,12 +67,13 @@ class Save_Service:
                 self.game.settings.sounds_on = data.get("sound")
                 self.game.settings.sound_volume = data.get("sound_volume")
                 self.game.settings.music_volume = data.get("music_volume")
+                self.game.settings.forced_width = data.get("forced_width")
+                self.game.settings.forced_height = data.get("forced_height")
+                self.game.is_fullscreen = data.get("toggle_fullscreen")
 
         except FileNotFoundError:
             print("File not found")
             self.shop_list = [[], [], []]
-            #self.save_progress()
-            #self.load_progress()
 
         except Exception as e:
             print(f"Error while loading the save file: {e}")

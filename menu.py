@@ -11,6 +11,7 @@ class Menu:
         self.character_list = None
         self.cursor_focused = False
         self.character_add_text_box = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black", "Character Name:", "white")
+        self.resolution_drop_down = Drop_Down_Menu(self.settings.base_width / 2 - 100, self.settings.base_height / 2 + 70, DISPLAY_RESOLUTION_LIST, 200, 50, "gray", "white", 200, 50, "Resolution", func= lambda res_text: self.apply_resolution(res_text))
         self.show_add_text_editor = False
         self.menu_button_list = []
         self.character_slot_list = []
@@ -58,7 +59,7 @@ class Menu:
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
 
-        save_button = Button(position= (mid_x, mid_y + 120),size= (150, 50), text= "Save and close", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
+        save_button = Button(position= (mid_x, mid_y + 180),size= (150, 50), text= "Save and close", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
         self.options_button = [save_button]
 
     def create_options_slider(self):
@@ -78,16 +79,21 @@ class Menu:
     def create_options_toggle(self):
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
+
+
+        fullscreen_toggle = Toggle(pos=(mid_x, mid_y - 170), size=(100, 40), font=get_font(None, 25),
+                                    label="Toggle Fullscreen:", getter = lambda: self.game.is_fullscreen,
+                                    on_toggle=self.game.toggle_fullscreen, text_color= "white")
         
-        MUSIC_TOGGLE = Toggle(pos=(mid_x, mid_y - 120), size=(100, 40), font=get_font(None, 25),
-                                    label="music:", initial_state=self.settings.music_on,
+        music_toggle = Toggle(pos=(mid_x, mid_y - 120), size=(100, 40), font=get_font(None, 25),
+                                    label="music:", getter = lambda: self.settings.music_on,
                                     on_toggle=self.settings.on_toggle_music, text_color= "white")
         
-        SOUND_TOGGLE = Toggle(pos=(mid_x, mid_y - 70), size=(100, 40), font=get_font(None, 25),
-                                    label="sound effects:", initial_state=self.settings.sounds_on,
+        sound_toggle = Toggle(pos=(mid_x, mid_y - 70), size=(100, 40), font=get_font(None, 25),
+                                    label="sound effects:", getter = lambda: self.settings.sounds_on,
                                     on_toggle=self.settings.on_toggle_sound, text_color= "white")
 
-        self.options_toggle = [MUSIC_TOGGLE, SOUND_TOGGLE]
+        self.options_toggle = [fullscreen_toggle, music_toggle, sound_toggle]
 
     def show_text_editor(self, x, y, i):
         self.character_slot = i
@@ -99,17 +105,27 @@ class Menu:
         self.game.save_service.save_progress(self.game)
         self.change_menu_state(new_state)
 
+    def apply_resolution(self, res_string):
+        try:
+            width, height = map(int, res_string.split('x'))
+            self.game.set_specific_window_size(width, height)
+        except ValueError:
+            print(f"Ungültiges Format: {res_string}")
+
     def draw_options(self, canvas, mouse_pos):
 
         for toggle in self.options_toggle:
             toggle.update((toggle.center_x, toggle.center_y))
             toggle.draw(canvas)
 
-        for button in self.options_button:
-            button.draw(canvas, mouse_pos)
+        if not self.resolution_drop_down.focused:
+            for button in self.options_button:
+                button.draw(canvas, mouse_pos)
 
         for slider in self.options_slider:
             slider.draw(canvas)
+
+        self.resolution_drop_down.draw(canvas, mouse_pos)
 
     def draw_character_slots(self, canvas, mouse_pos):
         width = 300
@@ -206,8 +222,11 @@ class Menu:
         for slider in self.options_slider:
             slider.handle_event(event, mouse_pos)
 
-        for button in self.options_button:
-            button.handle_event(event, mouse_pos)
+        if not self.resolution_drop_down.focused:
+            for button in self.options_button:
+                button.handle_event(event, mouse_pos)
+
+        self.resolution_drop_down.handle_event(event, mouse_pos)
 
     def draw(self, canvas, mouse_pos):
         for button in self.menu_button_list:

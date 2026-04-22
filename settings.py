@@ -45,6 +45,7 @@ MAGE = "mage"
 ARCHER = "archer"
 
 CLASS_TYPE_LIST = [WARRIOR, MAGE, ARCHER]
+DISPLAY_RESOLUTION_LIST = ["2560x1440", "1920x1080", "1280x720"]
 
 # Const for Language selector
 ENGLISH = "english"
@@ -61,6 +62,10 @@ class Settings:
     def __init__(self):
         self.base_width = INITIAL_SCREEN_WIDTH
         self.base_height = INITIAL_SCREEN_HEIGHT
+        # this is to use for specific resolution
+        self.forced_width = None
+        self.forced_height = None
+        self.fullscreen_display_resolution = (0,0)
         self.language = ENGLISH
         self.fps = FPS
         self.title = "RPG Adventure"

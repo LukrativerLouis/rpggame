@@ -16,6 +16,7 @@ class Game():
         pygame.init()
         self.is_web = sys.platform == "emscripten"
         self.settings = Settings()
+        self.is_fullscreen = False
 
         if self.is_web:
             self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height))
@@ -24,15 +25,20 @@ class Game():
         self.save_service = Save_Service(self)
         self.save_service.load_progress()
 
+        if self.settings.forced_width and self.settings.forced_height:
+            self.screen = pygame.display.set_mode((self.settings.forced_width, self.settings.forced_height), pygame.RESIZABLE | pygame.DOUBLEBUF)
+
         self.all_shops_data = self.save_service.shop_list
 
         self.character_list: list[Character] = self.save_service.character_list
         self.menu = Menu(self.settings, self)
         self.character: Character = None
+
+        if self.is_fullscreen:
+            self.toggle_fullscreen(no_toggle = True)
         
         pygame.display.set_caption(self.settings.title)
 
-        self.is_fullscreen = False
         self.last_window_size = (self.settings.base_width, self.settings.base_height)
 
         self.canvas = pygame.Surface((self.settings.base_width, self.settings.base_height))
@@ -62,7 +68,7 @@ class Game():
         self.offset_y = 0
 
         if not self.is_web:
-            self.calc_scale()
+            self.calc_scale(self.settings.forced_width, self.settings.forced_height)
         self.create_buttons()
 
     def create_buttons(self):
@@ -71,7 +77,8 @@ class Game():
         btn_shop = Button(position = (100, 240), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
         btn_dungeon = Button(position = (100, 310), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
         btn_back = Button(position=(100, 925), size=(100, 50), text="Back", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.menu.change_menu_state(CHARACTER_SLOTS_STATE))
-        btn_quit = Button(position=(100, 1000), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
+        btn_quit = Button(position=(100, 995), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
+        #btn_test = Button(position=(100, 1050), size=(100, 40), text="Test", color=[200, 50, 50], func= lambda: self.set_specific_window_size(1280, 720))
 
         self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_back, btn_quit]
 
@@ -155,19 +162,30 @@ class Game():
 
         return (virtual_x, virtual_y)
     
-    def toggle_fullscreen(self):
+    def toggle_fullscreen(self, is_fullscreen = None, no_toggle = False):
         if self.is_web:
            return 
 
-        self.is_fullscreen = not self.is_fullscreen
+        if not no_toggle:
+            self.is_fullscreen = not self.is_fullscreen
 
         if self.is_fullscreen:
             self.last_window_size = self.screen.get_size()
 
             self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN | pygame.DOUBLEBUF)
 
+            self.menu.resolution_drop_down.locked = True
+            if self.menu.resolution_drop_down.display_item:
+                self.menu.resolution_drop_down.selected_item = self.menu.resolution_drop_down.display_item
+            else:
+                self.menu.resolution_drop_down.selected_item = "-"
+            
+            self.settings.forced_width = None
+            self.settings.forced_height = None
+
         else:
             self.screen = pygame.display.set_mode(self.last_window_size, pygame.RESIZABLE | pygame.DOUBLEBUF)
+            self.menu.resolution_drop_down.locked = False
 
         self.calc_scale()
 
@@ -202,6 +220,12 @@ class Game():
             if i < len(self.shop_window.item_holder_list):
                 item.rect.center = self.shop_window.item_holder_list[i].rect.center
                 item.x, item.y = item.rect.center
+
+    def set_specific_window_size(self, width, height):
+        self.settings.forced_width = width
+        self.settings.forced_height = height
+        self.calc_scale(width, height)
+        self.screen = pygame.display.set_mode((self.settings.forced_width, self.settings.forced_height), pygame.RESIZABLE | pygame.DOUBLEBUF)
 
     async def start(self):
 
