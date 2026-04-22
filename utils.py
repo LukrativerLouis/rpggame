@@ -109,9 +109,9 @@ def create_tooltip(canvas, x, y, width, height, text, text_color, color = "black
     show_text(canvas, text, x + width / 2, y + height / 2, text_color, True)
 
 pygame.font.init()
-font = pygame.font.SysFont("arial", 20)
 
-def debug(canvas, info, y, x, color, center = False):
+def debug(canvas, info, y, x, color, center = False, size = 20):
+    font = pygame.font.SysFont("arial", size)
 
     debug_surf = font.render(str(info), True, color)
 
@@ -122,8 +122,8 @@ def debug(canvas, info, y, x, color, center = False):
 
     canvas.blit(debug_surf, debug_rect)
 
-def show_text(canvas, info, x = 100, y = 100, color= "Green", center = False):
-    debug(canvas, info, y, x, color, center)
+def show_text(canvas, info, x = 100, y = 100, color= "Green", center = False, size = 20):
+    debug(canvas, info, y, x, color, center, size)
 
 def draw_health_bar(canvas, x, y, visual_val, actual_val, max_val, bar_width, bar_height, border_value):
     ratio = bar_width / max_val if max_val > 0 else 0
@@ -161,7 +161,7 @@ def draw_progression_bar(canvas, x, y, actual_val, max_val, bar_width, bar_heigh
     else:
         show_text(canvas, f"{int(actual_val)}/{int(max_val)}", border.centerx, border.centery, text_color, True)
 
-class SliderToggle:
+class Toggle:
     def __init__(self, pos, size, font, label, initial_state=False, on_toggle=None, bg_on = "green", bg_off = "red", knob_color = "white", text_color = "black"):
         self.font = font
         self.label = label
@@ -297,8 +297,8 @@ class VolumeSlider:
             if self.on_change:
                 self.on_change(self.value)
 
-def get_font(size):
-    return pygame.font.Font(None, size)
+def get_font(font = None, size = 20):
+    return pygame.font.Font(font, size)
 
 class Text_Input_Box():
     def __init__(self, x, y, width, height, background_color, border_color, text_color, label_text = None, label_color = "white", focused_color = "green"):
@@ -324,7 +324,7 @@ class Text_Input_Box():
         pygame.draw.rect(canvas, self.border_color, self.rect, 2)
         show_text(canvas, self.text, self.rect.centerx, self.rect.centery, self.text_color, True)
         if self.label_text:
-            show_text(canvas, self.label_text, self.rect.x + 2, self.rect.y - 30, self.label_color, False)
+            show_text(canvas, self.label_text, self.rect.x + 2, self.rect.y - 30, self.label_color, False, 18)
         if self.focused:
             pygame.draw.rect(canvas, self.focused_color, self.rect, 4)
 

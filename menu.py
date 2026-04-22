@@ -65,11 +65,11 @@ class Menu:
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
 
-        MUSIC_SLIDER = VolumeSlider(size=(200, 20), font=get_font(25), label="music volume:",
+        MUSIC_SLIDER = VolumeSlider(size=(200, 20), font=get_font(None, 25), label="music volume:",
                                 initial_value=int(self.settings.music_volume * 100),
                                 on_change=self.settings.on_music_volume_change, center_pos= (mid_x, mid_y), text_color= "white", slider_color= "gray", slider_picker_color= "white")
     
-        SOUND_SLIDER = VolumeSlider(size=(200, 20), font=get_font(25), label="sound volume:",
+        SOUND_SLIDER = VolumeSlider(size=(200, 20), font=get_font(None, 25), label="sound volume:",
                                 initial_value=int(self.settings.sound_volume * 100),
                                 on_change=self.settings.on_sound_volume_change, center_pos= (mid_x, mid_y + 30), text_color= "white", slider_color= "gray", slider_picker_color= "white")
         
@@ -79,11 +79,11 @@ class Menu:
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
         
-        MUSIC_TOGGLE = SliderToggle(pos=(mid_x, mid_y - 120), size=(100, 40), font=get_font(30),
+        MUSIC_TOGGLE = Toggle(pos=(mid_x, mid_y - 120), size=(100, 40), font=get_font(None, 25),
                                     label="music:", initial_state=self.settings.music_on,
                                     on_toggle=self.settings.on_toggle_music, text_color= "white")
         
-        SOUND_TOGGLE = SliderToggle(pos=(mid_x, mid_y - 70), size=(100, 40), font=get_font(30),
+        SOUND_TOGGLE = Toggle(pos=(mid_x, mid_y - 70), size=(100, 40), font=get_font(None, 25),
                                     label="sound effects:", initial_state=self.settings.sounds_on,
                                     on_toggle=self.settings.on_toggle_sound, text_color= "white")
 
