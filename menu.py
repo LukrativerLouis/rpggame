@@ -10,7 +10,7 @@ class Menu:
         self.character_slot = 0
         self.character_list = None
         self.cursor_focused = False
-        self.character_add_text_editor = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black")
+        self.character_add_text_box = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black", "Character Name:", "white")
         self.show_add_text_editor = False
         self.menu_button_list = []
         self.character_slot_list = []
@@ -91,8 +91,8 @@ class Menu:
 
     def show_text_editor(self, x, y, i):
         self.character_slot = i
-        self.character_add_text_editor.clear()
-        self.character_add_text_editor.set_pos(x, y)
+        self.character_add_text_box.clear()
+        self.character_add_text_box.set_pos(x, y)
         self.show_add_text_editor = True
 
     def save_and_close(self, new_state):
@@ -140,8 +140,10 @@ class Menu:
                 show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
 
                 if self.show_add_text_editor and self.character_slot == i:
-                    self.character_add_text_editor.set_pos(slot_center_x, slot_center_y)
-                    self.character_add_text_editor.draw(canvas)
+                    self.character_add_text_box.set_pos(slot_center_x, slot_center_y)
+                    self.character_add_text_box.draw(canvas)
+                    if len(self.character_add_text_box.text) > 0:
+                        show_text(canvas, "Press enter to continue", self.character_add_text_box.rect.centerx, self.character_add_text_box.rect.centery + 40, "white", True)
                 else:
                     add_btn = self.add_buttons[i]
                     add_btn.set_pos((slot_center_x, slot_center_y))
@@ -150,8 +152,8 @@ class Menu:
         self.character_slot_buttons[0].draw(canvas, mouse_pos)
 
     def create_character_and_change_state(self, character_slot = None):
-        if not character_slot:
-            chosen_name = self.character_add_text_editor.text
+        if not character_slot and len(self.character_add_text_box.text) > 0:
+            chosen_name = self.character_add_text_box.text
             new_char = Character(chosen_name, None, 1, 1)
             self.game.character_list[self.character_slot] = new_char
         else:
@@ -173,10 +175,10 @@ class Menu:
         self.character_slot_buttons[0].handle_event(event, mouse_pos)
             
         if self.show_add_text_editor:
-            self.character_add_text_editor.handle_event(event, mouse_pos)
+            self.character_add_text_box.handle_event(event, mouse_pos)
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                if len(self.character_add_text_editor.text) > 0:
+                if len(self.character_add_text_box.text) > 0:
                     self.create_character_and_change_state(None)
                     self.show_add_text_editor = False
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:

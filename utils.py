@@ -301,7 +301,7 @@ def get_font(size):
     return pygame.font.Font(None, size)
 
 class Text_Input_Box():
-    def __init__(self, x, y, width, height, background_color, border_color, text_color):
+    def __init__(self, x, y, width, height, background_color, border_color, text_color, label_text = None, label_color = "white", focused_color = "green"):
         self.text = ""
         self.x = x
         self.y = y
@@ -310,6 +310,9 @@ class Text_Input_Box():
         self.background_color = background_color
         self.border_color = border_color
         self.text_color = text_color
+        self.label_text = label_text
+        self.label_color = label_color
+        self.focused_color = focused_color
         self.focused = False
         self.rect = pygame.rect.Rect(self.x, self.y, self.width, self.height)
 
@@ -320,6 +323,10 @@ class Text_Input_Box():
         pygame.draw.rect(canvas, self.background_color, self.rect)
         pygame.draw.rect(canvas, self.border_color, self.rect, 2)
         show_text(canvas, self.text, self.rect.centerx, self.rect.centery, self.text_color, True)
+        if self.label_text:
+            show_text(canvas, self.label_text, self.rect.x + 2, self.rect.y - 30, self.label_color, False)
+        if self.focused:
+            pygame.draw.rect(canvas, self.focused_color, self.rect, 4)
 
     def set_pos(self, x, y):
         self.x = x
@@ -328,7 +335,7 @@ class Text_Input_Box():
 
     def handle_event(self, event, mouse_pos):
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(mouse_pos):
-            self.focused = True
+            self.focused = not self.focused
         elif event.type == pygame.MOUSEBUTTONDOWN and not self.rect.collidepoint(mouse_pos):
             self.focused = False
 
