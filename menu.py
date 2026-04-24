@@ -11,7 +11,7 @@ class Menu:
         self.character_list = None
         self.cursor_focused = False
         self.character_add_text_box = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black", "Character Name:", "white")
-        self.resolution_drop_down = Drop_Down_Menu(self.settings.base_width / 2 - 100, self.settings.base_height / 2 + 70, DISPLAY_RESOLUTION_LIST, 200, 50, "gray", "white", 200, 50, "Resolution", func= lambda res_text: self.apply_resolution(res_text))
+        self.resolution_drop_down = Drop_Down_Menu(self.settings.base_width / 2 - 100, self.settings.base_height / 2 + 70, DISPLAY_RESOLUTION_LIST, 200, 50, "gray", "white", 200, 50, "Display", func= lambda res_text: self.apply_resolution(res_text))
         self.show_add_text_editor = False
         self.menu_button_list = []
         self.character_slot_list = []
@@ -125,6 +125,13 @@ class Menu:
         for slider in self.options_slider:
             slider.draw(canvas)
 
+        current_w, current_h = self.game.screen.get_size()
+        res_string = f"{current_w}x{current_h}"
+
+        if res_string in self.resolution_drop_down.item_list:
+            self.resolution_drop_down.display_item = res_string
+        else:
+            self.resolution_drop_down.display_item = "Display"
         self.resolution_drop_down.draw(canvas, mouse_pos)
 
     def draw_character_slots(self, canvas, mouse_pos):
