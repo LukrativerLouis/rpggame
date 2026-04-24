@@ -12,6 +12,7 @@ class Menu:
         self.cursor_focused = False
         self.character_add_text_box = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black", "Character Name:", "white")
         self.resolution_drop_down = Drop_Down_Menu(self.settings.base_width / 2 - 100, self.settings.base_height / 2 + 70, DISPLAY_RESOLUTION_LIST, 200, 50, "gray", "white", 200, 50, "Display", func= lambda res_text: self.apply_resolution(res_text))
+        self.language_drop_down = Drop_Down_Menu(self.settings.base_width / 2 - 100, self.settings.base_height / 2 + 130, LANGUAGE_LIST, 200, 50, "gray", "white", 200, 50, self.settings.language, func= lambda language: self.apply_language(language))
         self.show_add_text_editor = False
         self.menu_button_list = []
         self.character_slot_list = []
@@ -59,7 +60,7 @@ class Menu:
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
 
-        save_button = Button(position= (mid_x, mid_y + 180),size= (150, 50), text= "Save and close", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
+        save_button = Button(position= (mid_x, mid_y + 230),size= (150, 50), text= "Save and close", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
         self.options_button = [save_button]
 
     def create_options_slider(self):
@@ -112,13 +113,16 @@ class Menu:
         except ValueError:
             print(f"Ungültiges Format: {res_string}")
 
+    def apply_language(self, new_language):
+        self.settings.language = new_language
+
     def draw_options(self, canvas, mouse_pos):
 
         for toggle in self.options_toggle:
             toggle.update((toggle.center_x, toggle.center_y))
             toggle.draw(canvas)
 
-        if not self.resolution_drop_down.focused:
+        if not self.language_drop_down.focused:
             for button in self.options_button:
                 button.draw(canvas, mouse_pos)
 
@@ -133,6 +137,7 @@ class Menu:
         else:
             self.resolution_drop_down.display_item = "Display"
         self.resolution_drop_down.draw(canvas, mouse_pos)
+        self.language_drop_down.draw(canvas, mouse_pos)
 
     def draw_character_slots(self, canvas, mouse_pos):
         width = 300
@@ -229,11 +234,12 @@ class Menu:
         for slider in self.options_slider:
             slider.handle_event(event, mouse_pos)
 
-        if not self.resolution_drop_down.focused:
+        if not self.language_drop_down.focused:
             for button in self.options_button:
                 button.handle_event(event, mouse_pos)
 
         self.resolution_drop_down.handle_event(event, mouse_pos)
+        self.language_drop_down.handle_event(event, mouse_pos)
 
     def draw(self, canvas, mouse_pos):
         for button in self.menu_button_list:

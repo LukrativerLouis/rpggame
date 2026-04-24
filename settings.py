@@ -48,8 +48,10 @@ CLASS_TYPE_LIST = [WARRIOR, MAGE, ARCHER]
 DISPLAY_RESOLUTION_LIST = ["2560x1440", "1920x1080", "1280x720"]
 
 # Const for Language selector
-ENGLISH = "english"
-GERMAN = "german"
+ENGLISH = "English"
+GERMAN = "German"
+
+LANGUAGE_LIST  = [ENGLISH, GERMAN]
 
 translations = {
     ENGLISH: {
