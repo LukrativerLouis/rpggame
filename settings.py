@@ -14,6 +14,7 @@ OPTIONS_STATE = "options_state"
 CHARACTER_SLOTS_STATE = "character_slots_state"
 CHARACTER_ADD_STATE = "character_add_state"
 GAME_STATE = "game_state"
+INTRO_STATE = "intro_state"
 
 DEFAULT_MAIN_WINDOW_STATE = "Default_Main_Window_State"
 QUEST_MAIN_WINDOW_STATE = "Quest_Main_Window_State"
@@ -37,6 +38,7 @@ DANGEROUS_QUEST_TYPE = "dangerous_quest_type"
 # file paths
 
 SAVE_FILE_PATH = "data/data.json"
+PIXELIFY_FONT_PATH = "font/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf"
 
 # class types
 

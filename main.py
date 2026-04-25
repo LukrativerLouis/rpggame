@@ -10,6 +10,7 @@ from dungeon_window import *
 from quest_window import *
 from settings import *
 from utils import *
+from intro import *
 
 class Game():
     def __init__(self):
@@ -27,6 +28,8 @@ class Game():
 
         if self.settings.forced_width and self.settings.forced_height:
             self.screen = pygame.display.set_mode((self.settings.forced_width, self.settings.forced_height), pygame.RESIZABLE | pygame.DOUBLEBUF)
+
+        self.intro = Intro()
 
         self.all_shops_data = self.save_service.shop_list
 
@@ -50,8 +53,8 @@ class Game():
         self.active_item = None
         self.main_button_list = []
 
-        # this is to ensure what main menu is shown: Menu, Options, Game, Character_Slots, Character Add Screen
-        self.menu_state = MENU_STATE
+        # this is to ensure what main menu is shown: Intro, Menu, Options, Game, Character_Slots, Character Add Screen
+        self.menu_state = INTRO_STATE
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         self.quest_window = Quest_Window(self.character, self)
@@ -243,6 +246,7 @@ class Game():
                     button.handle_event(event, mouse_pos)
 
                 # event handling window states
+
                 if self.menu_state == MENU_STATE:
                     self.menu.handle_events(event, mouse_pos)
 
@@ -421,8 +425,13 @@ class Game():
 
             self.canvas.fill("black")
 
-            # global
-            show_text(self.canvas, f"{GAME_VERSION}", x = 10, y = 1050, color= "lightblue")
+            if self.menu_state == INTRO_STATE:
+                self.intro.draw(self.canvas, self.settings.base_width / 2, self.settings.base_height / 2)
+                if self.intro.fade_out_complete:
+                    self.menu_state = MENU_STATE
+            else:
+                # global except intro
+                show_text(self.canvas, f"{GAME_VERSION}", x = 10, y = 1050, color= "lightblue")
 
             if self.menu_state == MENU_STATE:
                 self.menu.draw(self.canvas, mouse_pos)
