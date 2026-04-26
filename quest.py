@@ -33,7 +33,7 @@ def get_quest(character_level):
     base_gold = 5
     variation = random.uniform(0.8, 1.2)
 
-    quest_exp = round(base_xp * (character_level ** 1.3) * variation)
+    quest_exp = round(base_xp * (character_level ** 1.2) * variation)
     quest_gold = round((base_gold + (character_level * 3)) * variation)
     quest_item = None
     quest_duration = random.randint(5, 30)

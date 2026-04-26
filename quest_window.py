@@ -92,12 +92,7 @@ class Quest_Window:
             return
 
     def __quest_completed(self):
-        if self.selected_quest_index == 0:
-            self.quest_list[0] = Quest(EXPERIENCE_QUEST_TYPE)
-        elif self.selected_quest_index == 1:
-            self.quest_list[1] = Quest(GOLD_QUEST_TYPE)
-        elif self.selected_quest_index == 2:
-            self.quest_list[2] = Quest(DANGEROUS_QUEST_TYPE)
+        self.quest_list[self.selected_quest_index] = get_quest(self.character.level)
 
         self.show_dialog_window = False
         self.quest_started = False

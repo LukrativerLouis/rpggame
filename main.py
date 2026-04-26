@@ -448,6 +448,10 @@ class Game():
 
             elif self.menu_state == GAME_STATE:
 
+                # IF CURSOR STUFF PLEASE YOU NEED TO REMOVE
+                if pygame.mouse.get_cursor() != pygame.Cursor(pygame.SYSTEM_CURSOR_ARROW):
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
                 for button in self.main_button_list:
                     button.draw(self.canvas, mouse_pos)
 
