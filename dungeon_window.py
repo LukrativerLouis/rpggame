@@ -19,17 +19,11 @@ class Dungeon_Window:
         self.specific_dungeon_buttons = None
         self.__setup_buttons()
 
-        # 1 is first monster
-        self.beaten_dungeon_monster = {
-            DUNGEON_1 : 1,
-            DUNGEON_2 : 1,
-            DUNGEON_3 : 1
-        }
         self.dungeon_monster = 0
         # specific dungeon window
         self.current_dungeon_selected = DUNGEON_1
         self.current_dungeon_focused = False
-        self.current_dungeon_monster: Dungeon_Monster = dungeon_monster_list[self.current_dungeon_selected][self.beaten_dungeon_monster[self.current_dungeon_selected] - 1]
+        self.current_dungeon_monster: Dungeon_Monster = None
 
     def __setup_buttons(self):
         self.button_d1 = Button(position=(0,0), size=(50, 50), text="", color=[0, 255, 0], func=lambda: self.__toggle_dungeon_seleced(DUNGEON_1))
@@ -42,14 +36,15 @@ class Dungeon_Window:
         self.btn_close_spec = Button(position=(0,0), size=(100, 50), text="close", func = lambda: self.__toggle_dungeon_seleced(DUNGEON_1))
         self.specific_dungeon_buttons = [self.btn_start_fight, self.btn_close_spec]
 
-    def __fight_completed(self):
+    def fight_completed(self):
         self.current_dungeon_focused = False
         self.fight_started = False
         self.fight_window = None
 
     def __fight_competed_winning(self):
-        self.beaten_dungeon_monster[self.current_dungeon_selected] += 1
-        self.current_dungeon_monster: Dungeon_Monster = dungeon_monster_list[self.current_dungeon_selected][self.beaten_dungeon_monster[self.current_dungeon_selected] - 1]
+        self.character.dungeon_completed[self.current_dungeon_selected] += 1
+        self.current_dungeon_monster: Dungeon_Monster = dungeon_monster_list[self.current_dungeon_selected][self.character.dungeon_completed[self.current_dungeon_selected] - 1]
+        self.fight_completed()
 
     def __start_fight(self):
         self.fight_started = True
@@ -60,7 +55,7 @@ class Dungeon_Window:
 
     def __toggle_dungeon_seleced(self, new_selected_dungeon):
         self.current_dungeon_selected = new_selected_dungeon
-        self.current_dungeon_monster: Dungeon_Monster = dungeon_monster_list[self.current_dungeon_selected][self.beaten_dungeon_monster[self.current_dungeon_selected] - 1]
+        self.current_dungeon_monster: Dungeon_Monster = dungeon_monster_list[self.current_dungeon_selected][self.character.dungeon_completed[self.current_dungeon_selected] - 1]
         self.current_dungeon_focused = not self.current_dungeon_focused
     
     def __draw_first_dungeon_window(self, canvas, mouse_pos):
@@ -76,7 +71,7 @@ class Dungeon_Window:
         pos_1 = (first_dungeon_window.x + first_dungeon_window.width / 2, first_dungeon_window.y + first_dungeon_window.height - 50)
         self.button_d1.rect.center = pos_1
         self.button_d1.center_pos = pos_1
-        self.button_d1.set_text(f"{self.beaten_dungeon_monster[DUNGEON_1]}/{max_dungeon_monster}")
+        self.button_d1.set_text(f"{self.character.dungeon_completed[DUNGEON_1]}/{max_dungeon_monster}")
 
         # second dungeon window 
 
@@ -87,7 +82,7 @@ class Dungeon_Window:
         pos_2 = (second_dungeon_window.x + second_dungeon_window.width / 2, second_dungeon_window.y + second_dungeon_window.height - 50)
         self.button_d2.rect.center = pos_2
         self.button_d2.center_pos = pos_2
-        self.button_d2.set_text(f"{self.beaten_dungeon_monster[DUNGEON_2]}/{max_dungeon_monster}")
+        self.button_d2.set_text(f"{self.character.dungeon_completed[DUNGEON_2]}/{max_dungeon_monster}")
 
         # third dungeon window
 
@@ -98,7 +93,7 @@ class Dungeon_Window:
         pos_3 = (third_dungeon_window.x + third_dungeon_window.width / 2, third_dungeon_window.y + third_dungeon_window.height - 50)
         self.button_d3.rect.center = pos_3
         self.button_d3.center_pos = pos_3
-        self.button_d3.set_text(f"{self.beaten_dungeon_monster[DUNGEON_3]}/{max_dungeon_monster}")
+        self.button_d3.set_text(f"{self.character.dungeon_completed[DUNGEON_3]}/{max_dungeon_monster}")
 
     def __draw_specific_dungeon_window(self, canvas, mouse_pos):
         specific_window = create_rectangle(canvas, MAIN_START + MAIN_END / 2 - 400, main_side_padding + specific_offset, 800, 800, 0, "gray")
@@ -142,7 +137,6 @@ class Dungeon_Window:
 
             if self.fight_started:
                 self.fight_window.draw(canvas, mouse_pos)
-
 
     def handle_events(self, event, mouse_pos, character):
         if self.character != character:

@@ -40,6 +40,12 @@ DANGEROUS_QUEST_TYPE = "dangerous_quest_type"
 SAVE_FILE_PATH = "data/data.json"
 PIXELIFY_FONT_PATH = "font/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf"
 
+# dungeons
+
+DUNGEON_1 = "Dungeon 1"
+DUNGEON_2 = "Dungeon 2"
+DUNGEON_3 = "Dungeon 3"
+
 # class types
 
 WARRIOR = "warrior"

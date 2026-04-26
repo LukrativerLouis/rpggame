@@ -17,6 +17,7 @@ class Game():
         pygame.init()
         self.is_web = sys.platform == "emscripten"
         self.settings = Settings()
+        self.character: Character = None
         self.is_fullscreen = False
 
         if self.is_web:
@@ -35,7 +36,6 @@ class Game():
 
         self.character_list: list[Character] = self.save_service.character_list
         self.menu = Menu(self.settings, self)
-        self.character: Character = None
 
         if self.is_fullscreen:
             self.toggle_fullscreen(no_toggle = True)
@@ -79,11 +79,17 @@ class Game():
         btn_character = Button(position = (100, 170), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
         btn_shop = Button(position = (100, 240), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
         btn_dungeon = Button(position = (100, 310), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
-        btn_back = Button(position=(100, 925), size=(100, 50), text="Back", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.menu.change_menu_state(CHARACTER_SLOTS_STATE))
+        btn_back = Button(position=(100, 925), size=(100, 50), text="Back", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.back_button())
         btn_quit = Button(position=(100, 995), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
         #btn_test = Button(position=(100, 1050), size=(100, 40), text="Test", color=[200, 50, 50], func= lambda: self.set_specific_window_size(1280, 720))
 
         self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_back, btn_quit]
+
+    def back_button(self):
+        self.quest_window.close_dialog_window()
+        self.dungeon_window.fight_completed()
+        self.save_service.save_progress(self)
+        self.menu.change_menu_state(CHARACTER_SLOTS_STATE)
 
     def set_items_to_visible(self, item_list):
         for item in item_list:
@@ -199,6 +205,8 @@ class Game():
             self.main_window_state = new_window_state
 
     def sync_character_to_ui(self):
+        self.save_service.load_progress()
+
         if not self.character:
             return
 

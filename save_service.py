@@ -32,7 +32,8 @@ class Save_Service:
             "forced_width": game.settings.forced_width,
             "forced_height": game.settings.forced_height,
             "toggle_fullscreen": game.is_fullscreen,
-            "language": game.settings.language
+            "language": game.settings.language,
+            "dungeon_completed": game.character.dungeon_completed,
         }
         
         data_string = json.dumps(raw_data, indent=4)
@@ -72,6 +73,7 @@ class Save_Service:
                 self.game.settings.forced_height = data.get("forced_height")
                 self.game.is_fullscreen = data.get("toggle_fullscreen")
                 self.game.settings.language = data.get("language")
+                self.game.character.dungeon_completed = data.get("dungeon_completed")
 
         except FileNotFoundError:
             print("File not found")

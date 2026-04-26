@@ -1,4 +1,5 @@
 from character import *
+from settings import *
 
 class Dungeon_Monster():
     def __init__(self, name, description, class_type, gold, experience, level, strength, dexterity, endurance, precision, armor, max_health, item = None):
@@ -18,10 +19,6 @@ class Dungeon_Monster():
 
     def reset_enemy(self):
         self.enemy = Enemy(self.enemy.class_type, self.gold, self.experience, self.enemy_level, self.enemy_strength, self.enemy_dexterity, self.enemy_endurance, self.enemy_precision, self.enemy_armor, self.enemy_max_health)
-
-DUNGEON_1 = "Dungeon 1"
-DUNGEON_2 = "Dungeon 2"
-DUNGEON_3 = "Dungeon 3"
 
 dungeon_monster_list = {
     DUNGEON_1: [

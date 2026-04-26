@@ -1,7 +1,6 @@
 from settings import *
 from character import *
 from fight_window import *
-from quest import *
 from utils import *
 
 class Quest_Window:
@@ -45,7 +44,7 @@ class Quest_Window:
             self.selected_quest = None
             self.selected_quest_index = -1
     
-    def __close_dialog_window(self, simple_close = True):
+    def close_dialog_window(self, simple_close = True):
         self.show_dialog_window = False
         if not simple_close:
             self.selected_quest = None
@@ -69,7 +68,7 @@ class Quest_Window:
         return [button_quest_first, button_quest_second, button_quest_third]
 
     def __create_dialog_window_buttons(self):
-        button_close = Button(position = (1870, 50), size = (50, 50), text = "x", color = [255, 0, 0],change_color = [255, 50, 50], func = lambda: self.__close_dialog_window(False))
+        button_close = Button(position = (1870, 50), size = (50, 50), text = "x", color = [255, 0, 0],change_color = [255, 50, 50], func = lambda: self.close_dialog_window(False))
         button_start_quest = Button(position = (1400, INITIAL_SCREEN_HEIGHT - 100), size = (150, 50), text = "Start Quest", color = [0, 255, 0],change_color = [50, 255, 50], func = lambda: self.__start_quest())
 
         return [button_close, button_start_quest]
@@ -87,7 +86,7 @@ class Quest_Window:
             self.start_fight_early = False
             self.countdown_bar_total_time = self.selected_quest.duration
             self.countdown_bar_start_time = pygame.time.get_ticks()
-            self.__close_dialog_window(True)
+            self.close_dialog_window(True)
         else:
             return
 

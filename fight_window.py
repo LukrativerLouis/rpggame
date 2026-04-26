@@ -2,7 +2,6 @@ import pygame
 from random import shuffle
 from utils import *
 from character import *
-from quest import *
 
 class Fight_Window:
     def __init__(self, gold, experience, item, enemy, character: Character, completed_function, completed_function_winning):
