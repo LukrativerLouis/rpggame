@@ -11,23 +11,22 @@ class Character:
         self.required_experience = CHARACTER_BASE_XP
         self.level = level
         self.damage = 10
-        self.physical_damage = 0
-        self.magic_damage = 0
+        self.strength = 0
+        self.dexterity = 0
+        self.endurance = 0
+        self.precision = 0
         self.armor = 0
-        self.magic_resist = 0
         self.class_type = WARRIOR
         self.max_health = 10
         self.current_health = self.max_health
-        self.crit_chance = 0
-        self.crit_damage = 0
-        self.speed = 0
         self.attack_score = 0
         self.base_character_value_list = {
-            "physical_damage": 0,
-            "magic_damage": 0,
-            "armor": 0,
-            "magic_resist": 0
+            "strength": 0,
+            "dexterity": 0,
+            "endurance": 0,
+            "precision": 0
         }
+        self.dungeon_completed = [1, 1, 1]
         self.inventory: list[Item] = []
         self.equipment: list[Item] = []
         self.shop_items: list[Item] = []
@@ -38,7 +37,6 @@ class Character:
         self.experience += new_exp
 
     def check_level_up(self):
-
         if self.required_experience != self.calculate_required_exp():
             self.required_experience = self.calculate_required_exp()
 
@@ -61,10 +59,11 @@ class Character:
         if self.equipment:
             for item in self.equipment:
                 if item not in self.item_stats_calculated_list:
-                    self.physical_damage += item.physical_damage
-                    self.magic_damage += item.magic_damage
+                    self.strength += item.strength
+                    self.dexterity += item.dexterity
+                    self.endurance += item.endurance
+                    self.precision += item.precision
                     self.armor += item.armor
-                    self.magic_resist += item.magic_resist
                     self.item_stats_calculated_list.append(item)
             if self.equipment != self.item_stats_calculated_list:
                 self.clear_character_stats()
@@ -74,19 +73,19 @@ class Character:
         self.calculate_damage()
         
     def clear_character_stats(self):
-        self.physical_damage, self.magic_damage, self.armor, self.magic_resist = self.get_base_character_values()
+        self.strength, self.dexterity, self.endurance, self.precision = self.get_base_character_values()
         self.item_stats_calculated_list.clear()
         self.calculate_player_stats()
 
     def get_base_character_values(self):
-        return self.base_character_value_list["physical_damage"], self.base_character_value_list["magic_damage"], self.base_character_value_list["armor"], self.base_character_value_list["magic_resist"]
+        return self.base_character_value_list["strength"], self.base_character_value_list["dexterity"], self.base_character_value_list["endurance"], self.base_character_value_list["precision"]
     
     def calculate_damage(self):
         if self.class_type:
             if self.class_type == WARRIOR or self.class_type == ARCHER:
-                self.damage = self.physical_damage
+                self.damage = 1
             elif self.class_type == MAGE:
-                self.damage = self.magic_damage
+                self.damage = 1
 
     # dictionary stuff
 
@@ -124,12 +123,15 @@ class Character:
         return char
 
 class Enemy:
-    def __init__(self, class_type, level = 1, physical_damage = 1, magic_damage = 1, max_health = 10):
+    def __init__(self, class_type, level = 1, strength = 0, dexterity = 0, endurance = 0, precision = 0, armor = 0, max_health = 10):
         self.class_type = class_type
         self.level = level
         self.damage = 0
-        self.physical_damage = physical_damage
-        self.magic_damage = magic_damage
+        self.strength = strength
+        self.dexterity = dexterity
+        self.endurance = endurance
+        self.precision = precision
+        self.armor = armor
         self.max_health = max_health
         self.current_health = max_health
         self.attack_score = 0
@@ -139,6 +141,6 @@ class Enemy:
     def calculate_damage(self):
         if self.class_type:
             if self.class_type == WARRIOR or self.class_type == ARCHER:
-                self.damage = self.physical_damage
+                self.damage = 1
             elif self.class_type == MAGE:
-                self.damage = self.magic_damage
+                self.damage = 1

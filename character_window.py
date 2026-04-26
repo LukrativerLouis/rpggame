@@ -94,20 +94,22 @@ class Character_Blueprint:
         # damage
         show_text(canvas, f"Damage: {self.character.damage}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 25)
 
-        # physical damage
-        show_text(canvas, f"Physical Damage: {self.character.physical_damage}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 50)
+        # strength
+        show_text(canvas, f"Strength: {self.character.strength}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 50)
 
-        # magic damage
-        show_text(canvas, f"Magic Damage: {self.character.magic_damage}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 75)
+        # dexterity
+        show_text(canvas, f"Dexterity: {self.character.dexterity}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 75)
+
+        # endurance
+        show_text(canvas, f"Endurance: {self.character.endurance}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 75)
+
+        # precision
+        show_text(canvas, f"Precision: {self.character.precision}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 75)
 
         # armor
         show_text(canvas, f"Armor: {self.character.armor}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 100)
 
-        # magic resist
-        show_text(canvas, f"Magic Resist: {self.character.magic_resist}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 125)
-
-        # tooltip
-
+        # exp tooltip
         if self.show_exp_bar_tooltips and active_item == None:
             create_tooltip(canvas, exp_bar.x + exp_bar.width / 2 - 30, exp_bar.y + exp_bar.height + spacer_padding, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "white", "gray")
 

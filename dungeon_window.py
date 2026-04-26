@@ -43,6 +43,7 @@ class Dungeon_Window:
         self.specific_dungeon_buttons = [self.btn_start_fight, self.btn_close_spec]
 
     def __fight_completed(self):
+        self.current_dungeon_focused = False
         self.fight_started = False
         self.fight_window = None
 

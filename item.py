@@ -3,7 +3,7 @@ from settings import *
 import random
 
 class Item():
-    def __init__(self, id, x, y, width, height, name, physical_damage, magic_damage, armor, magic_resist, gold_value, type, sub_type, visible):
+    def __init__(self, id, x, y, width, height, name, strength, dexterity, endurance, precision, armor, gold_value, type, sub_type, visible):
         self.id = id
         self.x = x
         self.y = y
@@ -14,10 +14,11 @@ class Item():
         #self.image = image
         #self.rect = image.get_rect(topleft = (x, y))
         self.name = name
-        self.physical_damage = physical_damage
-        self.magic_damage = magic_damage
+        self.strength = strength
+        self.dexterity = dexterity
+        self.endurance = endurance
+        self.precision = precision
         self.armor = armor
-        self.magic_resist = magic_resist
         self.gold_value = gold_value
         self.sell_value = self.get_sell_value()
         self.type = type
@@ -47,10 +48,11 @@ class Item():
             "width": self.width,
             "height": self.height,
             "name": self.name,
-            "physical_damage": self.physical_damage,
-            "magic_damage": self.magic_damage,
+            "strength": self.strength,
+            "dexterity": self.dexterity,
+            "endurance": self.endurance,
+            "precision": self.precision,
             "armor": self.armor,
-            "magic_resist": self.magic_resist,
             "gold_value": self.gold_value,
             "type": self.type,
             "sub_type": self.sub_type,
@@ -115,12 +117,11 @@ LIST_OF_EQUIPMENT_TYPES = [
 SHOP = "shop"
 INVENTORY = "inventory"
 
-
 item_list = [
-    {"name": "Wooden Sword", "physical_damage": 1, "magic_damage": 0, "armor": 1, "magic_resist": 0, "type": WEAPON, "sub_type": SWORD,},
-    {"name": "Cracked Wooden Sword", "physical_damage": 0.5, "magic_damage": 0, "armor": 0, "magic_resist": 0, "type": WEAPON, "sub_type": SWORD}
+    {"name": "Wooden Sword", "strength": 1, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Cracked Wooden Sword", "strength": 0.5, "dexterity": 0, "endurance": 0.5, "precision": 0, "armor": 0, "type": WEAPON, "sub_type": SWORD}
 ]
 
 def getItemDetailsRandom():
     random_item = random.choice(item_list)
-    return random.randint(0, 10000), random_item["name"], random_item["physical_damage"], random_item["magic_damage"], random_item["armor"], random_item["magic_resist"], random_item["type"], random_item["sub_type"]
+    return random.randint(0, 10000), random_item["name"], random_item["strength"], random_item["dexterity"], random_item["endurance"], random_item["precision"], random_item["armor"], random_item["type"], random_item["sub_type"]
