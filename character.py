@@ -18,6 +18,9 @@ class Character:
         self.endurance = 0
         self.precision = 0
         self.armor = 0
+        self.initiative = 0
+        self.weapon_p = 1
+        self.weapon_s = 1
         self.crit_chance = 0
         self.crit_multiplier = 0
         self.class_type = WARRIOR
@@ -102,20 +105,26 @@ class Character:
         return self.base_character_value_list["strength"], self.base_character_value_list["dexterity"], self.base_character_value_list["endurance"], self.base_character_value_list["precision"]
     
     def calculate_fighting_stats(self):
-        if self.class_type:
-            if self.class_type == WARRIOR:
-                self.fighting_power = (self.strength * 0.8) + (self.dexterity * 0.2)
-                self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_WARRIOR)
-            elif self.class_type == ARCHER:
-                self.fighting_power = (self.strength * 0.3) + (self.dexterity * 0.7)
-                self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_ARCHER)
-            elif self.class_type == MAGE:
-                self.fighting_power = 1
-                self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_MAGE)
-            
-            # all classes
-            self.crit_chance = min(50, self.precision / int(1 + self.level * 0.5) * CRIT_CHANCE_SCALING)
-            self.crit_multiplier = CRIT_MULITPLIER_BASE + (self.precision / int(1 + self.level * 0.1) * CRIT_MULITPLIER_SCALING)
+        if self.class_type == WARRIOR:
+            self.fighting_power = (self.strength * 0.8) + (self.dexterity * 0.2)
+            self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_WARRIOR)
+        elif self.class_type == ARCHER:
+            self.fighting_power = (self.strength * 0.3) + (self.dexterity * 0.7)
+            self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_ARCHER)
+        elif self.class_type == MAGE:
+            self.fighting_power = 1
+            self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_MAGE)
+        
+        # all classes
+        for item in self.equipment:
+            if item.type == WEAPON:
+                self.weapon_p = item.weapon_p
+                self.weapon_s = item.weapon_s
+
+        self.current_health = self.max_health
+        self.initiative = self.dexterity + random.randint(1, 10)
+        self.crit_chance = min(50, self.precision / int(1 + self.level * 0.5) * CRIT_CHANCE_SCALING)
+        self.crit_multiplier = CRIT_MULITPLIER_BASE + (self.precision / int(1 + self.level * 0.1) * CRIT_MULITPLIER_SCALING)
 
     # dictionary stuff
 
@@ -164,17 +173,30 @@ class Enemy:
         self.precision = precision
         self.armor = armor
         self.max_health = max_health
-        self.current_health = max_health
+        self.current_health = self.max_health
+        self.weapon_p = 1
+        self.weapon_s = 1
+        self.initiative = 0
         self.attack_score = 0
 
-        self.calculate_damage()
+        self.calculate_fighting_stats()
 
-    def calculate_damage(self):
-        if self.class_type:
-            if self.class_type == WARRIOR or self.class_type == ARCHER:
-                self.damage = 1
-            elif self.class_type == MAGE:
-                self.damage = 1
+    def calculate_fighting_stats(self):
+        if self.class_type == WARRIOR:
+            self.fighting_power = (self.strength * 0.8) + (self.dexterity * 0.2)
+            #self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_WARRIOR)
+        elif self.class_type == ARCHER:
+            self.fighting_power = (self.strength * 0.3) + (self.dexterity * 0.7)
+            #self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_ARCHER)
+        elif self.class_type == MAGE:
+            self.fighting_power = 1
+            #self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_MAGE)
+            
+        # all classes
+        self.current_health = self.max_health
+        self.initiative = self.dexterity + random.randint(1, 10)
+        self.crit_chance = min(50, self.precision / int(1 + self.level * 0.5) * CRIT_CHANCE_SCALING)
+        self.crit_multiplier = CRIT_MULITPLIER_BASE + (self.precision / int(1 + self.level * 0.1) * CRIT_MULITPLIER_SCALING)
 
     def to_dict(self):
         return self.__dict__.copy()
@@ -262,3 +284,7 @@ def get_quest(character_level):
 def getQuestDetails():
     random_quest = random.choice(quests_list["quests"])
     return random_quest["title"], random_quest["description"]
+
+def calculate_player_damage(player, enemy):
+    weapon_roll = random.randint(int(player.weapon_p * player.weapon_s), player.weapon_p)
+    return weapon_roll + (1 + player.fighting_power)

@@ -26,8 +26,8 @@ class Shop_Window():
                 self.item_holder_list.append(Item_Holder(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, "blue", SHOP))
 
     def create_new_item(self, item_holder):
-        id, name, strength, dexterity, endurance, precision, armor, type, sub_type = getItemDetailsRandom()
-        item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, strength, dexterity, endurance, precision, armor, self.character.get_item_gold_value(), type, sub_type, False)
+        id, name, strength, dexterity, endurance, precision, armor, weapon_p, weapon_s, type, sub_type = getItemDetailsRandom()
+        item = Item(id, item_holder.rect.center[0], item_holder.rect.center[1], ITEM_SIZE, ITEM_SIZE, name, strength, dexterity, endurance, precision, armor, weapon_p, weapon_s, self.character.get_item_gold_value(), type, sub_type, False)
 
         self.character.shop_items.append(item)
 

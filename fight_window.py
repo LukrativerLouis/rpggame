@@ -73,12 +73,22 @@ class Fight_Window:
         self.attack_cooldown *= 0.5
 
     def __simulate_fight(self):
+
+        self.character.calculate_fighting_stats()
+        self.enemy.calculate_fighting_stats()
+
         temp_character_health = self.character.current_health
         temp_enemy_health = self.enemy.current_health
 
         players = [CHARACTER, ENEMY]
-        shuffle(players)
-        starter = players[0]
+        starter = None
+        if self.character.initiative > self.enemy.initiative:
+            starter = CHARACTER
+        elif self.character.initiative < self.enemy.initiative:
+            starter = ENEMY
+        else:
+            shuffle(players)
+            starter = players[0]
 
         simulate_character_score = 0
         simulate_enemy_score = 0
@@ -92,13 +102,15 @@ class Fight_Window:
                 attacker = starter
 
             if attacker == CHARACTER:
-                temp_enemy_health -= self.character.damage
+                damage = calculate_player_damage(self.character, self.enemy)
+                temp_enemy_health -= damage
                 simulate_character_score += 1
-                self.battle_log.append((CHARACTER, self.character.damage))
+                self.battle_log.append((CHARACTER, damage))
             else:
-                temp_character_health -= self.enemy.damage
+                damage = calculate_player_damage(self.enemy, self.character)
+                temp_character_health -= damage
                 simulate_enemy_score += 1
-                self.battle_log.append((ENEMY, self.enemy.damage))
+                self.battle_log.append((ENEMY, damage))
         
         self.fight_won = temp_enemy_health <= 0
 
@@ -155,8 +167,10 @@ class Fight_Window:
         dt = (current_time - self.last_frame_time) / 1000.0
         self.last_frame_time = current_time
 
-        character_constant_speed = self.enemy.damage
-        enemy_constant_speed = self.character.damage
+        ANIMATION_DURATION = 3
+
+        character_constant_speed = self.character.max_health / ANIMATION_DURATION
+        enemy_constant_speed = self.enemy.max_health / ANIMATION_DURATION
 
         # Character health Animation
         if self.character_visual_health > self.character.current_health:
@@ -189,7 +203,10 @@ class Fight_Window:
         # character stats
         character_stats_y = base_y + stats_offset
         create_rectangle(canvas, character_rect_x, character_stats_y, player_rect_width, 300, 0, "azure3")
-        show_text(canvas, f"Damage: {self.character.damage}", 300 + self.health_bar_length / 2, character_stats_y + 20, "azure4", True)
+        show_text(canvas, f"Strength: {self.character.strength}", 300 + self.health_bar_length / 2, character_stats_y + 20, "azure4", True)
+        show_text(canvas, f"Dexterity: {self.character.dexterity}", 300 + self.health_bar_length / 2, character_stats_y + 40, "azure4", True)
+        show_text(canvas, f"Endurance: {self.character.endurance}", 300 + self.health_bar_length / 2, character_stats_y + 60, "azure4", True)
+        show_text(canvas, f"Precision: {self.character.precision}", 300 + self.health_bar_length / 2, character_stats_y + 80, "azure4", True)
 
         # Enemy rect
         create_rectangle(canvas, enemy_rect_x, base_y, player_rect_width, player_rect_height, player_rect_border, "blue3")
@@ -210,7 +227,10 @@ class Fight_Window:
         # enemy stats
         enemy_stats_y = base_y + stats_offset
         create_rectangle(canvas, enemy_rect_x, enemy_stats_y, player_rect_width, 300, 0, "azure3")
-        show_text(canvas, f"Damage: {self.enemy.damage}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 20, "azure4", True)
+        show_text(canvas, f"Strength: {self.enemy.strength}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 20, "azure4", True)
+        show_text(canvas, f"Dexterity: {self.enemy.dexterity}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 40, "azure4", True)
+        show_text(canvas, f"Endurance: {self.enemy.endurance}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 60, "azure4", True)
+        show_text(canvas, f"Precision: {self.enemy.precision}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 80, "azure4", True)
 
         if not self.start_fight:
             # cooldown before fight 

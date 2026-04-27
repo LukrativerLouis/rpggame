@@ -51,7 +51,7 @@ class Dungeon_Window:
         if self.fight_window is None:
             self.character.current_health = self.character.max_health
             self.character.attack_score = 0
-            self.fight_window = Fight_Window(self.current_dungeon_monster.gold, self.current_dungeon_monster.experience, None, self.current_dungeon_monster.enemy, self.character, lambda: self.__fight_completed(), lambda: self.__fight_competed_winning())
+            self.fight_window = Fight_Window(self.current_dungeon_monster.gold, self.current_dungeon_monster.experience, None, self.current_dungeon_monster.enemy, self.character, lambda: self.fight_completed(), lambda: self.__fight_competed_winning())
 
     def __toggle_dungeon_seleced(self, new_selected_dungeon):
         self.current_dungeon_selected = new_selected_dungeon
