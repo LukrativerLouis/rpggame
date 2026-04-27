@@ -103,8 +103,9 @@ class System():
             return
         
         if not already_saved:
-            self.save_service.save_data(self.game.all_shops_data, self.game.character_list, self.game.character.dungeon_completed, self.game.quest_window.quest_list)
-            self.save_service.save_options(self.settings)
+            if self.game:
+                self.save_service.save_data(self.game.all_shops_data, self.game.character_list, self.game.character.dungeon_completed, self.game.quest_window.quest_list)
+                self.save_service.save_options(self.settings)
         self.running = False
 
     def toggle_fullscreen(self, is_fullscreen = None, no_toggle = False):
