@@ -72,6 +72,10 @@ class Save_Service:
         for slot_shop in game.all_shops_data:
             shop_data_to_save.append([self.save_to_dict(item) for item in slot_shop])
 
+        active_slot = self.system.menu.character_slot
+        if game.character_list[active_slot]:
+            game.character_list[active_slot].quest_list = game.quest_window.quest_list
+
         raw_data = {
             "character_list": [ self.save_to_dict(char) for char in (game.character_list or [])],
             "shop_list": shop_data_to_save,
@@ -91,7 +95,7 @@ class Save_Service:
                 decoded_data = base64.b64decode(encoded).decode()
                 data = json.loads(decoded_data)
 
-                char_dicts = data.get("character_list", [None, None, None])
+                char_dicts = data.get("character_list", [None for _ in range(3)])
                 self.character_list = []
                 for d in char_dicts:
                     if d is not None:
@@ -99,23 +103,28 @@ class Save_Service:
                     else:
                         self.character_list.append(None)
 
-                    item_slots = data.get("shop_list", [[], [], []])
-                    self.shop_list = [[], [], []]
-                    
-                    for i in range(len(item_slots)):
-                        for item_dict in item_slots[i]:
-                            if item_dict:
-                                self.shop_list[i].append(Item.from_dict(item_dict))
+                item_slots = data.get("shop_list", [[] for _ in range(3)])
+                self.shop_list = [[] for _ in range(3)]
+                
+                for i in range(len(item_slots)):
+                    for item_dict in item_slots[i]:
+                        if item_dict:
+                            self.shop_list[i].append(Item.from_dict(item_dict))
 
                 self.dungeon_completed = data.get("dungeon_completed")
 
+                while len(self.character_list) < 3:
+                    self.character_list.append(None)
+                while len(self.shop_list) < 3:
+                    self.shop_list.append([])
+
         except FileNotFoundError:
             print("File not found")
-            self.shop_list = [[], [], []]
+            self.shop_list = [[] for _ in range(3)]
 
         except Exception as e:
             print(f"Error while loading the save file: {e}")
-            self.shop_list = [[], [], []]
+            self.shop_list = [[] for _ in range(3)]
 
     def save_to_dict(self, obj):
         try:

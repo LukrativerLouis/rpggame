@@ -154,6 +154,7 @@ class System():
                     if char is not None and self.menu.character_list[i] is None:
                         self.menu.character_list[i] = char
                         self.save_service.character_list[i] = char
+                        self.save_service.character_list[i].shop_items = self.save_service.shop_list[i]
 
             if new_state == GAME_STATE:
                 self.game = Game(self, self.save_service.character_list, self.save_service.character_list[self.menu.character_slot], self.save_service.shop_list[self.menu.character_slot], self.save_service.shop_list)

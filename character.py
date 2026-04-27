@@ -36,6 +36,7 @@ class Character:
         self.equipment: list[Item] = []
         self.shop_items: list[Item] = []
         self.item_stats_calculated_list: list[Item] = []
+        self.quest_list: list[Quest] = []
 
     def adjust_gold_and_exp(self, new_gold = 0, new_exp = 0):
         self.gold += new_gold
@@ -100,6 +101,7 @@ class Character:
         data["equipment"] = [item.to_dict() for item in self.equipment]
         data["shop_items"] = [item.to_dict() for item in self.shop_items]
         data["item_stats_calculated_list"] = None
+        data["quest_list"] = [q.to_dict() for q in self.quest_list]
         
         return data
     
@@ -108,6 +110,7 @@ class Character:
         inventory_data = data.pop("inventory", [])
         equipment_data = data.pop("equipment", [])
         shop_data = data.pop("shop_items", [])
+        quest_data = data.pop("quest_list", [])
 
         char = cls(
             name = data["name"],
@@ -122,6 +125,7 @@ class Character:
         char.inventory = [Item.from_dict(i) for i in inventory_data]
         char.equipment = [Item.from_dict(i) for i in equipment_data]
         char.shop_items = [Item.from_dict(i) for i in shop_data]
+        char.quest_list = [Quest.from_dict(q) for q in quest_data]
 
         return char
 
@@ -180,10 +184,7 @@ class Quest():
 
     def to_dict(self):
         data = self.__dict__.copy()
-
-        if self.enemy:
-            data["enemy"] = self.enemy.to_dict()
-
+        data["enemy"] = self.enemy.to_dict() if self.enemy else None
         return data
     
     @classmethod

@@ -174,16 +174,20 @@ class Menu:
 
         self.character_slot_buttons[0].draw(canvas, mouse_pos)
 
-    def create_character_and_change_state(self, character_slot = None):
-        if not character_slot and len(self.character_add_text_box.text) > 0:
+    def create_character_and_change_state(self, character_slot=None):
+        if character_slot is None:
             chosen_name = self.character_add_text_box.text
-            new_char = Character(chosen_name, None, 1, 1)
-            self.character_list[self.character_slot] = new_char
+            if len(chosen_name) > 0:
+                new_char = Character(chosen_name, None, 1, 1)
+                idx = self.character_slot
+                
+                self.character_list[idx] = new_char
+                self.system.save_service.character_list[idx] = new_char
+                self.system.save_service.shop_list[idx] = [] 
         else:
+            # Bestehender Charakter ausgewählt
             self.character_slot = character_slot
-            self.character_slot = self.character_slot
-            self.character_list[self.character_slot] = self.character_list[self.character_slot]
-
+            
         self.system.switch_menu_state(GAME_STATE)
 
     def handle_character_slot_events(self, event, mouse_pos):

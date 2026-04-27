@@ -28,11 +28,13 @@ class Quest_Window:
         self.create_quests()
 
     def create_quests(self):
-        quest_list = []
-        for i in range(3):
-            quest_list.append(get_quest(self.character.level))
+        if self.character.quest_list:
+            self.quest_list = list(self.character.quest_list)
+        else:
+            self.quest_list = [get_quest(self.character.level) for _ in range(3)]
+            self.character.quest_list = self.quest_list
         
-        self.quest_list = quest_list
+        print(f"Erste Quest{self.quest_list[0].title}")
 
     def __toggle_dialog_window(self, show_quest_index = -1):
         current_selected_quest = self.quest_list[show_quest_index]
@@ -94,6 +96,7 @@ class Quest_Window:
 
     def __quest_completed(self):
         self.quest_list[self.selected_quest_index] = get_quest(self.character.level)
+        self.character.quest_list = self.quest_list
 
         self.show_dialog_window = False
         self.quest_started = False
