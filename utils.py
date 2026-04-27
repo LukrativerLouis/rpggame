@@ -21,6 +21,7 @@ class Button:
         
         self.rect = pygame.Rect(0, 0, size[0], size[1])
         self.rect.center = position
+        self.text = ""
         
         self.shrink_scale = 0.95
 

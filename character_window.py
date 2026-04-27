@@ -95,37 +95,45 @@ class Character_Blueprint:
         stat_rectangle = create_rectangle(canvas, MAIN_START + main_side_padding + ITEM_HOLDER_SIZE + spacer_padding, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 3 , ITEM_HOLDER_SIZE * 2 + spacer_padding, ITEM_HOLDER_SIZE, 2, "red")
 
         # health
-        show_text(canvas, f"Health: {self.character.max_health}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding - 20)
+        show_text(canvas, f"Health: {self.character.max_health}", stat_rectangle.x + text_padding + 200, stat_rectangle.y + text_padding - 20)
 
         # damage
-        show_text(canvas, f"Damage: {self.character.damage}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 5)
+        show_text(canvas, f"Damage: {self.character.damage}", stat_rectangle.x + text_padding + 200, stat_rectangle.y + text_padding + 5)
 
         # strength
-        show_text(canvas, f"Strength: {self.character.strength}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 30)
+        show_text(canvas, f"Strength: {self.character.strength}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 25)
         self.stat_button_list[0].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 35))
         self.stat_button_list[0].set_function(lambda: self.character.increase_base_stat("strength"))
+        self.stat_button_list[0].text = "strength"
 
         # dexterity
-        show_text(canvas, f"Dexterity: {self.character.dexterity}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 55)
-        self.stat_button_list[1].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 65))
+        show_text(canvas, f"Dexterity: {self.character.dexterity}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 60)
+        self.stat_button_list[1].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 70))
         self.stat_button_list[1].set_function(lambda: self.character.increase_base_stat("dexterity"))
+        self.stat_button_list[1].text = "dexterity"
 
         # endurance
-        show_text(canvas, f"Endurance: {self.character.endurance}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 80)
-        self.stat_button_list[2].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 95))
+        show_text(canvas, f"Endurance: {self.character.endurance}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 95)
+        self.stat_button_list[2].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 105))
         self.stat_button_list[2].set_function(lambda: self.character.increase_base_stat("endurance"))
+        self.stat_button_list[2].text = "endurance"
 
         # precision
-        show_text(canvas, f"Precision: {self.character.precision}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 105)
-        self.stat_button_list[3].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 125))
+        show_text(canvas, f"Precision: {self.character.precision}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 130)
+        self.stat_button_list[3].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 140))
         self.stat_button_list[3].set_function(lambda: self.character.increase_base_stat("precision"))
+        self.stat_button_list[3].text = "precision"
 
         for button in self.stat_button_list:
             button.draw(canvas, mouse_pos)
 
+        for button in self.stat_button_list:
+            if button.is_hovered:
+                create_tooltip(canvas, button.rect.centerx, button.rect.centery + 40, 100, 40, f"Cost: {self.character.get_stat_price(button.text)}g", "white", "gray")
+
         # exp tooltip
         if self.show_exp_bar_tooltips and active_item == None:
-            create_tooltip(canvas, exp_bar.centerx, exp_bar.centery + 35, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "white", "gray")
+            create_tooltip(canvas, exp_bar.centerx, exp_bar.centery + 35, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "lightgreen", "gray")
 
     def handle_events(self, event, mouse_pos):
         for button in self.stat_button_list:
