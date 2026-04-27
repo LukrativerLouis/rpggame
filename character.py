@@ -80,7 +80,8 @@ class Character:
         
     def clear_character_stats(self):
         self.strength, self.dexterity, self.endurance, self.precision = self.get_base_character_values()
-        self.item_stats_calculated_list.clear()
+        if self.item_stats_calculated_list:
+            self.item_stats_calculated_list.clear()
         self.calculate_player_stats()
 
     def get_base_character_values(self):

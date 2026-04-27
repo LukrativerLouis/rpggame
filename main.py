@@ -162,6 +162,8 @@ class System():
             if new_state == GAME_STATE:
                 self.game = Game(self, self.save_service.character_list, self.save_service.character_list[self.menu.character_slot], self.save_service.shop_list[self.menu.character_slot], self.save_service.shop_list)
                 self.game.character = self.save_service.character_list[self.menu.character_slot]
+                self.game.character.clear_character_stats()
+
         self.menu_state = new_state
 
     def draw(self, mouse_pos):
@@ -188,6 +190,8 @@ class System():
         elif self.menu_state == OPTIONS_STATE:
             self.menu.draw_options(self.canvas, mouse_pos)
 
+        elif self.menu_state == GAME_STATE:
+            self.game.draw(self.canvas, mouse_pos)
 
     async def run(self):
         
@@ -227,9 +231,6 @@ class System():
 
 
             self.draw(mouse_pos)
-
-            if self.menu_state == GAME_STATE:
-                self.game.draw(self.canvas, mouse_pos)
 
             self.screen.fill((20, 20, 20))
 

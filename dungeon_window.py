@@ -138,9 +138,7 @@ class Dungeon_Window:
             if self.fight_started:
                 self.fight_window.draw(canvas, mouse_pos)
 
-    def handle_events(self, event, mouse_pos, character):
-        if self.character != character:
-            self.character = character
+    def handle_events(self, event, mouse_pos):
 
         if self.dungeon_start_buttons is not None:
             if not self.current_dungeon_focused:
