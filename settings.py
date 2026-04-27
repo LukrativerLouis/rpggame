@@ -8,6 +8,7 @@ MAIN_END = 1725
 ITEM_SIZE = 180
 ITEM_HOLDER_SIZE = 200
 GAME_VERSION = "0.1.0.dev"
+WEB_PLATFORM = "emscripten"
 
 MENU_STATE = "menu_state"
 OPTIONS_STATE = "options_state"
@@ -37,7 +38,8 @@ DANGEROUS_QUEST_TYPE = "dangerous_quest_type"
 
 # file paths
 
-SAVE_FILE_PATH = "data/data.json"
+SAVE_FILE_PATH_OPTIONS = "data/options.json"
+SAVE_FILE_PATH_DATA = "data/data.json"
 PIXELIFY_FONT_PATH = "font/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf"
 
 # dungeons
@@ -76,6 +78,7 @@ class Settings:
         self.forced_width = None
         self.forced_height = None
         self.fullscreen_display_resolution = (0,0)
+        self.is_fullscreen = False
         self.language = ENGLISH
         self.fps = FPS
         self.title = "RPG Adventure"

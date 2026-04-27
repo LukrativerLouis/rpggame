@@ -9,6 +9,10 @@ class Shop_Window():
         self.character_blueprint = Character_Blueprint(self.character)
         self.setup_shop_slots()
         self.refresh_buttom = Button(position = (self.start_for_shop_x + ITEM_HOLDER_SIZE + 5 + ITEM_HOLDER_SIZE / 2, self.start_for_shop_y - 50), size = (150, 50), color = (0, 0, 255), text = "reroll items", func = lambda: self.reroll_shop())
+        if self.character.shop_items:
+            self.load_shop_items(self.character.shop_items)
+        else:
+            self.reroll_shop()
 
     def setup_shop_slots(self):
         spacer_padding = 5
@@ -32,6 +36,10 @@ class Shop_Window():
 
     def load_shop_items(self, items):
         self.character.shop_items = items
+
+        for item in self.character.shop_items:
+            if item not in self.main_item_list:
+                self.main_item_list.append(item)
 
         for i, item in enumerate(self.character.shop_items):
             if i < len(self.item_holder_list):

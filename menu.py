@@ -4,9 +4,9 @@ from character import *
 import pygame
 
 class Menu:
-    def __init__(self, settings: Settings, game):
+    def __init__(self, system, settings: Settings):
         self.settings = settings
-        self.game = game
+        self.system = system
         self.character_slot = 0
         self.character_list = None
         self.cursor_focused = False
@@ -36,25 +36,21 @@ class Menu:
         center_x = INITIAL_SCREEN_WIDTH / 2
         center_y = INITIAL_SCREEN_HEIGHT / 2
 
-        start_button = Button(position = (center_x, center_y - height - spacing), size = (width, height), text = "Start", change_color = [150, 150, 150], func= lambda: self.change_menu_state(CHARACTER_SLOTS_STATE))
-        options_button = Button(position = (center_x, center_y), size = (width, height), text = "Options", change_color = [150, 150, 150], func= lambda: self.change_menu_state(OPTIONS_STATE))
-        quit_buttton = Button(position = (center_x, center_y + height + spacing), size = (width, height), text = "Quit", change_color = [150, 150, 150], func= lambda: self.game.quit_game())
+        start_button = Button(position = (center_x, center_y - height - spacing), size = (width, height), text = "Start", change_color = [150, 150, 150], func= lambda: self.system.switch_menu_state(CHARACTER_SLOTS_STATE))
+        options_button = Button(position = (center_x, center_y), size = (width, height), text = "Options", change_color = [150, 150, 150], func= lambda: self.system.switch_menu_state(OPTIONS_STATE))
+        quit_buttton = Button(position = (center_x, center_y + height + spacing), size = (width, height), text = "Quit", change_color = [150, 150, 150], func= lambda: self.system.quit_game())
 
         self.menu_button_list = [start_button, options_button, quit_buttton]
 
     def create_character_slot_buttons(self):
         center_x = INITIAL_SCREEN_WIDTH / 2
-        back_button = Button(position=(center_x, INITIAL_SCREEN_HEIGHT - 100), size=(150, 50), text="Back", change_color= [150, 150, 150], func=lambda: self.change_menu_state(MENU_STATE))
+        back_button = Button(position=(center_x, INITIAL_SCREEN_HEIGHT - 100), size=(150, 50), text="Back", change_color= [150, 150, 150], func=lambda: self.system.switch_menu_state(MENU_STATE))
         self.character_slot_buttons = [back_button]
 
         self.add_buttons = []
         for i in range(3):
             btn = Button(position=(0, 0), size=(50, 50), text="+", change_color= [150, 150, 150], func= lambda idx = i: self.show_text_editor(btn.rect.centerx, btn.rect.centery, idx))
             self.add_buttons.append(btn)
-
-    def change_menu_state(self, new_state):
-        self.show_add_text_editor = False
-        self.game.menu_state = new_state
 
     def create_options_menu_button(self):
         mid_x = self.settings.base_width / 2
@@ -83,8 +79,8 @@ class Menu:
 
 
         fullscreen_toggle = Toggle(pos=(mid_x, mid_y - 170), size=(100, 40), font=get_font(None, 25),
-                                    label="Toggle Fullscreen:", getter = lambda: self.game.is_fullscreen,
-                                    on_toggle=self.game.toggle_fullscreen, text_color= "white")
+                                    label="Toggle Fullscreen:", getter = lambda: self.system.settings.is_fullscreen,
+                                    on_toggle=self.system.toggle_fullscreen, text_color= "white")
         
         music_toggle = Toggle(pos=(mid_x, mid_y - 120), size=(100, 40), font=get_font(None, 25),
                                     label="music:", getter = lambda: self.settings.music_on,
@@ -103,8 +99,8 @@ class Menu:
         self.show_add_text_editor = True
 
     def save_and_close(self, new_state):
-        self.game.save_service.save_progress(self.game)
-        self.change_menu_state(new_state)
+        self.system.save_service.save_options(self.settings, self.system.is_web)
+        self.system.switch_menu_state(new_state)
 
     def apply_resolution(self, res_string):
         try:
@@ -128,7 +124,7 @@ class Menu:
         for slider in self.options_slider:
             slider.draw(canvas)
 
-        current_w, current_h = self.game.screen.get_size()
+        current_w, current_h = self.system.screen.get_size()
         res_string = f"{current_w}x{current_h}"
 
         if res_string in self.resolution_drop_down.item_list:
@@ -143,14 +139,14 @@ class Menu:
         height = 600
         spacing = 20
         
-        num_chars = len(self.game.character_list)
+        num_chars = len(self.character_list)
         total_width = (num_chars * width) + ((num_chars - 1) * spacing)
         start_x = (INITIAL_SCREEN_WIDTH - total_width) / 2
         center_y = (INITIAL_SCREEN_HEIGHT - height) / 2
 
         self.character_slot_list = []
 
-        for i, character in enumerate(self.game.character_list):
+        for i, character in enumerate(self.character_list):
             current_x = start_x + i * (width + spacing)
             
             slot = create_rectangle(canvas, current_x, center_y, width, height, 4, "gray")
@@ -182,16 +178,13 @@ class Menu:
         if not character_slot and len(self.character_add_text_box.text) > 0:
             chosen_name = self.character_add_text_box.text
             new_char = Character(chosen_name, None, 1, 1)
-            self.game.character_list[self.character_slot] = new_char
+            self.character_list[self.character_slot] = new_char
         else:
             self.character_slot = character_slot
-            self.game.character_slot = self.character_slot
-            self.game.character_list[self.character_slot] = self.game.character_list[self.character_slot]
+            self.character_slot = self.character_slot
+            self.character_list[self.character_slot] = self.character_list[self.character_slot]
 
-        self.game.character = self.game.character_list[self.character_slot]
-        self.game.toggle_main_state(DEFAULT_MAIN_WINDOW_STATE)
-        self.game.sync_character_to_ui()
-        self.change_menu_state(GAME_STATE)
+        self.system.switch_menu_state(GAME_STATE)
 
     def handle_character_slot_events(self, event, mouse_pos):
         if not self.character_slot_list:
@@ -211,7 +204,7 @@ class Menu:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.show_add_text_editor = False
         
-        for i, character in enumerate(self.game.character_list):
+        for i, character in enumerate(self.character_list):
             if not character:
                 self.add_buttons[i].handle_event(event, mouse_pos)
             else:
