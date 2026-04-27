@@ -21,8 +21,8 @@ class Save_Service:
         self.toggle_fullscreen = None
         self.language = None
 
-    def save_options(self, settings, is_web):
-        if is_web:
+    def save_options(self, settings):
+        if self.system.is_web:
             return
 
         raw_data = {

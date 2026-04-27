@@ -99,7 +99,7 @@ class Menu:
         self.show_add_text_editor = True
 
     def save_and_close(self, new_state):
-        self.system.save_service.save_options(self.settings, self.system.is_web)
+        self.system.save_service.save_options(self.settings)
         self.system.switch_menu_state(new_state)
 
     def apply_resolution(self, res_string):

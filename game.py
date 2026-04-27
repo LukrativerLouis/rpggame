@@ -52,7 +52,8 @@ class Game():
         if self.system.is_web:
             return
         self.system.save_service.save_data(self)
-        self.system.quit_game()
+        self.system.save_service.save_options(self.system.settings)
+        self.system.quit_game(already_saved = True)
 
     def set_items_to_visible(self, item_list):
         for item in item_list:

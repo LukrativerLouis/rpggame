@@ -98,10 +98,13 @@ class System():
         self.offset_x = (screen_w - new_w) // 2
         self.offset_y = (screen_h - new_h) // 2
     
-    def quit_game(self):
+    def quit_game(self, already_saved = False):
         if self.is_web:
             return
-        self.save_service.save_options(self.settings, self.is_web)
+        
+        if not already_saved:
+            self.save_service.save_data(self.game)
+            self.save_service.save_options(self.settings)
         self.running = False
 
     def toggle_fullscreen(self, is_fullscreen = None, no_toggle = False):
