@@ -90,6 +90,8 @@ class Button:
                 self.rect = self.surf.get_rect(center = self.center_pos)
                 self.update_text_position()
 
+# RECT
+
 def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
     """
     canvas is the screen or surface to draw on -
@@ -104,9 +106,11 @@ def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
     rect = pygame.Rect(x, y, width, height)
     return pygame.draw.rect(canvas, color, rect, thickness)
 
+# TOOLTIP
+
 def create_tooltip(canvas, x, y, width, height, text, text_color, color = "black"):
-    create_rectangle(canvas, x, y, width, height, 0, color)
-    show_text(canvas, text, x + width / 2, y + height / 2, text_color, True)
+    rect = create_rectangle(canvas, x - width / 2, y - height / 2, width, height, 0, color)
+    show_text(canvas, text, rect.centerx, rect.centery, text_color, True)
 
 pygame.font.init()
 

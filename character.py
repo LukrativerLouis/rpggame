@@ -11,14 +11,17 @@ class Character:
         self.experience = 0
         self.required_experience = CHARACTER_BASE_XP
         self.level = level
-        self.damage = 10
+        self.damage = 1
+        self.fighting_power = 0
         self.strength = 0
         self.dexterity = 0
         self.endurance = 0
         self.precision = 0
         self.armor = 0
+        self.crit_chance = 0
+        self.crit_multiplier = 0
         self.class_type = WARRIOR
-        self.max_health = 10
+        self.max_health = 0
         self.current_health = self.max_health
         self.attack_score = 0
         self.base_character_value_list = {
@@ -57,6 +60,17 @@ class Character:
     def get_item_gold_value(self):
         # maybe give type (legendary or common or uncommon or something)
         return self.level
+
+    def increase_base_stat(self, stat):
+        if self.gold - self.get_stat_price(stat) >= 0:
+            self.gold -= self.get_stat_price(stat)
+            self.base_character_value_list[stat] += 1
+            self.clear_character_stats()
+        else:
+            return
+
+    def get_stat_price(self, stat):
+        return CHARACTER_STAT_BASE_PRICE * (1.1 ** self.base_character_value_list[stat])
     
     def calculate_player_stats(self):
         if not self.item_stats_calculated_list:
@@ -76,7 +90,7 @@ class Character:
         elif self.item_stats_calculated_list:
             self.clear_character_stats()
         
-        self.calculate_damage()
+        self.calculate_fighting_stats()
         
     def clear_character_stats(self):
         self.strength, self.dexterity, self.endurance, self.precision = self.get_base_character_values()
@@ -87,12 +101,21 @@ class Character:
     def get_base_character_values(self):
         return self.base_character_value_list["strength"], self.base_character_value_list["dexterity"], self.base_character_value_list["endurance"], self.base_character_value_list["precision"]
     
-    def calculate_damage(self):
+    def calculate_fighting_stats(self):
         if self.class_type:
-            if self.class_type == WARRIOR or self.class_type == ARCHER:
-                self.damage = 1
+            if self.class_type == WARRIOR:
+                self.fighting_power = (self.strength * 0.8) + (self.dexterity * 0.2)
+                self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_WARRIOR)
+            elif self.class_type == ARCHER:
+                self.fighting_power = (self.strength * 0.3) + (self.dexterity * 0.7)
+                self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_ARCHER)
             elif self.class_type == MAGE:
-                self.damage = 1
+                self.fighting_power = 1
+                self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_MAGE)
+            
+            # all classes
+            self.crit_chance = min(50, self.precision / int(1 + self.level * 0.5) * CRIT_CHANCE_SCALING)
+            self.crit_multiplier = CRIT_MULITPLIER_BASE + (self.precision / int(1 + self.level * 0.1) * CRIT_MULITPLIER_SCALING)
 
     # dictionary stuff
 
