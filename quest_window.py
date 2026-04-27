@@ -33,8 +33,6 @@ class Quest_Window:
         else:
             self.quest_list = [get_quest(self.character.level) for _ in range(3)]
             self.character.quest_list = self.quest_list
-        
-        print(f"Erste Quest{self.quest_list[0].title}")
 
     def __toggle_dialog_window(self, show_quest_index = -1):
         current_selected_quest = self.quest_list[show_quest_index]

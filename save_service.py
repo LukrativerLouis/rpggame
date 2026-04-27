@@ -10,6 +10,7 @@ class Save_Service:
 
         self.character_list = [None, None, None]
         self.shop_list = []
+        self.quest_list = [[], [], []]
         self.dungeon_completed = []
         # options
         self.music_on = None
@@ -64,22 +65,23 @@ class Save_Service:
         except Exception as e:
             print(f"Error while loading the save file: {e}")
 
-    def save_data(self, game):
+    def save_data(self, all_shops_data, character_list, dungeon_completed, quest_list = None,):
         if self.system.is_web:
             return
         
         shop_data_to_save = []
-        for slot_shop in game.all_shops_data:
+        for slot_shop in all_shops_data:
             shop_data_to_save.append([self.save_to_dict(item) for item in slot_shop])
 
         active_slot = self.system.menu.character_slot
-        if game.character_list[active_slot]:
-            game.character_list[active_slot].quest_list = game.quest_window.quest_list
+        if character_list[active_slot] and quest_list:
+            character_list[active_slot].quest_list = quest_list
+            self.quest_list[active_slot] = quest_list
 
         raw_data = {
-            "character_list": [ self.save_to_dict(char) for char in (game.character_list or [])],
+            "character_list": [ self.save_to_dict(char) for char in (character_list or [])],
             "shop_list": shop_data_to_save,
-            "dungeon_completed": game.character.dungeon_completed,
+            "dungeon_completed": dungeon_completed,
         }
         
         data_string = json.dumps(raw_data, indent=4)

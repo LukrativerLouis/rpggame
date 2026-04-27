@@ -47,10 +47,13 @@ class Menu:
         back_button = Button(position=(center_x, INITIAL_SCREEN_HEIGHT - 100), size=(150, 50), text="Back", change_color= [150, 150, 150], func=lambda: self.system.switch_menu_state(MENU_STATE))
         self.character_slot_buttons = [back_button]
 
+        self.delete_buttons = []
         self.add_buttons = []
         for i in range(3):
             btn = Button(position=(0, 0), size=(50, 50), text="+", change_color= [150, 150, 150], func= lambda idx = i: self.show_text_editor(btn.rect.centerx, btn.rect.centery, idx))
+            delete_btn = Button(position=(0, 0), size=(25, 25), text= "x", color= [255, 0, 0], func = lambda idx = i: self.delete_character(idx))
             self.add_buttons.append(btn)
+            self.delete_buttons.append(delete_btn)
 
     def create_options_menu_button(self):
         mid_x = self.settings.base_width / 2
@@ -112,6 +115,12 @@ class Menu:
     def apply_language(self, new_language):
         self.settings.language = new_language
 
+    def delete_character(self, i):
+        self.character_list[i] = None
+        self.system.save_service.shop_list[i] = []
+        self.system.save_service.character_list = self.character_list.copy()
+        self.system.save_service.save_data(self.system.save_service.shop_list, self.system.save_service.character_list, self.system.save_service.dungeon_completed)
+
     def draw_options(self, canvas, mouse_pos):
 
         for toggle in self.options_toggle:
@@ -159,6 +168,9 @@ class Menu:
                 show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
                 show_text(canvas, f"{character.name}", slot_center_x, slot.y + 70, "white", True)
                 show_text(canvas, f"Level: {character.level}", slot_center_x, slot.y + 120, "green", True)
+                delete_btn = self.delete_buttons[i]
+                delete_btn.set_pos((slot.x + slot.width, slot.y))
+                delete_btn.draw(canvas, mouse_pos)
             else:
                 show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
 
@@ -212,6 +224,7 @@ class Menu:
             if not character:
                 self.add_buttons[i].handle_event(event, mouse_pos)
             else:
+                self.delete_buttons[i].handle_event(event, mouse_pos)
                 if self.character_slot_list[i].collidepoint(mouse_pos):
                     self.cursor_focused = True
                     if event.type == pygame.MOUSEBUTTONDOWN:

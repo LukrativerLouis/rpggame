@@ -13,8 +13,6 @@ class Shop_Window():
             self.load_shop_items(self.character.shop_items)
         else:
             self.reroll_shop()
-        
-        print(f"Erstes Shop item{self.character.shop_items[0].id}")
 
     def setup_shop_slots(self):
         spacer_padding = 5

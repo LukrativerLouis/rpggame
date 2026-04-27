@@ -45,13 +45,13 @@ class Game():
         self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_back, btn_quit]
 
     def back_button(self):
-        self.system.save_service.save_data(self)
+        self.system.save_service.save_data(self.all_shops_data, self.character_list, self.character.dungeon_completed, self.quest_window.quest_list)
         self.system.switch_menu_state(CHARACTER_SLOTS_STATE)
 
     def quit_game(self):
         if self.system.is_web:
             return
-        self.system.save_service.save_data(self)
+        self.system.save_service.save_data(self.all_shops_data, self.character_list, self.character.dungeon_completed, self.quest_window.quest_list)
         self.system.save_service.save_options(self.system.settings)
         self.system.quit_game(already_saved = True)
 

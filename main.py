@@ -103,7 +103,7 @@ class System():
             return
         
         if not already_saved:
-            self.save_service.save_data(self.game)
+            self.save_service.save_data(self.game.all_shops_data, self.game.character_list, self.game.character.dungeon_completed, self.game.quest_window.quest_list)
             self.save_service.save_options(self.settings)
         self.running = False
 
