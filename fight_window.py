@@ -38,8 +38,20 @@ class Fight_Window:
         self.battle_log = []
         self.current_log_index = 0
 
+        self.active_damage_numbers = []
+
+        self.character_window = None
+        self.enemy_window = None
+
+        self.__create_player_windows()
+
         self.__create_fight_done_button()
         self.__simulate_fight()
+
+    def __create_player_windows(self):
+        start_time = pygame.time.get_ticks()
+        self.character_window = Player_Window(x = 300, y= 200, image= None, width= 370, height= 400, start_time= start_time, duration= 1.0, border_size= 5, color= "black", border_color= "blue3")
+        self.enemy_window = Player_Window(x=1445, y=200, image=None, width=370, height=400, start_time=start_time, duration=1.0, border_size=5, color="black", border_color="blue3")
 
     def __execute_completed_functions(self):
         if self.completed_function_winning and self.fight_won:
@@ -73,7 +85,6 @@ class Fight_Window:
         self.attack_cooldown *= 0.5
 
     def __simulate_fight(self):
-
         self.character.calculate_fighting_stats()
         self.enemy.calculate_fighting_stats()
 
@@ -102,12 +113,12 @@ class Fight_Window:
                 attacker = starter
 
             if attacker == CHARACTER:
-                damage = calculate_player_damage(self.character, self.enemy)
+                damage = round(calculate_player_damage(self.character, self.enemy))
                 temp_enemy_health -= damage
                 simulate_character_score += 1
                 self.battle_log.append((CHARACTER, damage))
             else:
-                damage = calculate_player_damage(self.enemy, self.character)
+                damage = round(calculate_player_damage(self.enemy, self.character))
                 temp_character_health -= damage
                 simulate_enemy_score += 1
                 self.battle_log.append((ENEMY, damage))
@@ -121,19 +132,49 @@ class Fight_Window:
 
             if elapsed_time >= self.attack_cooldown:
                 attacker_type, damage = self.battle_log[self.current_log_index]
+                character_rect = self.character_window.get_rect()
+                enemy_rect = self.enemy_window.get_rect()
 
                 if attacker_type == CHARACTER:
+
+                    self.character_window.start_hit_animation(is_attacker = True, is_character = True)
+                    self.enemy_window.start_hit_animation(is_attacker = False, is_character = False)
                     self.enemy.current_health -= damage
+
+                    y_shift = random.randint(-20, 80)
+                    damage_number = Damage_Number(damage, enemy_rect.centerx, enemy_rect.centery + y_shift, current_time + 200, duration = self.attack_cooldown, color = "white")
+                    self.active_damage_numbers.append(damage_number)
                 else:
+
+                    self.enemy_window.start_hit_animation(is_attacker = True, is_character = False)
+                    self.character_window.start_hit_animation(is_attacker = False, is_character = True)
                     self.character.current_health -= damage
+
+                    y_shift = random.randint(-20, 80)
+                    damage_number = Damage_Number(damage, character_rect.centerx, character_rect.centery + y_shift, current_time + 200, duration = self.attack_cooldown, color = "white")
+                    self.active_damage_numbers.append(damage_number)
 
                 self.current_log_index += 1
                 self.start_time = pygame.time.get_ticks()
         else:
             self.fight_done = True
             self.fight_won = self.character.current_health > self.enemy.current_health
+
+    def draw_damage_numbers(self, canvas):
+        current_time = pygame.time.get_ticks()
+
+        for damage_number in self.active_damage_numbers:
+            if damage_number.is_finished(current_time):
+                self.active_damage_numbers.remove(damage_number)
+            else:
+                damage_number.update(current_time)
+                show_text(canvas, damage_number.damage, damage_number.x, damage_number.y, damage_number.color, True, 30)
     
     def draw(self, canvas, mouse_pos):
+        current_time = pygame.time.get_ticks()
+
+        self.character_window.update_hit_animation(current_time)
+        self.enemy_window.update_hit_animation(current_time)
 
         character_rect_x = 300
         enemy_rect_x = 1445
@@ -142,9 +183,6 @@ class Fight_Window:
         base_y = 200
         health_bar_offset = 410
         stats_offset = 450
-
-        player_rect_border = 5
-        player_rect_height = 400
 
         health_bar_height = 30
         health_bar_border = 2
@@ -160,10 +198,8 @@ class Fight_Window:
                 button.draw(canvas, mouse_pos)
 
         # character rect
-        create_rectangle(canvas, character_rect_x, base_y, player_rect_width, player_rect_height, player_rect_border, "blue3")
-        create_rectangle(canvas, character_rect_x + player_rect_border, base_y + player_rect_border, player_rect_width - player_rect_border * 2, player_rect_height - player_rect_border * 2, 0, "black")
+        self.character_window.draw(canvas, mouse_pos)
 
-        current_time = pygame.time.get_ticks()
         dt = (current_time - self.last_frame_time) / 1000.0
         self.last_frame_time = current_time
 
@@ -209,8 +245,7 @@ class Fight_Window:
         show_text(canvas, f"Precision: {self.character.precision}", 300 + self.health_bar_length / 2, character_stats_y + 80, "azure4", True)
 
         # Enemy rect
-        create_rectangle(canvas, enemy_rect_x, base_y, player_rect_width, player_rect_height, player_rect_border, "blue3")
-        create_rectangle(canvas, enemy_rect_x + player_rect_border, base_y + player_rect_border, player_rect_width - player_rect_border * 2, player_rect_height - player_rect_border * 2, 0, "black")
+        self.enemy_window.draw(canvas, mouse_pos)
 
         self.enemy_visual_health = draw_health_bar(
             canvas,
@@ -238,6 +273,8 @@ class Fight_Window:
         else:
             # fight is in progress
             self.__play_next_animation_step()
+        
+        self.draw_damage_numbers(canvas)
 
         if self.fight_done:
             # fight end base
@@ -268,3 +305,104 @@ class Fight_Window:
         else:
             for button in self.fight_window_button_list:
                 button.handle_event(event, mouse_pos)
+
+
+class Player_Window:
+    def __init__(self, x, y, image, width, height, start_time, duration, border_size, color, border_color):
+        self.x = x
+        self.y = y
+        self.original_x = x
+        self.image = image
+        self.width = width
+        self.height = height
+        self.start_time = start_time
+        self.duration = duration
+        self.border_size = border_size
+        self.color = color 
+        self.border_color = border_color
+
+        self.is_hit_animating = False
+        self.hit_start_time = 0
+        self.hit_duration = 0.3
+        self.hit_distance = 40
+        self.is_attacker = False
+        self.is_character = False
+
+    def start_hit_animation(self, is_attacker = False, is_character = False):
+        self.is_hit_animating = True
+        self.hit_start_time = pygame.time.get_ticks()
+        self.is_attacker = is_attacker
+        self.is_character = is_character
+
+    def update_hit_animation(self, current_time):
+        if not self.is_hit_animating:
+            return False
+        
+        elapsed = (current_time - self.hit_start_time) / 1000.0
+        progress = min(elapsed / self.hit_duration, 1.0)
+
+        direction = 1 if self.is_character else -1
+        
+        if self.is_attacker:
+            if progress < 0.5:
+                move_progress = progress * 2
+                self.x = self.original_x + (self.hit_distance * move_progress * direction)
+            else:
+                move_progress = (progress - 0.5) * 2
+                self.x = self.original_x + (self.hit_distance * (1 - move_progress) * direction)
+        else:
+            pass
+
+        if progress >= 1.0:
+            self.is_hit_animating = False
+            self.x = self.original_x
+            return False
+        
+        return True
+    
+    def get_rect(self):
+        return pygame.Rect(self.x, self.y, self.width, self.height)
+    
+    def draw(self, canvas, mouse_pos):
+        current_rect = self.get_rect()
+
+        pygame.draw.rect(canvas, self.border_color, current_rect, self.border_size)
+
+        inner_rect = pygame.Rect(current_rect.x + self.border_size, current_rect.y + self.border_size, current_rect.width - self.border_size * 2, current_rect.height - self.border_size * 2)
+        pygame.draw.rect(canvas, self.color, inner_rect)
+    
+    def update(self, current_time):
+        elapsed = (current_time - self.start_time) / 1000.0
+        progress = min(elapsed / self.duration, 1.0)
+
+        return progress < 1.0
+
+
+class Damage_Number:
+    def __init__(self, damage, x, y, start_time, duration, color):
+        self.damage = damage
+        self.start_x = x
+        self.start_y = y
+        self.x = x
+        self.y = y
+        self.color = color
+        self.start_time = start_time
+        self.duration = duration
+        self.x_shift = random.randint(-10, 10)
+        self.alpha = 255
+    
+    def update(self, current_time):
+        elapsed = (current_time - self.start_time) / 1000.0
+        progress = min(elapsed / self.duration, 1.0)
+        
+        self.y = self.start_y - (progress * 30)
+        self.x = self.start_x - (progress * self.x_shift)
+        
+        self.alpha = int(255 * (1 - progress))
+        
+        return progress < 1.0
+    
+    def is_finished(self, current_time):
+        elapsed = (current_time - self.start_time) / 1000.0
+        return elapsed >= self.duration
+
