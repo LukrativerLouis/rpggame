@@ -49,6 +49,10 @@ class Shop_Window():
     def reroll_shop(self):
         if not self.character: return
 
+        if self.character.shop_items:
+            for item in self.character.shop_items:
+                if item in self.main_item_list:
+                    self.main_item_list.remove(item)
         self.character.shop_items.clear()
         for holder in self.item_holder_list:
             self.create_new_item(holder)

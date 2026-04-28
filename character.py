@@ -287,4 +287,4 @@ def getQuestDetails():
 
 def calculate_player_damage(player, enemy):
     weapon_roll = random.randint(int(player.weapon_p * player.weapon_s), player.weapon_p)
-    return weapon_roll + (1 + player.fighting_power)
+    return weapon_roll + (player.fighting_power)

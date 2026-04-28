@@ -106,6 +106,8 @@ class Menu:
         self.system.switch_menu_state(new_state)
 
     def apply_resolution(self, res_string):
+        if self.system.is_web:
+            return
         try:
             width, height = map(int, res_string.split('x'))
             self.game.set_specific_window_size(width, height)
