@@ -11,9 +11,12 @@ class Menu:
         self.character_list = None
         self.cursor_focused = False
         self.character_add_text_box = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black", "Character Name:", "white")
+        self.chracter_image_box = None
+        self.character_class_box = Choosing_Element(0, 0, CLASS_TYPE_LIST, 100, 30, "gray", "white")
         self.resolution_drop_down = Drop_Down_Menu(self.settings.base_width / 2 - 200, self.settings.base_height / 2 + 70, DISPLAY_RESOLUTION_LIST, 200, 50, "gray", "white", 200, 50, "Display", func= lambda res_text: self.apply_resolution(res_text))
         self.language_drop_down = Drop_Down_Menu(self.settings.base_width / 2, self.settings.base_height / 2 + 70, LANGUAGE_LIST, 200, 50, "gray", "white", 200, 50, self.settings.language, func= lambda language: self.apply_language(language))
         self.show_add_text_editor = False
+        self.show_character_class_box = False
         self.menu_button_list = []
         self.character_slot_list = []
         self.character_slot_buttons = []
@@ -98,8 +101,11 @@ class Menu:
     def show_text_editor(self, x, y, i):
         self.character_slot = i
         self.character_add_text_box.clear()
+        self.character_class_box.index = 0
+        self.character_class_box.set_pos(x, y + 100)
         self.character_add_text_box.set_pos(x, y)
         self.show_add_text_editor = True
+        self.show_character_class_box = True
 
     def save_and_close(self, new_state):
         self.system.save_service.save_options(self.settings)
@@ -176,9 +182,11 @@ class Menu:
             else:
                 show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
 
-                if self.show_add_text_editor and self.character_slot == i:
+                if self.show_add_text_editor and self.show_character_class_box and self.character_slot == i:
                     self.character_add_text_box.set_pos(slot_center_x, slot_center_y)
                     self.character_add_text_box.draw(canvas)
+                    self.character_class_box.set_pos(slot_center_x, slot_center_y + 100)
+                    self.character_class_box.draw(canvas, mouse_pos)
                     if len(self.character_add_text_box.text) > 0:
                         show_text(canvas, "Press enter to continue", self.character_add_text_box.rect.centerx, self.character_add_text_box.rect.centery + 40, "white", True)
                 else:
@@ -191,8 +199,9 @@ class Menu:
     def create_character_and_change_state(self, character_slot=None):
         if character_slot is None:
             chosen_name = self.character_add_text_box.text
+            chosen_class_type = self.character_class_box.selected_item
             if len(chosen_name) > 0:
-                new_char = Character(chosen_name, None, 1, 1)
+                new_char = Character(chosen_name, None, 1, 1, chosen_class_type)
                 idx = self.character_slot
                 
                 self.character_list[idx] = new_char
@@ -214,6 +223,7 @@ class Menu:
             
         if self.show_add_text_editor:
             self.character_add_text_box.handle_event(event, mouse_pos)
+            self.character_class_box.handle_event(event, mouse_pos)
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 if len(self.character_add_text_box.text) > 0:

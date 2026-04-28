@@ -29,15 +29,22 @@ class Character_Blueprint:
         self.character_window_y = 0
         self.character_window_width = 815
         self.character_window_height = 815 - ITEM_HOLDER_SIZE
+        self.stats_to_display = ["strength", "dexterity", "endurance", "precision"]
         self.stat_button_list = []
         self.setup_slots()
         self.create_stat_buttons()
 
     def create_stat_buttons(self):
         self.stat_button_list = []
-
-        for _ in range(4):
-            btn = Button(position=(0,0), size=(30, 30), text="+", color=[255, 0, 0])
+        for stat_name in self.stats_to_display:
+            btn = Button(
+                position=(0, 0), 
+                size=(30, 30), 
+                text="+", 
+                color=[255, 0, 0],
+                func=lambda s=stat_name: self.character.increase_base_stat(s)
+            )
+            btn.stat_name = stat_name 
             self.stat_button_list.append(btn)
 
     def setup_slots(self):
@@ -100,36 +107,30 @@ class Character_Blueprint:
         # damage
         show_text(canvas, f"Damage: {self.character.damage}", stat_rectangle.x + text_padding + 200, stat_rectangle.y + text_padding + 5)
 
-        # strength
-        show_text(canvas, f"Strength: {self.character.strength}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 25)
-        self.stat_button_list[0].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 35))
-        self.stat_button_list[0].set_function(lambda: self.character.increase_base_stat("strength"))
-        self.stat_button_list[0].text = "strength"
+        start_y = stat_rectangle.y + text_padding + 25
+        line_height = 35
+        hovered_stat_data = None
 
-        # dexterity
-        show_text(canvas, f"Dexterity: {self.character.dexterity}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 60)
-        self.stat_button_list[1].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 70))
-        self.stat_button_list[1].set_function(lambda: self.character.increase_base_stat("dexterity"))
-        self.stat_button_list[1].text = "dexterity"
-
-        # endurance
-        show_text(canvas, f"Endurance: {self.character.endurance}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 95)
-        self.stat_button_list[2].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 105))
-        self.stat_button_list[2].set_function(lambda: self.character.increase_base_stat("endurance"))
-        self.stat_button_list[2].text = "endurance"
-
-        # precision
-        show_text(canvas, f"Precision: {self.character.precision}", stat_rectangle.x + text_padding, stat_rectangle.y + text_padding + 130)
-        self.stat_button_list[3].set_pos((stat_rectangle.x + text_padding + 150, stat_rectangle.y + text_padding + 140))
-        self.stat_button_list[3].set_function(lambda: self.character.increase_base_stat("precision"))
-        self.stat_button_list[3].text = "precision"
-
-        for button in self.stat_button_list:
+        for i, stat_name in enumerate(self.stats_to_display):
+            current_y = start_y + (i * line_height)
+            stat_value = getattr(self.character, stat_name)
+            show_text(canvas, f"{stat_name.capitalize()}: {stat_value}", stat_rectangle.x + text_padding, current_y)
+            button = self.stat_button_list[i]
+            button.set_pos((stat_rectangle.x + text_padding + 150, current_y + 10))
             button.draw(canvas, mouse_pos)
 
-        for button in self.stat_button_list:
             if button.is_hovered:
-                create_tooltip(canvas, button.rect.centerx, button.rect.centery + 40, 100, 40, f"Cost: {self.character.get_stat_price(button.text)}g", "white", "gray")
+                hovered_stat_data = {
+                    "stat_name": stat_name,
+                    "x": button.rect.centerx,
+                    "y": button.rect.centery + 40
+                }
+
+        if hovered_stat_data:
+            name = hovered_stat_data["stat_name"]
+            cost = self.character.get_stat_price(name)
+            create_tooltip(canvas, hovered_stat_data["x"], hovered_stat_data["y"], 
+                        100, 40, f"Cost: {cost}g", "white", "gray")
 
         # exp tooltip
         if self.show_exp_bar_tooltips and active_item == None:

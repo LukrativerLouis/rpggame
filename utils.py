@@ -425,3 +425,36 @@ class Drop_Down_Item():
         pygame.draw.rect(canvas, self.color, self.rect)
         pygame.draw.rect(canvas, (200, 200, 200), self.rect, 1)
         show_text(canvas, self.text, self.rect.centerx, self.rect.centery, self.text_color, True)
+
+class Choosing_Element():
+    def __init__(self, x, y, item_list, width, height, bg_color, text_color):
+        self.x = x
+        self.y = y
+        self.item_list = item_list
+        self.width = width
+        self.height = height
+        self.bg_color = bg_color
+        self.text_color = text_color
+        self.index = 0
+        self.next_button = Button(position = (self.x + 70, self.y), size = (40, 40), text= "=>", func = lambda: self.next_element())
+        self.selected_item = self.item_list[self.index]
+
+    def set_pos(self, x, y):
+        self.x = x
+        self.y = y
+        self.next_button.set_pos((x + 70, y))
+
+    def next_element(self):
+        if self.index + 1 <= len(self.item_list) - 1:
+            self.index += 1
+            self.selected_item = self.item_list[self.index]
+        else:
+            self.index = 0
+            self.selected_item = self.item_list[self.index]
+
+    def draw(self, canvas, mouse_pos):
+        show_text(canvas, self.selected_item, self.x, self.y, self.text_color, True)
+        self.next_button.draw(canvas, mouse_pos)
+
+    def handle_event(self, event, mouse_pos):
+        self.next_button.handle_event(event, mouse_pos)

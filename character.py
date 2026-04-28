@@ -2,7 +2,7 @@ from item import *
 from settings import *
 
 class Character:
-    def __init__(self, name, image, gold, level):
+    def __init__(self, name, image, gold, level, class_type):
         self.name = name
         self.image = image
         self.current_stamina = 50
@@ -23,7 +23,7 @@ class Character:
         self.weapon_s = 1
         self.crit_chance = 0
         self.crit_multiplier = 0
-        self.class_type = WARRIOR
+        self.class_type = class_type
         self.max_health = 0
         self.current_health = self.max_health
         self.attack_score = 0
@@ -149,7 +149,8 @@ class Character:
             name = data["name"],
             image = data["image"],
             gold = data["gold"],
-            level = data["level"]
+            level = data["level"],
+            class_type = data["class_type"]
         )
 
         for key, value in data.items():

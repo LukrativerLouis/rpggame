@@ -57,9 +57,9 @@ DUNGEON_3 = "Dungeon 3"
 
 # class types
 
-WARRIOR = "warrior"
-MAGE = "mage"
-ARCHER = "archer"
+WARRIOR = "Warrior"
+MAGE = "Mage"
+ARCHER = "Archer"
 
 CLASS_TYPE_LIST = [WARRIOR, MAGE, ARCHER]
 DISPLAY_RESOLUTION_LIST = ["2560x1440", "1920x1080", "1280x720"]
