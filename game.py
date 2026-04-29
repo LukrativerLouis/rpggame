@@ -18,28 +18,27 @@ class Game():
         self.character: Character = active_character
         self.character.shop_items = current_shop_data
 
-
         self.main_item_list: list[Item] = []
         self.active_item = None
         self.main_button_list = []
 
         self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
-        self.quest_window = Quest_Window(self.character, self)
-        self.shop_window = Shop_Window(self.character, self.main_item_list)
-        self.character_window = Character_Window(self.character, self.main_item_list)
-        self.dungeon_window = Dungeon_Window(self.character)
+        self.quest_window = Quest_Window(self.character, self, self.system.settings)
+        self.shop_window = Shop_Window(self.character, self.main_item_list, self.system.settings)
+        self.character_window = Character_Window(self.character, self.main_item_list, self.system.settings)
+        self.dungeon_window = Dungeon_Window(self.character, self.system.settings)
 
         self.item_holder_list: list[Item_Holder] = self.shop_window.item_holder_list + self.character_window.item_holder_list
 
         self.create_buttons()
 
     def create_buttons(self):
-        btn_quest = Button(position = (100, 100), size = (150, 50), text = "Questboard", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
-        btn_character = Button(position = (100, 170), size = (150, 50), text = "Character", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
-        btn_shop = Button(position = (100, 240), size = (150, 50), text = "Shop", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
-        btn_dungeon = Button(position = (100, 310), size = (150, 50), text = "Dungeon", change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
-        btn_back = Button(position=(100, 925), size=(100, 50), text="Back", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.back_button())
-        btn_quit = Button(position=(100, 995), size=(100, 50), text="Quit", color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
+        btn_quest = Button(position = (100, 100), size = (150, 50), text = self.system.settings.translate("button_questboard"), change_color = [150, 150, 150], func = lambda: self.toggle_main_state(QUEST_MAIN_WINDOW_STATE))
+        btn_character = Button(position = (100, 170), size = (150, 50), text = self.system.settings.translate("button_character"), change_color = [150, 150, 150], func = lambda: self.toggle_main_state(CHARACTER_MAIN_WINDOW_STATE))
+        btn_shop = Button(position = (100, 240), size = (150, 50), text = self.system.settings.translate("button_shop"), change_color = [150, 150, 150], func = lambda: self.toggle_main_state(SHOP_MAIN_WINDOW_STATE))
+        btn_dungeon = Button(position = (100, 310), size = (150, 50), text = self.system.settings.translate("button_dungeon"), change_color = [150, 150, 150], func = lambda: self.toggle_main_state(DUNGEON_MAIN_WINDOW_STATE))
+        btn_back = Button(position=(100, 925), size=(100, 50), text= self.system.settings.translate("button_back"), color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.back_button())
+        btn_quit = Button(position=(100, 995), size=(100, 50), text= self.system.settings.translate("button_quit"), color=[150, 50, 50], change_color=[200, 50, 50], func= lambda: self.quit_game())
         #btn_test = Button(position=(100, 1050), size=(100, 40), text="Test", color=[200, 50, 50], func= lambda: self.set_specific_window_size(1280, 720))
 
         self.main_button_list = [btn_quest, btn_character, btn_shop, btn_dungeon, btn_back, btn_quit]

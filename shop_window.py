@@ -2,13 +2,14 @@ from character_window import *
 from item import *
 
 class Shop_Window():
-    def __init__(self, character: Character, main_item_list):
+    def __init__(self, character: Character, main_item_list, settings):
         self.character = character
         self.main_item_list: list[Item] = main_item_list
+        self.settings = settings
         self.item_holder_list = []
-        self.character_blueprint = Character_Blueprint(self.character)
+        self.character_blueprint = Character_Blueprint(self.character, self.settings)
         self.setup_shop_slots()
-        self.refresh_buttom = Button(position = (self.start_for_shop_x + ITEM_HOLDER_SIZE + 5 + ITEM_HOLDER_SIZE / 2, self.start_for_shop_y - 50), size = (150, 50), color = (0, 0, 255), text = "reroll items", func = lambda: self.reroll_shop())
+        self.refresh_buttom = Button(position = (self.start_for_shop_x + ITEM_HOLDER_SIZE + 5 + ITEM_HOLDER_SIZE / 2, self.start_for_shop_y - 50), size = (150, 50), color = (0, 0, 255), text = self.settings.translate("button_reroll_items"), func = lambda: self.reroll_shop())
         if self.character.shop_items:
             self.load_shop_items(self.character.shop_items)
         else:

@@ -10,8 +10,9 @@ base_dungeon_window_size = 400
 specific_offset = 20
 
 class Dungeon_Window:
-    def __init__(self, character: Character):
+    def __init__(self, character: Character, settings):
         self.character = character
+        self.settings = settings
         self.fight_started = False
         self.fight_window = None
 

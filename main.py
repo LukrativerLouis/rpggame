@@ -184,10 +184,6 @@ class System():
         elif self.menu_state == CHARACTER_SLOTS_STATE:
             self.menu.draw_character_slots(self.canvas, mouse_pos)
 
-        elif self.menu_state == CHARACTER_ADD_STATE:
-            pass
-            #self.menu.draw_character_add_screen(self.canvas, mouse_pos)
-
         elif self.menu_state == OPTIONS_STATE:
             self.menu.draw_options(self.canvas, mouse_pos)
 
@@ -222,10 +218,6 @@ class System():
 
                 elif self.menu_state == CHARACTER_SLOTS_STATE:
                     self.menu.handle_character_slot_events(event, mouse_pos)
-
-                elif self.menu_state == CHARACTER_ADD_STATE:
-                    pass
-                    #self.menu.handle_character_add_events(event, mouse_pos)
                 
                 elif self.menu_state == GAME_STATE:
                     self.game.handle_events(event, mouse_pos)

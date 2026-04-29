@@ -4,10 +4,11 @@ from character import *
 from item import *
 
 class Character_Window:
-    def __init__(self, character: Character, main_item_list):
+    def __init__(self, character: Character, main_item_list, settings):
         self.character = character
         self.main_item_list = main_item_list
-        self.character_blueprint = Character_Blueprint(character)
+        self.settings = settings
+        self.character_blueprint = Character_Blueprint(character, settings)
 
     @property
     def item_holder_list(self):
@@ -20,8 +21,9 @@ class Character_Window:
         self.character_blueprint.handle_events(event, mouse_pos)
 
 class Character_Blueprint:
-    def __init__(self, character: Character):
-        self.character = character 
+    def __init__(self, character: Character, settings):
+        self.character = character
+        self.settings = settings
         self.exp_bar_width = 395
         self.item_holder_list = []
         self.show_exp_bar_tooltips = False
@@ -102,10 +104,10 @@ class Character_Blueprint:
         stat_rectangle = create_rectangle(canvas, MAIN_START + main_side_padding + ITEM_HOLDER_SIZE + spacer_padding, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 3 , ITEM_HOLDER_SIZE * 2 + spacer_padding, ITEM_HOLDER_SIZE, 2, "red")
 
         # health
-        show_text(canvas, f"Health: {self.character.max_health}", stat_rectangle.x + text_padding + 200, stat_rectangle.y + text_padding - 20)
+        show_text(canvas, f"{self.settings.translate("stat_health")}: {self.character.max_health}", stat_rectangle.x + text_padding + 200, stat_rectangle.y + text_padding - 20)
 
         # damage
-        show_text(canvas, f"Damage: {self.character.damage}", stat_rectangle.x + text_padding + 200, stat_rectangle.y + text_padding + 5)
+        show_text(canvas, f"{self.settings.translate("stat_damage")}: {self.character.damage}", stat_rectangle.x + text_padding + 200, stat_rectangle.y + text_padding + 5)
 
         start_y = stat_rectangle.y + text_padding + 25
         line_height = 35
@@ -114,7 +116,8 @@ class Character_Blueprint:
         for i, stat_name in enumerate(self.stats_to_display):
             current_y = start_y + (i * line_height)
             stat_value = getattr(self.character, stat_name)
-            show_text(canvas, f"{stat_name.capitalize()}: {stat_value}", stat_rectangle.x + text_padding, current_y)
+            show_text(canvas, f"{self.settings.translate(f"stat_{stat_name}")}: {stat_value}", stat_rectangle.x + text_padding, current_y)
+            
             button = self.stat_button_list[i]
             button.set_pos((stat_rectangle.x + text_padding + 150, current_y + 10))
             button.draw(canvas, mouse_pos)

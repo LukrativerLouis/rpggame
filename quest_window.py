@@ -4,7 +4,8 @@ from fight_window import *
 from utils import *
 
 class Quest_Window:
-    def __init__(self, character: Character, level):
+    def __init__(self, character: Character, level, settings):
+        self.settings = settings
         self.show_dialog_window = False
         self.quest_list = []
         self.selected_quest: Quest = None
@@ -71,13 +72,13 @@ class Quest_Window:
 
     def __create_dialog_window_buttons(self):
         button_close = Button(position = (1870, 50), size = (50, 50), text = "x", color = [255, 0, 0],change_color = [255, 50, 50], func = lambda: self.close_dialog_window(False))
-        button_start_quest = Button(position = (1400, INITIAL_SCREEN_HEIGHT - 100), size = (150, 50), text = "Start Quest", color = [0, 255, 0],change_color = [50, 255, 50], func = lambda: self.__start_quest())
+        button_start_quest = Button(position = (1400, INITIAL_SCREEN_HEIGHT - 100), size = (150, 50), text = self.settings.translate("button_start_quest"), color = [0, 255, 0],change_color = [50, 255, 50], func = lambda: self.__start_quest())
 
         return [button_close, button_start_quest]
     
     def __create_traveling_screen_buttons(self):
-        button_cancel_quest = Button(position = (975, 1025), size = (150, 50), text = "cancel quest", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__cancel_quest())
-        button_skip_quest = Button(position = (1150, 1025), size = (150, 50), text = "skip quest time", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__skip_quest_time())
+        button_cancel_quest = Button(position = (975, 1025), size = (150, 50), text = self.settings.translate("button_cancel_quest"), color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__cancel_quest())
+        button_skip_quest = Button(position = (1150, 1025), size = (150, 50), text = self.settings.translate("button_skip_quest_time"), color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__skip_quest_time())
 
         return [button_cancel_quest, button_skip_quest]
     
@@ -118,9 +119,9 @@ class Quest_Window:
         # text
         show_text(canvas, self.selected_quest.title, 1000, 100, "darkgoldenrod1")
         show_text(canvas, self.selected_quest.description, 1000, 200, "darkgoldenrod1")
-        show_text(canvas, f"Experience: {self.selected_quest.experience}", 1000, 400, "green")
-        show_text(canvas, f"Gold: {self.selected_quest.gold}", 1000, 450, "yellow")
-        show_text(canvas, f"Stamina-Cost: {self.selected_quest.stamina_cost}", 1000, 500, "darkgoldenrod2")
+        show_text(canvas, f"{self.settings.translate("experience")}: {self.selected_quest.experience}", 1000, 400, "green")
+        show_text(canvas, f"{self.settings.translate("gold")}: {self.selected_quest.gold}", 1000, 450, "yellow")
+        show_text(canvas, f"{self.settings.translate("stamina_cost")}: {self.selected_quest.stamina_cost}", 1000, 500, "darkgoldenrod2")
 
     def __draw_quest_traveling_screen(self, canvas):
         countdown_bar_x = 300
@@ -173,7 +174,7 @@ class Quest_Window:
         current_stamina = self.character.current_stamina
         max_stamina = self.character.max_stamina
 
-        draw_progression_bar(canvas, stamina_bar_x, stamina_bar_y, current_stamina, max_stamina, stamina_bar_width, stamina_bar_heigth, stamina_bar_border, "darkgoldenrod2", "gray", "white", "Stamina")
+        draw_progression_bar(canvas, stamina_bar_x, stamina_bar_y, current_stamina, max_stamina, stamina_bar_width, stamina_bar_heigth, stamina_bar_border, "darkgoldenrod2", "gray", "white", self.settings.translate("stamina_bar"))
 
     def draw(self, canvas, mouse_pos):
         # temp quest board

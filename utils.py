@@ -25,6 +25,11 @@ class Button:
         
         self.shrink_scale = 0.95
 
+    def set_size(self, size):
+        self.size_original = pygame.Vector2(size)
+        self.rect = pygame.Rect(0, 0, self.size_original.x, self.size_original.y)
+        self.rect.center = (self.center_pos.x, self.center_pos.y)
+
     def _generate_hover_color(self, color):
         brightness = sum(color[:3]) / 3
         
@@ -188,20 +193,29 @@ class Toggle:
         self.text_surface = self.font.render(self.label, True, self.text_color)
         self.text_rect = self.text_surface.get_rect()
         
-        spacing = 20
+        self.spacing = 20
+        self._recalculate_rects()
 
-        total_width = self.text_rect.width + spacing + self.width
+    def _recalculate_rects(self):
+        total_width = self.text_rect.width + self.spacing + self.width
         left_edge = self.center_x - total_width // 2
 
         self.text_rect.midleft = (left_edge, self.center_y)
 
         self.slider_rect = pygame.Rect(
-            self.text_rect.right + spacing,
+            self.text_rect.right + self.spacing,
             self.center_y - self.height // 2,
             self.width,
             self.height
         )
         self.knob_radius = self.height // 2 - 4
+
+    def set_label(self, new_label):
+        if self.label != new_label:
+            self.label = new_label
+            self.text_surface = self.font.render(self.label, True, self.text_color)
+            self.text_rect = self.text_surface.get_rect()
+            self._recalculate_rects()
 
     def toggle(self):
         self.state = not self.state
@@ -262,6 +276,13 @@ class VolumeSlider:
         self.x = self.center_x - self.total_width // 2
 
         self._recalculate_rects()
+
+    def set_label(self, new_label):
+        if self.label != new_label:
+            self.label = new_label
+            self.label_surface = self.font.render(self.label, True, self.text_color)
+            self.label_rect = self.label_surface.get_rect()
+            self._recalculate_rects()
 
     def _recalculate_rects(self):
         self.label_rect.topleft = (self.x, self.y)
@@ -436,13 +457,14 @@ class Choosing_Element():
         self.bg_color = bg_color
         self.text_color = text_color
         self.index = 0
-        self.next_button = Button(position = (self.x + 70, self.y), size = (40, 40), text= "=>", func = lambda: self.next_element())
+        self.button_offset = 100
+        self.next_button = Button(position = (self.x + self.button_offset, self.y), size = (40, 40), text= "=>", func = lambda: self.next_element())
         self.selected_item = self.item_list[self.index]
 
     def set_pos(self, x, y):
         self.x = x
         self.y = y
-        self.next_button.set_pos((x + 70, y))
+        self.next_button.set_pos((x + self.button_offset, y))
 
     def next_element(self):
         if self.index + 1 <= len(self.item_list) - 1:
@@ -452,8 +474,8 @@ class Choosing_Element():
             self.index = 0
             self.selected_item = self.item_list[self.index]
 
-    def draw(self, canvas, mouse_pos):
-        show_text(canvas, self.selected_item, self.x, self.y, self.text_color, True)
+    def draw(self, canvas, mouse_pos, settings):
+        show_text(canvas, settings.translate(self.selected_item), self.x, self.y, self.text_color, True)
         self.next_button.draw(canvas, mouse_pos)
 
     def handle_event(self, event, mouse_pos):

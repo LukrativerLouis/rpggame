@@ -10,7 +10,7 @@ class Menu:
         self.character_slot = 0
         self.character_list = None
         self.cursor_focused = False
-        self.character_add_text_box = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black", "Character Name:", "white")
+        self.character_add_text_box = Text_Input_Box(0, 0, 250, 50, "white", "gray", "black", f"{self.settings.translate('character_name')}:", "white")
         self.chracter_image_box = None
         self.character_class_box = Choosing_Element(0, 0, CLASS_TYPE_LIST, 100, 30, "gray", "white")
         self.resolution_drop_down = Drop_Down_Menu(self.settings.base_width / 2 - 200, self.settings.base_height / 2 + 70, DISPLAY_RESOLUTION_LIST, 200, 50, "gray", "white", 200, 50, "Display", func= lambda res_text: self.apply_resolution(res_text))
@@ -39,15 +39,15 @@ class Menu:
         center_x = INITIAL_SCREEN_WIDTH / 2
         center_y = INITIAL_SCREEN_HEIGHT / 2
 
-        start_button = Button(position = (center_x, center_y - height - spacing), size = (width, height), text = "Start", change_color = [150, 150, 150], func= lambda: self.system.switch_menu_state(CHARACTER_SLOTS_STATE))
-        options_button = Button(position = (center_x, center_y), size = (width, height), text = "Options", change_color = [150, 150, 150], func= lambda: self.system.switch_menu_state(OPTIONS_STATE))
-        quit_buttton = Button(position = (center_x, center_y + height + spacing), size = (width, height), text = "Quit", change_color = [150, 150, 150], func= lambda: self.system.quit_game())
+        start_button = Button(position = (center_x, center_y - height - spacing), size = (width, height), text = self.settings.translate("title_start"), change_color = [150, 150, 150], func= lambda: self.system.switch_menu_state(CHARACTER_SLOTS_STATE))
+        options_button = Button(position = (center_x, center_y), size = (width, height), text = self.settings.translate("title_options"), change_color = [150, 150, 150], func= lambda: self.system.switch_menu_state(OPTIONS_STATE))
+        quit_buttton = Button(position = (center_x, center_y + height + spacing), size = (width, height), text = self.settings.translate("title_quit"), change_color = [150, 150, 150], func= lambda: self.system.quit_game())
 
         self.menu_button_list = [start_button, options_button, quit_buttton]
 
     def create_character_slot_buttons(self):
         center_x = INITIAL_SCREEN_WIDTH / 2
-        back_button = Button(position=(center_x, INITIAL_SCREEN_HEIGHT - 100), size=(150, 50), text="Back", change_color= [150, 150, 150], func=lambda: self.system.switch_menu_state(MENU_STATE))
+        back_button = Button(position=(center_x, INITIAL_SCREEN_HEIGHT - 100), size=(150, 50), text=f"{self.settings.translate("button_back")}", change_color= [150, 150, 150], func=lambda: self.system.switch_menu_state(MENU_STATE))
         self.character_slot_buttons = [back_button]
 
         self.delete_buttons = []
@@ -62,18 +62,18 @@ class Menu:
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
 
-        save_button = Button(position= (mid_x, mid_y + 230),size= (150, 50), text= "Save and close", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
+        save_button = Button(position= (mid_x, mid_y + 230),size= (200, 50), text= f"{self.settings.translate("button_save_and_close")}", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
         self.options_button = [save_button]
 
     def create_options_slider(self):
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
 
-        MUSIC_SLIDER = VolumeSlider(size=(200, 20), font=get_font(None, 25), label="music volume:",
+        MUSIC_SLIDER = VolumeSlider(size=(200, 20), font=get_font(None, 25), label=f"{self.settings.translate("music_volume")}:",
                                 initial_value=int(self.settings.music_volume * 100),
                                 on_change=self.settings.on_music_volume_change, center_pos= (mid_x, mid_y), text_color= "white", slider_color= "gray", slider_picker_color= "white")
     
-        SOUND_SLIDER = VolumeSlider(size=(200, 20), font=get_font(None, 25), label="sound volume:",
+        SOUND_SLIDER = VolumeSlider(size=(200, 20), font=get_font(None, 25), label=f"{self.settings.translate("sound_volume")}:",
                                 initial_value=int(self.settings.sound_volume * 100),
                                 on_change=self.settings.on_sound_volume_change, center_pos= (mid_x, mid_y + 30), text_color= "white", slider_color= "gray", slider_picker_color= "white")
         
@@ -85,15 +85,15 @@ class Menu:
 
 
         fullscreen_toggle = Toggle(pos=(mid_x, mid_y - 170), size=(100, 40), font=get_font(None, 25),
-                                    label="Toggle Fullscreen:", getter = lambda: self.system.settings.is_fullscreen,
+                                    label=f"{self.settings.translate("settings_toggle_fullscreen")}:", getter = lambda: self.system.settings.is_fullscreen,
                                     on_toggle=self.system.toggle_fullscreen, text_color= "white")
         
         music_toggle = Toggle(pos=(mid_x, mid_y - 120), size=(100, 40), font=get_font(None, 25),
-                                    label="music:", getter = lambda: self.settings.music_on,
+                                    label=f"{self.settings.translate("settings_music_on")}:", getter = lambda: self.settings.music_on,
                                     on_toggle=self.settings.on_toggle_music, text_color= "white")
         
         sound_toggle = Toggle(pos=(mid_x, mid_y - 70), size=(100, 40), font=get_font(None, 25),
-                                    label="sound effects:", getter = lambda: self.settings.sounds_on,
+                                    label=f"{self.settings.translate("settings_sounds_on")}:", getter = lambda: self.settings.sounds_on,
                                     on_toggle=self.settings.on_toggle_sound, text_color= "white")
 
         self.options_toggle = [fullscreen_toggle, music_toggle, sound_toggle]
@@ -122,6 +122,21 @@ class Menu:
 
     def apply_language(self, new_language):
         self.settings.language = new_language
+
+        self.menu_button_list[0].set_text(self.settings.translate("title_start"))
+        self.menu_button_list[1].set_text(self.settings.translate("title_options"))
+        self.menu_button_list[2].set_text(self.settings.translate("title_quit"))
+        
+        self.options_toggle[0].set_label(f"{self.settings.translate('settings_toggle_fullscreen')}:")
+        self.options_toggle[1].set_label(f"{self.settings.translate('settings_music_on')}:")
+        self.options_toggle[2].set_label(f"{self.settings.translate('settings_sounds_on')}:")
+
+        self.options_slider[0].set_label(f"{self.settings.translate("music_volume")}")
+        self.options_slider[1].set_label(f"{self.settings.translate("sound_volume")}")
+
+        self.character_slot_buttons[0].set_text(f"{self.settings.translate("button_back")}")
+        self.options_button[0].set_text(f"{self.settings.translate("button_save_and_close")}")
+        self.character_add_text_box.label_text = f"{self.settings.translate('character_name')}"
 
     def delete_character(self, i):
         self.character_list[i] = None
@@ -173,22 +188,22 @@ class Menu:
             slot_center_y = slot.y + slot.height / 2
 
             if character:
-                show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
+                show_text(canvas, f"{self.settings.translate("slot")} {i + 1}", slot_center_x, slot.y + 20, "white", True)
                 show_text(canvas, f"{character.name}", slot_center_x, slot.y + 70, "white", True)
                 show_text(canvas, f"Level: {character.level}", slot_center_x, slot.y + 120, "green", True)
                 delete_btn = self.delete_buttons[i]
                 delete_btn.set_pos((slot.x + slot.width, slot.y))
                 delete_btn.draw(canvas, mouse_pos)
             else:
-                show_text(canvas, f"Slot {i + 1}", slot_center_x, slot.y + 20, "white", True)
+                show_text(canvas, f"{self.settings.translate("slot")} {i + 1}", slot_center_x, slot.y + 20, "white", True)
 
                 if self.show_add_text_editor and self.show_character_class_box and self.character_slot == i:
                     self.character_add_text_box.set_pos(slot_center_x, slot_center_y)
                     self.character_add_text_box.draw(canvas)
                     self.character_class_box.set_pos(slot_center_x, slot_center_y + 100)
-                    self.character_class_box.draw(canvas, mouse_pos)
+                    self.character_class_box.draw(canvas, mouse_pos, self.settings)
                     if len(self.character_add_text_box.text) > 0:
-                        show_text(canvas, "Press enter to continue", self.character_add_text_box.rect.centerx, self.character_add_text_box.rect.centery + 40, "white", True)
+                        show_text(canvas, self.settings.translate("press_enter"), self.character_add_text_box.rect.centerx, self.character_add_text_box.rect.centery + 40, "white", True)
                 else:
                     add_btn = self.add_buttons[i]
                     add_btn.set_pos((slot_center_x, slot_center_y))

@@ -13,7 +13,6 @@ WEB_PLATFORM = "emscripten"
 MENU_STATE = "menu_state"
 OPTIONS_STATE = "options_state"
 CHARACTER_SLOTS_STATE = "character_slots_state"
-CHARACTER_ADD_STATE = "character_add_state"
 GAME_STATE = "game_state"
 INTRO_STATE = "intro_state"
 
@@ -61,7 +60,7 @@ WARRIOR = "Warrior"
 MAGE = "Mage"
 ARCHER = "Archer"
 
-CLASS_TYPE_LIST = [WARRIOR, MAGE, ARCHER]
+CLASS_TYPE_LIST = [WARRIOR, ARCHER, MAGE]
 DISPLAY_RESOLUTION_LIST = ["2560x1440", "1920x1080", "1280x720"]
 
 # Const for Language selector
@@ -72,8 +71,78 @@ LANGUAGE_LIST  = [ENGLISH, GERMAN]
 
 translations = {
     ENGLISH: {
+        "title_start": "Start game",
+        "title_options": "Options",
+        "title_quit": "Quit",
+        "settings_toggle_fullscreen": "Toggle Fullscreen",
+        "settings_music_on": "Music",
+        "settings_sounds_on": "Sounds",
+        "music_volume": "Music volume",
+        "sound_volume": "Sound volume",
+        "button_back": "Back",
+        "button_save_and_close": "Save and close",
+        "character_name": "Enter character name",
+        "press_enter": "Press enter to continue",
+        "Warrior": "Warrior",
+        "Mage": "Mage",
+        "Archer": "Archer",
+        "button_questboard": "Questboard",
+        "button_character": "Character",
+        "button_shop": "Shop",
+        "button_dungeon": "Dungeon",
+        "button_quit": "Quit",
+        "stat_health": "Health",
+        "stat_damage": "Damage",
+        "stat_strength": "Strength",
+        "stat_dexterity": "Dexterity",
+        "stat_endurance": "Endurance",
+        "stat_precision": "Precision",
+        "button_reroll_items": "Reroll items",
+        "slot": "Slot",
+        "button_cancel_quest": "Cancel quest",
+        "button_skip_quest_time": "Skip quest time",
+        "button_start_quest": "Start quest",
+        "stamina_bar": "Stamina",
+        "experience": "Experience",
+        "gold": "Gold",
+        "stamina_cost": "Stamina-Cost"
     },
     GERMAN: {
+        "title_start": "Spiel starten",
+        "title_options": "Optionen",
+        "title_quit": "Verlassen",
+        "settings_toggle_fullscreen": "Vollbild an/aus",
+        "settings_music_on": "Musik",
+        "settings_sounds_on": "Geräusche",
+        "music_volume": "Musik Lautstärke",
+        "sound_volume": "Geräusche Lautstärke",
+        "button_back": "Zurück",
+        "button_save_and_close": "Speichern und schließen",
+        "character_name": "Charakternamen eingeben",
+        "press_enter": "Drück Eingabe um fortzufahren",
+        "Warrior": "Krieger",
+        "Mage": "Magier",
+        "Archer": "Bogenschütze",
+        "button_questboard": "Questbrett",
+        "button_character": "Charakter",
+        "button_shop": "Laden",
+        "button_dungeon": "Dungeon",
+        "button_quit": "Verlassen",
+        "stat_health": "Leben",
+        "stat_damage": "Schaden",
+        "stat_strength": "Stärke",
+        "stat_dexterity": "Geschick",
+        "stat_endurance": "Ausdauer",
+        "stat_precision": "Präzision",
+        "button_reroll_items": "Laden erneuern",
+        "slot": "Speicherplatz",
+        "button_cancel_quest": "Quest abbrechen",
+        "button_skip_quest_time": "Zeit überspringen",
+        "button_start_quest": "Quest starten",
+        "stamina_bar": "Kondition",
+        "experience": "Erfahrung",
+        "gold": "Gold",
+        "stamina_cost": "Kondition Kosten"
     }
 }
 
