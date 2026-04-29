@@ -48,6 +48,12 @@ SAVE_FILE_PATH_OPTIONS = "data/options.json"
 SAVE_FILE_PATH_DATA = "data/data.json"
 PIXELIFY_FONT_PATH = "font/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf"
 
+# keys
+
+TITLE_KEY = "title_key"
+DESCRIPTION_KEY = "description_key"
+
+
 # dungeons
 
 DUNGEON_1 = "Dungeon 1"
@@ -105,7 +111,68 @@ translations = {
         "stamina_bar": "Stamina",
         "experience": "Experience",
         "gold": "Gold",
-        "stamina_cost": "Stamina-Cost"
+        "stamina_cost": "Stamina-Cost",
+        "button_start_fight": "Start fight",
+        "button_close": "Close",
+        "button_skip_fight": "Skip fight",
+        "button_faster": "Faster",
+        "button_continue": "Continue",
+        "message_won": "You won!",
+        "message_lost": "You lost!",
+
+        # Quest
+        "quest_exam_title": "Apprenticeship Exam",
+        "quest_exam_description": "Pass the exam to become a mage.",
+        "quest_lorem_ipsum_title": "lorem ipsum",
+        "quest_lorem_ipsum_description": "SISPSISPSISPS",
+        "quest_test_title": "Test",
+        "quest_test_description": "test",
+        "quest_monsterhunt_title": "Monster Hunt",
+        "quest_monsterhunt_description": "Defeat 10 wolves to gain experience.",
+        "quest_treasurehunt_title": "Treasure Hunt",
+        "quest_treasurehunt_description": "Find the hidden chest in the forest.",
+        "quest_errands_title": "Run Errands",
+        "quest_errands_description": "Deliver a message and get a reward.",
+        "quest_sword_title": "The Lost Sword",
+        "quest_sword_description": "Find the legendary sword and bring it back.",
+        "quest_herb_title": "Herb collector",
+        "quest_herb_description": "Collect 5 medicinal herbs for the alchemist.",
+        "quest_dragon_title": "Dragon Slayer",
+        "quest_dragon_description": "Defeat the dragon that is threatening the village.",
+        "quest_depths_title": "Dangerous Depths",
+        "quest_depths_description": "Explore the cursed cave and make it back alive.",
+
+        # Dungeon
+        "dungeon_monster_1_title": "Monster 1",
+        "dungeon_monster_1_description": "Not that scary only number 1",
+        "dungeon_monster_2_title": "Monster 2",
+        "dungeon_monster_2_description": "Not that scary only number 2",
+        "dungeon_monster_3_title": "Monster 3",
+        "dungeon_monster_3_description": "Not that scary only number 3",
+        "dungeon_monster_4_title": "Monster 4",
+        "dungeon_monster_4_description": "Not that scary only number 4",
+        "dungeon_monster_5_title": "Monster 5",
+        "dungeon_monster_5_description": "Not that scary only number 5",
+        "dungeon_enemy_1_title": "Enemy 1",
+        "dungeon_enemy_1_description": "Not that scary only number 1",
+        "dungeon_enemy_2_title": "Enemy 2",
+        "dungeon_enemy_2_description": "Not that scary only number 2",
+        "dungeon_enemy_3_title": "Enemy 3",
+        "dungeon_enemy_3_description": "Not that scary only number 3",
+        "dungeon_enemy_4_title": "Enemy 4",
+        "dungeon_enemy_4_description": "Not that scary only number 4",
+        "dungeon_enemy_5_title": "Enemy 5",
+        "dungeon_enemy_5_description": "Not that scary only number 5",
+        "dungeon_boss_1_title": "Boss 1",
+        "dungeon_boss_1_description": "Not that scary only number 1",
+        "dungeon_boss_2_title": "Boss 2",
+        "dungeon_boss_2_description": "Not that scary only number 1",
+        "dungeon_boss_3_title": "Boss 3",
+        "dungeon_boss_3_description": "Not that scary only number 1",
+        "dungeon_boss_4_title": "Boss 4",
+        "dungeon_boss_4_description": "Not that scary only number 1",
+        "dungeon_boss_5_title": "Boss 5",
+        "dungeon_boss_5_description": "Not that scary only number 1"
     },
     GERMAN: {
         "title_start": "Spiel starten",
@@ -142,7 +209,68 @@ translations = {
         "stamina_bar": "Kondition",
         "experience": "Erfahrung",
         "gold": "Gold",
-        "stamina_cost": "Kondition Kosten"
+        "stamina_cost": "Kondition Kosten",
+        "button_start_fight": "Kampf starten",
+        "button_close": "Schließen",
+        "button_skip_fight": "Kampf überspringen",
+        "button_faster": "Schneller",
+        "button_continue": "Weiter",
+        "message_won": "You won!",
+        "message_lost": "You lost!",
+
+        # Quest
+        "quest_exam_title": "Lehrlingsprüfung",
+        "quest_exam_description": "Bestehe die Prüfung, um Magier zu werden.",
+        "quest_lorem_ipsum_title": "lorem ipsum",
+        "quest_lorem_ipsum_description": "SISPSISPSISPS",
+        "quest_test_title": "Test",
+        "quest_test_description": "test",
+        "quest_monsterhunt_title": "Monsterjagd",
+        "quest_monsterhunt_description": "Besiege 10 Wölfe, um Erfahrungspunkte zu sammeln.",
+        "quest_treasurehunt_title": "Schatzsuche",
+        "quest_treasurehunt_description": "Finde die versteckte Truhe im Wald.",
+        "quest_errands_title": "Botengang",
+        "quest_errands_description": "Überbringe eine Nachricht und erhalte eine Belohnung.",
+        "quest_sword_title": "Das verlorene Schwert",
+        "quest_sword_description": "Finde das legendäre Schwert und bring es zurück.",
+        "quest_herb_title": "Kräutersammler",
+        "quest_herb_description": "Sammle 5 Heilkräuter für den Alchemisten.",
+        "quest_dragon_title": "Drachentöter",
+        "quest_dragon_description": "Besiege den Drachen, der das Dorf bedroht.",
+        "quest_depths_title": "Gefährliche Tiefen",
+        "quest_depths_description": "Erkunde die verfluchte Höhle und schaffe es, lebend zurückzukommen.",
+
+        # Dungeon
+        "dungeon_monster_1_title": "Monster 1",
+        "dungeon_monster_1_description": "Nicht so furchterregend, nur Monster Nummer 1",
+        "dungeon_monster_2_title": "Monster 2",
+        "dungeon_monster_2_description": "Nicht so furchterregend, nur Monster Nummer 2",
+        "dungeon_monster_3_title": "Monster 3",
+        "dungeon_monster_3_description": "Nicht so furchterregend, nur Monster Nummer 3",
+        "dungeon_monster_4_title": "Monster 4",
+        "dungeon_monster_4_description": "Nicht so furchterregend, nur Monster Nummer 4",
+        "dungeon_monster_5_title": "Monster 5",
+        "dungeon_monster_5_description": "Nicht so furchterregend, nur Monster Nummer 5",
+        "dungeon_enemy_1_title": "Gegner 1",
+        "dungeon_enemy_1_description": "Nicht so furchterregend, nur Gegner Nummer 1",
+        "dungeon_enemy_2_title": "Gegner 2",
+        "dungeon_enemy_2_description": "Nicht so furchterregend, nur Gegner Nummer 2",
+        "dungeon_enemy_3_title": "Gegner 3",
+        "dungeon_enemy_3_description": "Nicht so furchterregend, nur Gegner Nummer 3",
+        "dungeon_enemy_4_title": "Gegner 4",
+        "dungeon_enemy_4_description": "Nicht so furchterregend, nur Gegner Nummer 4",
+        "dungeon_enemy_5_title": "Gegner 5",
+        "dungeon_enemy_5_description": "Nicht so furchterregend, nur Gegner Nummer 5",
+        "dungeon_boss_1_title": "Boss 1",
+        "dungeon_boss_1_description": "Nicht so furchterregend, nur Boss Nummer 1",
+        "dungeon_boss_2_title": "Boss 2",
+        "dungeon_boss_2_description": "Nicht so furchterregend, nur Boss Nummer 2",
+        "dungeon_boss_3_title": "Boss 3",
+        "dungeon_boss_3_description": "Nicht so furchterregend, nur Boss Nummer 3",
+        "dungeon_boss_4_title": "Boss 4",
+        "dungeon_boss_4_description": "Nicht so furchterregend, nur Boss Nummer 4",
+        "dungeon_boss_5_title": "Boss 5",
+        "dungeon_boss_5_description": "Nicht so furchterregend, nur Boss Nummer 5"
     }
 }
 

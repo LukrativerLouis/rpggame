@@ -33,8 +33,8 @@ class Dungeon_Window:
         
         self.dungeon_start_buttons = [self.button_d1, self.button_d2, self.button_d3]
         
-        self.btn_start_fight = Button(position=(0,0), size=(100, 50), text="start fight", func = lambda: self.__start_fight())
-        self.btn_close_spec = Button(position=(0,0), size=(100, 50), text="close", func = lambda: self.__toggle_dungeon_seleced(DUNGEON_1))
+        self.btn_start_fight = Button(position=(0,0), size=(100, 50), text= self.settings.translate("button_start_fight"), func = lambda: self.__start_fight())
+        self.btn_close_spec = Button(position=(0,0), size=(100, 50), text= self.settings.translate("button_close"), func = lambda: self.__toggle_dungeon_seleced(DUNGEON_1))
         self.specific_dungeon_buttons = [self.btn_start_fight, self.btn_close_spec]
 
     def fight_completed(self):
@@ -52,7 +52,7 @@ class Dungeon_Window:
         if self.fight_window is None:
             self.character.current_health = self.character.max_health
             self.character.attack_score = 0
-            self.fight_window = Fight_Window(self.current_dungeon_monster.gold, self.current_dungeon_monster.experience, None, self.current_dungeon_monster.enemy, self.character, lambda: self.fight_completed(), lambda: self.__fight_competed_winning())
+            self.fight_window = Fight_Window(self.current_dungeon_monster.gold, self.current_dungeon_monster.experience, None, self.current_dungeon_monster.enemy, self.character, self.settings, lambda: self.fight_completed(), lambda: self.__fight_competed_winning())
 
     def __toggle_dungeon_seleced(self, new_selected_dungeon):
         self.current_dungeon_selected = new_selected_dungeon
@@ -106,11 +106,11 @@ class Dungeon_Window:
 
         # display title
 
-        show_text(canvas, self.current_dungeon_monster.name, monster_picture.x + monster_picture.width + specific_offset, monster_picture.y, "gold")
+        show_text(canvas, self.settings.translate(self.current_dungeon_monster.name), monster_picture.x + monster_picture.width + specific_offset, monster_picture.y, "gold")
 
         # display description
 
-        show_text(canvas, self.current_dungeon_monster.description, monster_picture.x + monster_picture.width + specific_offset, monster_picture.y + 200, "gold")
+        show_text(canvas, self.settings.translate(self.current_dungeon_monster.description), monster_picture.x + monster_picture.width + specific_offset, monster_picture.y + 200, "gold")
 
         # display start button
 

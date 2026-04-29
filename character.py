@@ -256,16 +256,16 @@ class Quest():
 
 quests_list = {
     "quests": [
-        {"title": "Lehrlingsprüfung", "description": "Bestehe die Prüfung, um ein Magier zu werden."},
-        {"title": "lorem ipsum", "description": "SISPSISPSISPS."},
-        {"title": "ipsum loren", "description": "neee neneee jaaj jajajaj."},
-        {"title": "Monsterjagd", "description": "Besiege 10 Wölfe, um Erfahrung zu sammeln."},
-        {"title": "Schatzsuche", "description": "Finde die versteckte Truhe im Wald."},
-        {"title": "Botengang", "description": "Liefer eine Nachricht und erhalte eine Belohnung."},
-        {"title": "Das verlorene Schwert", "description": "Finde das legendäre Schwert und bringe es zurück."},
-        {"title": "Kräutersammler", "description": "Sammle 5 Heilkräuter für den Alchemisten."},
-        {"title": "Drachenbezwinger", "description": "Besiege den Drachen, der das Dorf bedroht."},
-        {"title": "Gefährliche Tiefen", "description": "Erkunde die verfluchte Höhle und kehre lebend zurück."}
+        {TITLE_KEY: "quest_exam_title", DESCRIPTION_KEY: "quest_exam_description"},
+        {TITLE_KEY: "quest_ipsum_lorem_title", DESCRIPTION_KEY: "quest_ipsum_lorem_description"},
+        {TITLE_KEY: "quest_test_title", DESCRIPTION_KEY: "quest_test_description"},
+        {TITLE_KEY: "quest_monsterhunt_title", DESCRIPTION_KEY: "quest_monsterhunt_description"},
+        {TITLE_KEY: "quest_treasurehunt_title", DESCRIPTION_KEY: "quest_treasurehunt_description"},
+        {TITLE_KEY: "quest_errands_title", DESCRIPTION_KEY: "quest_errands_description"},
+        {TITLE_KEY: "quest_sword_title", DESCRIPTION_KEY: "quest_sword_description"},
+        {TITLE_KEY: "quest_herb_title", DESCRIPTION_KEY: "quest_herb_description"},
+        {TITLE_KEY: "quest_dragon_title", DESCRIPTION_KEY: "quest_dragon_description"},
+        {TITLE_KEY: "quest_depths_title", DESCRIPTION_KEY: "quest_depths_description"}
     ]
 }
 
@@ -284,7 +284,7 @@ def get_quest(character_level):
 
 def getQuestDetails():
     random_quest = random.choice(quests_list["quests"])
-    return random_quest["title"], random_quest["description"]
+    return random_quest[TITLE_KEY], random_quest[DESCRIPTION_KEY]
 
 def calculate_player_damage(player, enemy):
     weapon_roll = random.randint(int(player.weapon_p * player.weapon_s), player.weapon_p)

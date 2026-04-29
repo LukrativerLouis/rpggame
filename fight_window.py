@@ -4,9 +4,10 @@ from utils import *
 from character import *
 
 class Fight_Window:
-    def __init__(self, gold, experience, item, enemy, character: Character, completed_function, completed_function_winning):
+    def __init__(self, gold, experience, item, enemy, character: Character, settings, completed_function, completed_function_winning):
         # init stuff
         self.start_fight = False
+        self.settings = settings
         self.gold = gold
         self.experience = experience
         self.item = item
@@ -59,13 +60,13 @@ class Fight_Window:
         self.completed_function()
 
     def __create_fight_window_button(self):
-        button_skip = Button(position = (900, 1025), size = (150, 50), text = "skip fight", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__finish_instantly() )
-        button_faster = Button(position = (1250, 1025), size = (150, 50), text = "faster", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__adjust_attack_cooldown())
+        button_skip = Button(position = (900, 1025), size = (150, 50), text = self.settings.translate("button_skip_fight"), color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__finish_instantly() )
+        button_faster = Button(position = (1250, 1025), size = (150, 50), text = self.settings.translate("button_faster"), color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__adjust_attack_cooldown())
         
         return [button_skip, button_faster]
     
     def __create_fight_done_button(self):
-        self.button_continue = Button(position = (900, 1025), size = (150, 50), text = "continue", color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__execute_completed_functions())
+        self.button_continue = Button(position = (900, 1025), size = (150, 50), text = self.settings.translate("button_continue"), color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__execute_completed_functions())
     
     def __finish_instantly(self):
         while self.current_log_index < len(self.battle_log):
@@ -239,10 +240,10 @@ class Fight_Window:
         # character stats
         character_stats_y = base_y + stats_offset
         create_rectangle(canvas, character_rect_x, character_stats_y, player_rect_width, 300, 0, "azure3")
-        show_text(canvas, f"Strength: {self.character.strength}", 300 + self.health_bar_length / 2, character_stats_y + 20, "azure4", True)
-        show_text(canvas, f"Dexterity: {self.character.dexterity}", 300 + self.health_bar_length / 2, character_stats_y + 40, "azure4", True)
-        show_text(canvas, f"Endurance: {self.character.endurance}", 300 + self.health_bar_length / 2, character_stats_y + 60, "azure4", True)
-        show_text(canvas, f"Precision: {self.character.precision}", 300 + self.health_bar_length / 2, character_stats_y + 80, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_strength")}: {self.character.strength}", 300 + self.health_bar_length / 2, character_stats_y + 20, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_dexterity")}: {self.character.dexterity}", 300 + self.health_bar_length / 2, character_stats_y + 40, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_endurance")}: {self.character.endurance}", 300 + self.health_bar_length / 2, character_stats_y + 60, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_precision")}: {self.character.precision}", 300 + self.health_bar_length / 2, character_stats_y + 80, "azure4", True)
 
         # Enemy rect
         self.enemy_window.draw(canvas, mouse_pos)
@@ -262,10 +263,10 @@ class Fight_Window:
         # enemy stats
         enemy_stats_y = base_y + stats_offset
         create_rectangle(canvas, enemy_rect_x, enemy_stats_y, player_rect_width, 300, 0, "azure3")
-        show_text(canvas, f"Strength: {self.enemy.strength}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 20, "azure4", True)
-        show_text(canvas, f"Dexterity: {self.enemy.dexterity}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 40, "azure4", True)
-        show_text(canvas, f"Endurance: {self.enemy.endurance}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 60, "azure4", True)
-        show_text(canvas, f"Precision: {self.enemy.precision}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 80, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_strength")}: {self.enemy.strength}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 20, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_dexterity")}: {self.enemy.dexterity}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 40, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_endurance")}: {self.enemy.endurance}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 60, "azure4", True)
+        show_text(canvas, f"{self.settings.translate("stat_precision")}: {self.enemy.precision}", enemy_rect_x + self.health_bar_length / 2, enemy_stats_y + 80, "azure4", True)
 
         if not self.start_fight:
             # cooldown before fight 
@@ -281,15 +282,15 @@ class Fight_Window:
             create_rectangle(canvas, character_rect_x + player_rect_width + 20, character_stats_y, 735, 300, 0, "darkgray")
 
             if self.fight_won:
-                show_text(canvas, "You won!", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
-                show_text(canvas, f"Experience: {self.experience}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 40, "darkgoldenrod1", True)
-                show_text(canvas, f"Gold: {self.gold}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 60, "darkgoldenrod1", True)
+                show_text(canvas, self.settings.translate("message_won"), character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
+                show_text(canvas, f"{self.settings.translate("experience")}: {self.experience}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 40, "darkgoldenrod1", True)
+                show_text(canvas, f"{self.settings.translate("gold")}:: {self.gold}", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 60, "darkgoldenrod1", True)
                 if not self.reward_rewarded:
                     self.character.adjust_gold_and_exp(self.gold, self.experience)
                     self.reward_rewarded = True
                     
             else:
-                show_text(canvas, "You lost!", character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
+                show_text(canvas, self.settings.translate("message_lost"), character_rect_x + player_rect_width + 20 + 735 / 2, character_stats_y + 20, "darkgoldenrod1", True)
 
     def __inital_start_cooldown(self):
         current_time = pygame.time.get_ticks()

@@ -57,7 +57,7 @@ class Quest_Window:
         # TODO: Find out if you want to refund the cost
         self.character.current_stamina += self.selected_quest.stamina_cost
         self.quest_started = False
-        self.__close_dialog_window(False)
+        self.close_dialog_window(False)
 
     def __skip_quest_time(self):
         self.__start_fight()
@@ -109,7 +109,7 @@ class Quest_Window:
         if self.fight_window is None:
             self.character.current_health = self.character.max_health
             self.character.attack_score = 0
-            self.fight_window = Fight_Window(self.selected_quest.gold, self.selected_quest.experience, None, self.selected_quest.enemy, self.character, lambda: self.__quest_completed(), None)
+            self.fight_window = Fight_Window(self.selected_quest.gold, self.selected_quest.experience, None, self.selected_quest.enemy, self.character, self.settings, lambda: self.__quest_completed(), None)
 
     def __draw_quest_window(self, canvas):
         # window
@@ -117,8 +117,8 @@ class Quest_Window:
         create_rectangle(canvas, 905, 5, INITIAL_SCREEN_WIDTH - 910, INITIAL_SCREEN_HEIGHT - 10, 0, "azure4")
 
         # text
-        show_text(canvas, self.selected_quest.title, 1000, 100, "darkgoldenrod1")
-        show_text(canvas, self.selected_quest.description, 1000, 200, "darkgoldenrod1")
+        show_text(canvas, self.settings.translate(self.selected_quest.title), 1000, 100, "darkgoldenrod1")
+        show_text(canvas, self.settings.translate(self.selected_quest.description), 1000, 200, "darkgoldenrod1")
         show_text(canvas, f"{self.settings.translate("experience")}: {self.selected_quest.experience}", 1000, 400, "green")
         show_text(canvas, f"{self.settings.translate("gold")}: {self.selected_quest.gold}", 1000, 450, "yellow")
         show_text(canvas, f"{self.settings.translate("stamina_cost")}: {self.selected_quest.stamina_cost}", 1000, 500, "darkgoldenrod2")
@@ -136,7 +136,7 @@ class Quest_Window:
 
         # quest_title
 
-        show_text(canvas, f"{self.selected_quest.title}", 200 + 1715 / 2, 35, "darkgoldenrod", True)
+        show_text(canvas, self.settings.translate(self.selected_quest.title), 200 + 1715 / 2, 35, "darkgoldenrod", True)
 
         # loading bar border
 
