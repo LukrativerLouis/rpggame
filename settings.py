@@ -215,8 +215,8 @@ translations = {
         "button_skip_fight": "Kampf überspringen",
         "button_faster": "Schneller",
         "button_continue": "Weiter",
-        "message_won": "You won!",
-        "message_lost": "You lost!",
+        "message_won": "Du hast Gewonnen!",
+        "message_lost": "Du hast Verloren!",
 
         # Quest
         "quest_exam_title": "Lehrlingsprüfung",

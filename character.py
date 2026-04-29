@@ -73,7 +73,7 @@ class Character:
             return
 
     def get_stat_price(self, stat):
-        return CHARACTER_STAT_BASE_PRICE * (1.1 ** self.base_character_value_list[stat])
+        return round(CHARACTER_STAT_BASE_PRICE * (1.1 ** self.base_character_value_list[stat]), 1)
     
     def calculate_player_stats(self):
         if not self.item_stats_calculated_list:

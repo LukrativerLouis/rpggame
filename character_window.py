@@ -31,13 +31,17 @@ class Character_Blueprint:
         self.character_window_y = 0
         self.character_window_width = 815
         self.character_window_height = 815 - ITEM_HOLDER_SIZE
+        self.exp_bar = None
+        self.exp_bar_tooltip = Tooltip(0, 0, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "white", "gray")
         self.stats_to_display = ["strength", "dexterity", "endurance", "precision"]
         self.stat_button_list = []
+        self.stat_tooltips = []
         self.setup_slots()
         self.create_stat_buttons()
 
     def create_stat_buttons(self):
         self.stat_button_list = []
+        self.stat_tooltips = []
         for stat_name in self.stats_to_display:
             btn = Button(
                 position=(0, 0), 
@@ -48,6 +52,18 @@ class Character_Blueprint:
             )
             btn.stat_name = stat_name 
             self.stat_button_list.append(btn)
+
+            cost = self.character.get_stat_price(stat_name)
+            tooltip = Tooltip(
+                x=0, 
+                y=0, 
+                width=120, 
+                height=40, 
+                text=f"Cost: {cost}g", 
+                text_color="white", 
+                bg_color="gray"
+            )
+            self.stat_tooltips.append(tooltip)
 
     def setup_slots(self):
         base_x = 20
@@ -93,13 +109,8 @@ class Character_Blueprint:
         dynamic_width = max(0, self.character.experience / character_exp_bar_ratio - 2)
 
         create_rectangle(canvas, character_rect_x, character_rect_y, dynamic_width, character_exp_bar_height, 0, "lightgreen")
-        exp_bar = create_rectangle(canvas, character_rect_x, character_rect_y, self.exp_bar_width, character_exp_bar_height, 2, "cyan")
-        show_text(canvas, f"Level: {self.character.level}", exp_bar.x + exp_bar.width / 2, exp_bar.y + exp_bar.height / 2, "white", True)
-
-        if exp_bar.collidepoint(mouse_pos):
-            self.show_exp_bar_tooltips = True
-        else:
-            self.show_exp_bar_tooltips = False
+        self.exp_bar = create_rectangle(canvas, character_rect_x, character_rect_y, self.exp_bar_width, character_exp_bar_height, 2, "cyan")
+        show_text(canvas, f"Level: {self.character.level}", self.exp_bar.x + self.exp_bar.width / 2, self.exp_bar.y + self.exp_bar.height / 2, "white", True)
 
         stat_rectangle = create_rectangle(canvas, MAIN_START + main_side_padding + ITEM_HOLDER_SIZE + spacer_padding, base_x + (ITEM_HOLDER_SIZE + spacer_padding) * 3 , ITEM_HOLDER_SIZE * 2 + spacer_padding, ITEM_HOLDER_SIZE, 2, "red")
 
@@ -111,7 +122,6 @@ class Character_Blueprint:
 
         start_y = stat_rectangle.y + text_padding + 25
         line_height = 35
-        hovered_stat_data = None
 
         for i, stat_name in enumerate(self.stats_to_display):
             current_y = start_y + (i * line_height)
@@ -119,26 +129,22 @@ class Character_Blueprint:
             show_text(canvas, f"{self.settings.translate(f"stat_{stat_name}")}: {stat_value}", stat_rectangle.x + text_padding, current_y)
             
             button = self.stat_button_list[i]
-            button.set_pos((stat_rectangle.x + text_padding + 150, current_y + 10))
+            button_x = stat_rectangle.x + text_padding + 150
+            button_y = current_y + 10
+            button.set_pos((button_x, button_y))
             button.draw(canvas, mouse_pos)
 
-            if button.is_hovered:
-                hovered_stat_data = {
-                    "stat_name": stat_name,
-                    "x": button.rect.centerx,
-                    "y": button.rect.centery + 40
-                }
-
-        if hovered_stat_data:
-            name = hovered_stat_data["stat_name"]
-            cost = self.character.get_stat_price(name)
-            create_tooltip(canvas, hovered_stat_data["x"], hovered_stat_data["y"], 
-                        100, 40, f"Cost: {cost}g", "white", "gray")
+            tooltip = self.stat_tooltips[i]
+            tooltip.x = button_x
+            tooltip.y = button_y - 50
+            tooltip.text = f"Cost: {self.character.get_stat_price(stat_name)}g"
+            tooltip.draw(canvas, mouse_pos, button.rect)
 
         # exp tooltip
-        if self.show_exp_bar_tooltips and active_item == None:
-            create_tooltip(canvas, exp_bar.centerx, exp_bar.centery + 35, 100, 30, f"{self.character.experience}/{self.character.required_experience}", "lightgreen", "gray")
+        if active_item == None:
+            self.exp_bar_tooltip.text = f"{self.character.experience}/{self.character.required_experience}"
+            self.exp_bar_tooltip.draw(canvas, mouse_pos, self.exp_bar)
 
     def handle_events(self, event, mouse_pos):
-        for button in self.stat_button_list:
+        for i, button in enumerate(self.stat_button_list):
             button.handle_event(event, mouse_pos)

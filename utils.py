@@ -99,24 +99,94 @@ class Button:
 # RECT
 
 def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
-    """
-    canvas is the screen or surface to draw on -
-    color is the color of the rectangle standard is black -
-    x is the horizontal left and right -
-    y is vertical up and down -
-    width in pixel -
-    height in pixel -
-    thickness 0 is filled after that its thickness of the border
-    """
-
     rect = pygame.Rect(x, y, width, height)
     return pygame.draw.rect(canvas, color, rect, thickness)
 
 # TOOLTIP
 
-def create_tooltip(canvas, x, y, width, height, text, text_color, color = "black"):
-    rect = create_rectangle(canvas, x - width / 2, y - height / 2, width, height, 0, color)
-    show_text(canvas, text, rect.centerx, rect.centery, text_color, True)
+class Tooltip:
+    def __init__(self, x, y, width, height, text, text_color="white", bg_color="black"):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.text = text
+        self.text_color = text_color
+        self.bg_color = bg_color
+        
+        # Animation
+        self.hover_delay = 500
+        self.fade_duration = 300
+        self.alpha = 0
+        self.max_alpha = 200
+        
+        # States
+        self.is_hovered = False
+        self.hover_start_time = None
+        self.unhover_start_time = None
+    
+    def draw(self, canvas, mouse_pos, rect):
+        if self.x != rect.centerx:
+            self.x = rect.centerx
+            self.y = rect.centery + 40
+        current_time = pygame.time.get_ticks()
+        was_hovered = self.is_hovered
+        
+        self.is_hovered = rect.collidepoint(mouse_pos)
+        
+        if self.is_hovered and not was_hovered:
+            self.hover_start_time = current_time
+            self.unhover_start_time = None
+
+        elif not self.is_hovered and was_hovered:
+            self.unhover_start_time = current_time
+            self.hover_start_time = None
+        
+        if self.hover_start_time is not None:
+            elapsed = current_time - self.hover_start_time
+            if elapsed < self.hover_delay:
+                self.alpha = 0
+            else:
+                fade_elapsed = elapsed - self.hover_delay
+                if fade_elapsed < self.fade_duration:
+                    self.alpha = int((fade_elapsed / self.fade_duration) * self.max_alpha)
+                else:
+                    self.alpha = self.max_alpha
+        
+        elif self.unhover_start_time is not None:
+            elapsed = current_time - self.unhover_start_time
+            if elapsed < self.fade_duration:
+                self.alpha = int(self.max_alpha * (1 - elapsed / self.fade_duration))
+            else:
+                self.alpha = 0
+                self.unhover_start_time = None
+        
+        if self.alpha <= 0:
+            return
+        
+        tooltip_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        
+        bg_color_with_alpha = (*self.get_rgb(self.bg_color), self.alpha)
+        pygame.draw.rect(tooltip_surface, bg_color_with_alpha, (0, 0, self.width, self.height), border_radius=5)
+        
+        font = pygame.font.Font(None, 24)
+        text_surface = font.render(self.text, True, self.text_color)
+        text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
+        tooltip_surface.blit(text_surface, text_rect)
+        
+        canvas.blit(tooltip_surface, (self.x - self.width // 2, self.y - self.height // 2))
+    
+    @staticmethod
+    def get_rgb(color):
+        colors = {
+            "black": (0, 0, 0),
+            "white": (255, 255, 255),
+            "gray": (128, 128, 128),
+            "red": (255, 0, 0),
+            "green": (0, 255, 0),
+            "blue": (0, 0, 255),
+        }
+        return colors.get(color, (0, 0, 0))
 
 pygame.font.init()
 

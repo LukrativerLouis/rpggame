@@ -105,7 +105,7 @@ class Game():
         elif self.main_window_state == QUEST_MAIN_WINDOW_STATE:
             self.quest_window.handle_events(event, mouse_pos)
         elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
-            self.shop_window.handle_events(event, mouse_pos,)
+            self.shop_window.handle_events(event, mouse_pos)
         elif self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
             self.character_window.handle_events(event, mouse_pos)
         elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
