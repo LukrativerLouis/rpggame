@@ -126,7 +126,6 @@ class System():
                 self.save_service.save_data(self.game.all_shops_data, self.game.character_list, self.game.character.dungeon_completed, self.game.quest_window.quest_list)
             self.save_service.save_options(self.settings)
             self.last_auto_save_time = self.session_time_ms
-            print("auto saving")
             # TODO: SHOW THE USER ITS AUTOSAVING
 
     def toggle_fullscreen(self, is_fullscreen = None, no_toggle = False):
