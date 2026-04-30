@@ -17,6 +17,7 @@ class Menu:
         self.language_drop_down = Drop_Down_Menu(self.settings.base_width / 2, self.settings.base_height / 2 + 70, LANGUAGE_LIST, 200, 50, "gray", "white", 200, 50, self.settings.language, func= lambda language: self.apply_language(language))
         self.show_add_text_editor = False
         self.show_character_class_box = False
+        self.show_stats = False
         self.menu_button_list = []
         self.character_slot_list = []
         self.character_slot_buttons = []
@@ -62,8 +63,9 @@ class Menu:
         mid_x = self.settings.base_width / 2
         mid_y = self.settings.base_height / 2
 
-        save_button = Button(position= (mid_x, mid_y + 230),size= (200, 50), text= f"{self.settings.translate("button_save_and_close")}", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
-        self.options_button = [save_button]
+        save_button = Button(position= (mid_x - 100, mid_y + 230),size= (200, 50), text= f"{self.settings.translate("button_save_and_close")}", change_color = [150, 150, 150], func= lambda: self.save_and_close(MENU_STATE))
+        stats_button = Button(position= (mid_x + 105, mid_y + 230),size= (200, 50), text= f"{self.settings.translate("button_stats")}", change_color = [150, 150, 150], func= lambda: self.toggle_stats_window())
+        self.options_button = [save_button, stats_button]
 
     def create_options_slider(self):
         mid_x = self.settings.base_width / 2
@@ -84,19 +86,23 @@ class Menu:
         mid_y = self.settings.base_height / 2
 
 
-        fullscreen_toggle = Toggle(pos=(mid_x, mid_y - 170), size=(100, 40), font=get_font(None, 25),
+        fullscreen_toggle = Toggle(pos=(mid_x, mid_y - 190), size=(100, 40), font=get_font(None, 25),
                                     label=f"{self.settings.translate("settings_toggle_fullscreen")}:", getter = lambda: self.system.settings.is_fullscreen,
                                     on_toggle=self.system.toggle_fullscreen, text_color= "white")
         
-        music_toggle = Toggle(pos=(mid_x, mid_y - 120), size=(100, 40), font=get_font(None, 25),
+        music_toggle = Toggle(pos=(mid_x, mid_y - 140), size=(100, 40), font=get_font(None, 25),
                                     label=f"{self.settings.translate("settings_music_on")}:", getter = lambda: self.settings.music_on,
                                     on_toggle=self.settings.on_toggle_music, text_color= "white")
         
-        sound_toggle = Toggle(pos=(mid_x, mid_y - 70), size=(100, 40), font=get_font(None, 25),
+        sound_toggle = Toggle(pos=(mid_x, mid_y - 90), size=(100, 40), font=get_font(None, 25),
                                     label=f"{self.settings.translate("settings_sounds_on")}:", getter = lambda: self.settings.sounds_on,
                                     on_toggle=self.settings.on_toggle_sound, text_color= "white")
+        
+        auto_save_toggle = Toggle(pos= (mid_x, mid_y - 40), size=(100, 40), font=get_font(None, 25),
+                                    label=f"{self.settings.translate("settings_auto_save")}:", getter = lambda: self.settings.auto_save,
+                                    on_toggle=self.settings.on_toggle_auto_save, text_color= "white")
 
-        self.options_toggle = [fullscreen_toggle, music_toggle, sound_toggle]
+        self.options_toggle = [fullscreen_toggle, music_toggle, sound_toggle, auto_save_toggle]
 
     def show_text_editor(self, x, y, i):
         self.character_slot = i
@@ -108,6 +114,7 @@ class Menu:
         self.show_character_class_box = True
 
     def save_and_close(self, new_state):
+        self.show_stats = False
         self.system.save_service.save_options(self.settings)
         self.system.switch_menu_state(new_state)
 
@@ -130,13 +137,18 @@ class Menu:
         self.options_toggle[0].set_label(f"{self.settings.translate('settings_toggle_fullscreen')}:")
         self.options_toggle[1].set_label(f"{self.settings.translate('settings_music_on')}:")
         self.options_toggle[2].set_label(f"{self.settings.translate('settings_sounds_on')}:")
+        self.options_toggle[3].set_label(f"{self.settings.translate('settings_auto_save')}:")
 
         self.options_slider[0].set_label(f"{self.settings.translate("music_volume")}")
         self.options_slider[1].set_label(f"{self.settings.translate("sound_volume")}")
 
         self.character_slot_buttons[0].set_text(f"{self.settings.translate("button_back")}")
         self.options_button[0].set_text(f"{self.settings.translate("button_save_and_close")}")
+        self.options_button[1].set_text(f"{self.settings.translate("button_stats")}")
         self.character_add_text_box.label_text = f"{self.settings.translate('character_name')}"
+
+    def toggle_stats_window(self):
+        self.show_stats = not self.show_stats
 
     def delete_character(self, i):
         self.character_list[i] = None
@@ -155,6 +167,9 @@ class Menu:
 
         for slider in self.options_slider:
             slider.draw(canvas)
+
+        if self.show_stats:
+            self.draw_stats_window(canvas, mouse_pos)
 
         current_w, current_h = self.system.screen.get_size()
         res_string = f"{current_w}x{current_h}"
@@ -276,6 +291,21 @@ class Menu:
 
         self.resolution_drop_down.handle_event(event, mouse_pos)
         self.language_drop_down.handle_event(event, mouse_pos)
+
+    def draw_stats_window(self, canvas, mouse_pos):
+        stats_window = create_rectangle(canvas, 1300, 100, 350, 500, 0, "gray")
+        create_rectangle(canvas, 1300, 100, 350, 500, 5, "blue")
+
+        total_seconds = (self.system.total_time_ms  // 1000) % 60
+        total_minutes = (self.system.total_time_ms  // (1000 * 60)) % 60
+        total_hours = (self.system.total_time_ms  // (1000 * 60 * 60))
+
+        current_seconds = (self.system.session_time_ms  // 1000) % 60
+        current_minutes = (self.system.session_time_ms  // (1000 * 60)) % 60
+        current_hours = (self.system.session_time_ms  // (1000 * 60 * 60))
+
+        show_text(canvas, f"{self.settings.translate("playtime_total")}: {int(total_hours)}h {int(total_minutes)}m {int(total_seconds)}s", stats_window.centerx, stats_window.y + 20, "black", True)
+        show_text(canvas, f"{self.settings.translate("playtime_current")}: {int(current_hours)}h {int(current_minutes)}m {int(current_seconds)}s", stats_window.centerx, stats_window.y + 40, "black", True)
 
     def draw(self, canvas, mouse_pos):
         for button in self.menu_button_list:

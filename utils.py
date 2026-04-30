@@ -143,15 +143,7 @@ class Tooltip:
             self.hover_start_time = None
         
         if self.hover_start_time is not None:
-            elapsed = current_time - self.hover_start_time
-            if elapsed < self.hover_delay:
-                self.alpha = 0
-            else:
-                fade_elapsed = elapsed - self.hover_delay
-                if fade_elapsed < self.fade_duration:
-                    self.alpha = int((fade_elapsed / self.fade_duration) * self.max_alpha)
-                else:
-                    self.alpha = self.max_alpha
+            self.alpha = self.max_alpha
         
         elif self.unhover_start_time is not None:
             elapsed = current_time - self.unhover_start_time

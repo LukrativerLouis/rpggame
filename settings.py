@@ -119,6 +119,10 @@ translations = {
         "button_continue": "Continue",
         "message_won": "You won!",
         "message_lost": "You lost!",
+        "playtime_total": "Total playtime",
+        "playtime_current": "Current session",
+        "button_stats": "Statistics",
+        "settings_auto_save": "Auto save (5m)",
 
         # Quest
         "quest_exam_title": "Apprenticeship Exam",
@@ -217,6 +221,10 @@ translations = {
         "button_continue": "Weiter",
         "message_won": "Du hast Gewonnen!",
         "message_lost": "Du hast Verloren!",
+        "playtime_total": "Gesamte Spielzeit",
+        "playtime_current": "Aktuelle Sitzung",
+        "button_stats": "Statistiken",
+        "settings_auto_save": "Automatisch speichern (5m)",
 
         # Quest
         "quest_exam_title": "Lehrlingsprüfung",
@@ -293,12 +301,16 @@ class Settings:
         self.current_music_path = None
         self.music_volume = 0.05
         self.sound_volume = 0.1
+        self.auto_save = True
         self.music_on = True
         self.sounds_on = False
         self.debug = False
 
     def translate(self, key):
         return translations.get(self.language, {}).get(key, f"[{key}]")
+    
+    def on_toggle_auto_save(self, state):
+        self.auto_save = state
 
     def on_toggle_sound(self, state):
         self.sounds_on = state

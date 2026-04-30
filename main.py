@@ -29,6 +29,13 @@ class System():
         
         self.intro = Intro()
 
+        self.start_time = pygame.time.get_ticks()
+        self.clock = pygame.time.Clock()
+
+        # auto save
+        self.last_auto_save_time = 0
+        self.auto_save_interval = 1 * 60 * 1000
+
         self.save_service = Save_Service(self, self.settings)
         self.save_service.load_options()
 
@@ -44,7 +51,6 @@ class System():
 
         self.canvas = pygame.Surface((self.settings.base_width, self.settings.base_height))
 
-        self.clock = pygame.time.Clock()
         self.running = True
 
         # this is to ensure what main menu is shown: Intro, Menu, Options, Game, Character_Slots, Character Add Screen
@@ -101,12 +107,27 @@ class System():
     def quit_game(self, already_saved = False):
         if self.is_web:
             return
-        
+                
         if not already_saved:
             if self.game:
                 self.save_service.save_data(self.game.all_shops_data, self.game.character_list, self.game.character.dungeon_completed, self.game.quest_window.quest_list)
-                self.save_service.save_options(self.settings)
+            self.save_service.game_time = self.total_time_ms
+            self.save_service.save_options(self.settings)
         self.running = False
+
+    def start_total_game_time(self):
+        self.session_time_ms = pygame.time.get_ticks() - self.start_time
+        
+        self.total_time_ms = self.save_service.game_time + self.session_time_ms
+
+    def perform_auto_saving(self):
+        if self.settings.auto_save and self.session_time_ms - self.last_auto_save_time >= self.auto_save_interval:
+            if self.game:
+                self.save_service.save_data(self.game.all_shops_data, self.game.character_list, self.game.character.dungeon_completed, self.game.quest_window.quest_list)
+            self.save_service.save_options(self.settings)
+            self.last_auto_save_time = self.session_time_ms
+            print("auto saving")
+            # TODO: SHOW THE USER ITS AUTOSAVING
 
     def toggle_fullscreen(self, is_fullscreen = None, no_toggle = False):
         if self.is_web:
@@ -195,6 +216,14 @@ class System():
         while self.running:
 
             mouse_pos = self.get_virtual_mouse_pos()
+
+            # total game time
+
+            self.start_total_game_time()
+
+            # auto saving
+
+            self.perform_auto_saving()
 
             # event handling
 

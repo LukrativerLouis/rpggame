@@ -21,6 +21,7 @@ class Save_Service:
         self.forced_height = None
         self.toggle_fullscreen = None
         self.language = None
+        self.game_time = 0
 
     def save_options(self, settings):
         if self.system.is_web:
@@ -35,6 +36,7 @@ class Save_Service:
             "forced_height": settings.forced_height,
             "toggle_fullscreen": settings.is_fullscreen,
             "language": settings.language,
+            "game_time_total": self.game_time
         }
         
         data_string = json.dumps(raw_data, indent=4)
@@ -58,6 +60,7 @@ class Save_Service:
                 self.settings.forced_height = data.get("forced_height")
                 self.settings.is_fullscreen = data.get("toggle_fullscreen")
                 self.settings.language = data.get("language")
+                self.game_time = data.get("game_time_total")
 
         except FileNotFoundError:
             print("File not found")
