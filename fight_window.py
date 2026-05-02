@@ -41,8 +41,8 @@ class Fight_Window:
 
         self.active_damage_numbers = []
 
-        self.character_window = None
-        self.enemy_window = None
+        self.character_fight_window = None
+        self.enemy_fight_window = None
 
         self.__create_player_windows()
 
@@ -51,8 +51,8 @@ class Fight_Window:
 
     def __create_player_windows(self):
         start_time = pygame.time.get_ticks()
-        self.character_window = Player_Window(x = 300, y= 200, image= None, width= 370, height= 400, start_time= start_time, duration= 1.0, border_size= 5, color= "black", border_color= "blue3")
-        self.enemy_window = Player_Window(x=1445, y=200, image=None, width=370, height=400, start_time=start_time, duration=1.0, border_size=5, color="black", border_color="blue3")
+        self.character_fight_window = Player_Fight_Window(x = 300, y= 200, image= None, width= 370, height= 400, start_time= start_time, duration= 1.0, border_size= 5, color= "black", border_color= "blue3")
+        self.enemy_fight_window = Player_Fight_Window(x=1445, y=200, image=None, width=370, height=400, start_time=start_time, duration=1.0, border_size=5, color="black", border_color="blue3")
 
     def __execute_completed_functions(self):
         if self.completed_function_winning and self.fight_won:
@@ -70,7 +70,7 @@ class Fight_Window:
     
     def __finish_instantly(self):
         while self.current_log_index < len(self.battle_log):
-            attacker_type, damage = self.battle_log[self.current_log_index]
+            attacker_type, damage, is_crit = self.battle_log[self.current_log_index]
 
             if attacker_type == CHARACTER:
                 self.enemy_visual_health = 0
@@ -114,15 +114,15 @@ class Fight_Window:
                 attacker = starter
 
             if attacker == CHARACTER:
-                damage = round(calculate_player_damage(self.character, self.enemy))
+                damage, is_crit = calculate_player_damage(self.character, self.enemy)
                 temp_enemy_health -= damage
                 simulate_character_score += 1
-                self.battle_log.append((CHARACTER, damage))
+                self.battle_log.append((CHARACTER, damage, is_crit))
             else:
-                damage = round(calculate_player_damage(self.enemy, self.character))
+                damage, is_crit = calculate_player_damage(self.enemy, self.character)
                 temp_character_health -= damage
                 simulate_enemy_score += 1
-                self.battle_log.append((ENEMY, damage))
+                self.battle_log.append((ENEMY, damage, is_crit))
         
         self.fight_won = temp_enemy_health <= 0
 
@@ -132,27 +132,28 @@ class Fight_Window:
             elapsed_time = (current_time - self.start_time) / 1000
 
             if elapsed_time >= self.attack_cooldown:
-                attacker_type, damage = self.battle_log[self.current_log_index]
-                character_rect = self.character_window.get_rect()
-                enemy_rect = self.enemy_window.get_rect()
+                attacker_type, damage, is_crit = self.battle_log[self.current_log_index]
+                character_rect = self.character_fight_window.get_rect()
+                enemy_rect = self.enemy_fight_window.get_rect()
 
                 if attacker_type == CHARACTER:
 
-                    self.character_window.start_hit_animation(is_attacker = True, is_character = True)
-                    self.enemy_window.start_hit_animation(is_attacker = False, is_character = False)
+                    self.character_fight_window.start_hit_animation(is_attacker = True, is_character = True)
+                    self.enemy_fight_window.start_hit_animation(is_attacker = False, is_character = False)
                     self.enemy.current_health -= damage
 
                     y_shift = random.randint(-20, 80)
-                    damage_number = Damage_Number(damage, enemy_rect.centerx, enemy_rect.centery + y_shift, current_time + 200, duration = self.attack_cooldown, color = "white")
+
+                    damage_number = Damage_Number(damage, enemy_rect.centerx, enemy_rect.centery + y_shift, current_time + 200, duration = self.attack_cooldown, color = "red" if is_crit else "white")
                     self.active_damage_numbers.append(damage_number)
                 else:
 
-                    self.enemy_window.start_hit_animation(is_attacker = True, is_character = False)
-                    self.character_window.start_hit_animation(is_attacker = False, is_character = True)
+                    self.enemy_fight_window.start_hit_animation(is_attacker = True, is_character = False)
+                    self.character_fight_window.start_hit_animation(is_attacker = False, is_character = True)
                     self.character.current_health -= damage
 
                     y_shift = random.randint(-20, 80)
-                    damage_number = Damage_Number(damage, character_rect.centerx, character_rect.centery + y_shift, current_time + 200, duration = self.attack_cooldown, color = "white")
+                    damage_number = Damage_Number(damage, character_rect.centerx, character_rect.centery + y_shift, current_time + 200, duration = self.attack_cooldown, color = "red" if is_crit else "white")
                     self.active_damage_numbers.append(damage_number)
 
                 self.current_log_index += 1
@@ -174,8 +175,8 @@ class Fight_Window:
     def draw(self, canvas, mouse_pos):
         current_time = pygame.time.get_ticks()
 
-        self.character_window.update_hit_animation(current_time)
-        self.enemy_window.update_hit_animation(current_time)
+        self.character_fight_window.update_hit_animation(current_time)
+        self.enemy_fight_window.update_hit_animation(current_time)
 
         character_rect_x = 300
         enemy_rect_x = 1445
@@ -199,7 +200,7 @@ class Fight_Window:
                 button.draw(canvas, mouse_pos)
 
         # character rect
-        self.character_window.draw(canvas, mouse_pos)
+        self.character_fight_window.draw(canvas, mouse_pos)
 
         dt = (current_time - self.last_frame_time) / 1000.0
         self.last_frame_time = current_time
@@ -246,7 +247,7 @@ class Fight_Window:
         show_text(canvas, f"{self.settings.translate("stat_precision")}: {self.character.precision}", 300 + self.health_bar_length / 2, character_stats_y + 80, "azure4", True)
 
         # Enemy rect
-        self.enemy_window.draw(canvas, mouse_pos)
+        self.enemy_fight_window.draw(canvas, mouse_pos)
 
         self.enemy_visual_health = draw_health_bar(
             canvas,
@@ -308,7 +309,7 @@ class Fight_Window:
                 button.handle_event(event, mouse_pos)
 
 
-class Player_Window:
+class Player_Fight_Window:
     def __init__(self, x, y, image, width, height, start_time, duration, border_size, color, border_color):
         self.x = x
         self.y = y
@@ -406,4 +407,3 @@ class Damage_Number:
     def is_finished(self, current_time):
         elapsed = (current_time - self.start_time) / 1000.0
         return elapsed >= self.duration
-

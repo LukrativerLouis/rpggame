@@ -287,5 +287,13 @@ def getQuestDetails():
     return random_quest[TITLE_KEY], random_quest[DESCRIPTION_KEY]
 
 def calculate_player_damage(player, enemy):
+    final_dmg = 0
     weapon_roll = random.randint(int(player.weapon_p * player.weapon_s), player.weapon_p)
-    return weapon_roll + (player.fighting_power)
+    regular_dmg = weapon_roll + player.fighting_power
+    is_crit = random.random() < (player.crit_chance / 100)
+    if is_crit:
+        final_dmg = regular_dmg * player.crit_multiplier
+    else:
+        final_dmg = regular_dmg 
+
+    return round(final_dmg), is_crit
