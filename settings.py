@@ -22,6 +22,7 @@ DUNGEON_MAIN_WINDOW_STATE = "Dungeon_Main_Window_State"
 CHARACTER_MAIN_WINDOW_STATE = "Character_Main_Window_State"
 SHOP_MAIN_WINDOW_STATE = "Shop_Main_Window_State"
 
+AUTO_SAVE_TIME = 5
 SELL_FACTOR = 0.3
 CHARACTER_BASE_XP = 100
 XP_MULTIPLIER = 1.5
@@ -52,7 +53,6 @@ PIXELIFY_FONT_PATH = "font/Pixelify_Sans/PixelifySans-VariableFont_wght.ttf"
 
 TITLE_KEY = "title_key"
 DESCRIPTION_KEY = "description_key"
-
 
 # dungeons
 

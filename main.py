@@ -1,6 +1,7 @@
 import pygame
 import asyncio
 import sys
+import math
 from game import *
 from character import *
 from save_service import *
@@ -34,7 +35,11 @@ class System():
 
         # auto save
         self.last_auto_save_time = 0
-        self.auto_save_interval = 1 * 60 * 1000
+        self.auto_save_interval = AUTO_SAVE_TIME * 60 * 1000
+        self.show_auto_save = False
+        self.auto_save_start_time = 0
+        self.auto_save_animation_time = 2.0
+        self.save_icon_image = pygame.image.load("assets/save/save_icon.png").convert_alpha()
 
         self.save_service = Save_Service(self, self.settings)
         self.save_service.load_options()
@@ -126,7 +131,9 @@ class System():
                 self.save_service.save_data(self.game.all_shops_data, self.game.character_list, self.game.character.dungeon_completed, self.game.quest_window.quest_list)
             self.save_service.save_options(self.settings)
             self.last_auto_save_time = self.session_time_ms
-            # TODO: SHOW THE USER ITS AUTOSAVING
+
+            self.show_auto_save = True
+            self.auto_save_start_time = self.session_time_ms
 
     def toggle_fullscreen(self, is_fullscreen = None, no_toggle = False):
         if self.is_web:
@@ -197,6 +204,22 @@ class System():
         else:
             # global except intro
             show_text(self.canvas, f"{GAME_VERSION}", x = 10, y = 1050, color= "lightblue")
+            if self.show_auto_save:
+                elapsed_time = self.session_time_ms - self.auto_save_start_time
+                duration_ms = self.auto_save_animation_time * 1000
+
+                if elapsed_time < duration_ms:
+                    progress = elapsed_time / duration_ms
+                    
+                    pulse = math.sin(progress * math.pi) 
+                    
+                    base_size = 70
+                    amplitude = 10 
+                    current_size = base_size + (pulse * amplitude)
+                    
+                    create_surface(self.canvas, 1880, 30, self.save_icon_image, center = True, width = current_size, height = current_size)
+                else:
+                    self.show_auto_save = False
 
         if self.menu_state == MENU_STATE:
             self.menu.draw(self.canvas, mouse_pos)

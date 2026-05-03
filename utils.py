@@ -102,6 +102,20 @@ def create_rectangle(canvas, x, y, width, height, thickness, color = "black"):
     rect = pygame.Rect(x, y, width, height)
     return pygame.draw.rect(canvas, color, rect, thickness)
 
+def create_surface(canvas, x, y, image, center = False, width = None, height = None):
+    if width:
+        final_image = pygame.transform.scale(image, (width, height))
+    else:
+        final_image = image
+
+    if center:
+        rect = final_image.get_rect(center = (x, y))
+    else:
+        rect = final_image.get_rect(topleft = (x, y))
+        
+    canvas.blit(final_image, rect)
+    return rect
+
 # TOOLTIP
 
 class Tooltip:
