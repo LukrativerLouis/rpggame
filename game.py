@@ -30,6 +30,10 @@ class Game():
 
         self.item_holder_list: list[Item_Holder] = self.shop_window.item_holder_list + self.character_window.item_holder_list
 
+        # IF CURSOR STUFF PLEASE YOU NEED TO REMOVE
+        if pygame.mouse.get_cursor() != pygame.Cursor(pygame.SYSTEM_CURSOR_ARROW):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
         self.create_buttons()
 
     def create_buttons(self):
@@ -91,6 +95,21 @@ class Game():
             self.main_window_state = DEFAULT_MAIN_WINDOW_STATE
         else:
             self.main_window_state = new_window_state
+
+    def on_item_hover(self, new_item):
+        equipped_item = self.get_equipped_item_of_type(new_item.type)
+        
+        if equipped_item:
+            new_item.compare_with_equipped(equipped_item)
+            equipped_item.tooltip.is_hovered = new_item.tooltip.is_hovered
+        else:
+            new_item.create_tooltip()
+
+    def get_equipped_item_of_type(self, item_type):
+        for item in self.character.equipment:
+            if item.type == item_type:
+                return item
+        return None
 
     def handle_events(self, event, mouse_pos):
         # event handling
@@ -250,13 +269,9 @@ class Game():
             if self.active_item != None:
                 rel_x = event.rel[0] / self.system.scale_factor
                 rel_y = event.rel[1] / self.system.scale_factor
-                self.main_item_list[self.active_item].rect.move_ip(rel_x, rel_y)   
+                self.main_item_list[self.active_item].rect.move_ip(rel_x, rel_y)
 
     def draw(self, canvas, mouse_pos):
-
-        # IF CURSOR STUFF PLEASE YOU NEED TO REMOVE
-        if pygame.mouse.get_cursor() != pygame.Cursor(pygame.SYSTEM_CURSOR_ARROW):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
         for button in self.main_button_list:
             button.draw(canvas, mouse_pos)
@@ -308,6 +323,24 @@ class Game():
         for item in self.main_item_list:
             if item.visible:
                 item.draw(canvas, mouse_pos)
+
+        # draw tooltips
+
+        if self.active_item is None:
+            for num, item in enumerate(self.main_item_list):
+                if item.visible and num != self.active_item:
+                    if item not in self.character.equipment:
+                        if item.rect.collidepoint(mouse_pos):
+                            self.on_item_hover(item)
+                        else:
+                            item.create_tooltip()
+
+                    item.tooltip.draw(canvas, mouse_pos, item.rect, self.system.screen.height)
+
+        if self.main_window_state == CHARACTER_MAIN_WINDOW_STATE:
+            self.character_window.character_blueprint.exp_bar_tooltip.draw(canvas, mouse_pos, self.character_window.character_blueprint.exp_bar)
+        elif self.main_window_state == SHOP_MAIN_WINDOW_STATE:
+            self.shop_window.character_blueprint.exp_bar_tooltip.draw(canvas, mouse_pos, self.shop_window.character_blueprint.exp_bar)
 
         if self.active_item is not None:
             self.main_item_list[self.active_item].draw(canvas, mouse_pos)

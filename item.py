@@ -26,12 +26,63 @@ class Item():
         self.type = type
         self.sub_type = sub_type
         self.visible = visible
+        self.tooltip = Tooltip(self.rect.centerx, self.rect.centery, 200, 100, "", offset = 100)
         color_list = ["lightblue", "cornflowerblue", "magenta", "orange", "darkseagreen", "deeppink", "darkorange4"]
         self.color = random.choice(color_list)
+
+        self.create_tooltip()
+
+    def compare_with_equipped(self, equipped_item=None):
+        if not equipped_item:
+            return self.create_tooltip()
+        
+        relevant_stats = ITEM_STAT_MAPPING.get(self.type, 
+            ["strength", "dexterity", "endurance", "precision", "armor"])
+        
+        comparison_lines = [f"--- {self.name} vs {equipped_item.name} ---"]
+        
+        for stat in relevant_stats:
+            new_val = getattr(self, stat, 0)
+            old_val = getattr(equipped_item, stat, 0)
+            diff = new_val - old_val
+            
+            if diff > 0:
+                symbol = "+"
+                color = "green"
+            elif diff < 0:
+                symbol = "-"
+                color = "red"
+            else:
+                symbol = ""
+                color = "white"
+
+            if old_val == 0 and new_val == 0:
+                continue
+            
+            comparison_lines.append(f"{stat.capitalize()}: {new_val} ({symbol}{abs(diff)})")
+        
+        self.tooltip.text = "\n".join(comparison_lines)
+
+    def create_tooltip(self):
+        relevant_stats = ITEM_STAT_MAPPING.get(self.type, 
+            ["strength", "dexterity", "endurance", "precision", "armor"])
+        
+        stats = [
+            (f"--- {self.name} ---", True),
+        ]
+        
+        for stat in relevant_stats:
+            val = getattr(self, stat, 0)
+            stats.append((f"{stat.capitalize()}: {val}", val > 0))
+        
+        stats.append((f"Cost: {self.gold_value}g", self.gold_value > 0))
+        
+        active_lines = [text for text, condition in stats if condition]
+        self.tooltip.text = "\n".join(active_lines)
     
     def get_sell_value(self):
         # TODO: make sell value dynamic
-        return self.gold_value * SELL_FACTOR
+        return round(self.gold_value * SELL_FACTOR)
 
     def draw(self, canvas, mouse_pos):
         self.surf.fill(self.color)
@@ -120,6 +171,18 @@ LIST_OF_EQUIPMENT_TYPES = [
 
 SHOP = "shop"
 INVENTORY = "inventory"
+
+ITEM_STAT_MAPPING = {
+    WEAPON: ["strength", "dexterity", "precision", "endurance", "weapon_p", "weapon_s"],
+    HELMET: ["armor", "strength", "dexterity", "precision", "endurance"],
+    CHEST_PLATE: ["armor", "strength", "dexterity", "precision", "endurance"],
+    LEGGINGS: ["armor", "strength", "dexterity", "precision", "endurance"],
+    SHOES: ["armor", "strength", "dexterity", "precision", "endurance"],
+    AMULET: ["strength", "dexterity", "endurance", "precision"],
+    RING: ["strength", "dexterity", "endurance", "precision"],
+    EXTRA3: ["strength", "dexterity", "endurance", "precision"],
+    EXTRA4: ["strength", "dexterity", "endurance", "precision"],
+}
 
 item_list = [
     {"name": "Wooden Sword", "strength": 1, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "weapon_p": 5, "weapon_s": 0.5,"type": WEAPON, "sub_type": SWORD},

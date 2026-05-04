@@ -143,7 +143,6 @@ class Character_Blueprint:
         # exp tooltip
         if active_item == None:
             self.exp_bar_tooltip.text = f"{self.character.experience}/{self.character.required_experience}"
-            self.exp_bar_tooltip.draw(canvas, mouse_pos, self.exp_bar)
 
     def handle_events(self, event, mouse_pos):
         for i, button in enumerate(self.stat_button_list):

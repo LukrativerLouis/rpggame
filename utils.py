@@ -119,7 +119,7 @@ def create_surface(canvas, x, y, image, center = False, width = None, height = N
 # TOOLTIP
 
 class Tooltip:
-    def __init__(self, x, y, width, height, text, text_color="white", bg_color="black"):
+    def __init__(self, x, y, width, height, text, text_color="white", bg_color="black", offset = None):
         self.x = x
         self.y = y
         self.width = width
@@ -127,6 +127,10 @@ class Tooltip:
         self.text = text
         self.text_color = text_color
         self.bg_color = bg_color
+        if offset:
+            self.offset = offset
+        else:
+            self.offset = 40
         
         # Animation
         self.hover_delay = 500
@@ -139,10 +143,12 @@ class Tooltip:
         self.hover_start_time = None
         self.unhover_start_time = None
     
-    def draw(self, canvas, mouse_pos, rect):
-        if self.x != rect.centerx:
-            self.x = rect.centerx
-            self.y = rect.centery + 40
+    def draw(self, canvas, mouse_pos, rect, current_height = None):
+        self.x = rect.centerx
+        self.y = rect.centery + self.offset
+
+        if current_height and self.y + self.height >= current_height:
+            self.y = rect.y - self.offset - 10
         current_time = pygame.time.get_ticks()
         was_hovered = self.is_hovered
         
@@ -170,17 +176,36 @@ class Tooltip:
         if self.alpha <= 0:
             return
         
+        font = pygame.font.Font(None, 22)
+        padding = 10
+        lines = self.text.split('\n')
+        
+        line_surfaces = []
+        max_w = 0
+        total_h = 0
+        
+        for line in lines:
+            surf = font.render(line, True, self.text_color)
+            surf.set_alpha(self.alpha)
+            line_surfaces.append(surf)
+            
+            if surf.get_width() > max_w:
+                max_w = surf.get_width()
+            total_h += surf.get_height() + 2
+
+        self.width = max_w + (padding * 2)
+        self.height = total_h + (padding * 2)
+
         tooltip_surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        
         bg_color_with_alpha = (*self.get_rgb(self.bg_color), self.alpha)
-        pygame.draw.rect(tooltip_surface, bg_color_with_alpha, (0, 0, self.width, self.height), border_radius=5)
+        pygame.draw.rect(tooltip_surface, bg_color_with_alpha, (0, 0, self.width, self.height), border_radius=8)
         
-        font = pygame.font.Font(None, 24)
-        text_surface = font.render(self.text, True, self.text_color)
-        text_rect = text_surface.get_rect(center=(self.width // 2, self.height // 2))
-        tooltip_surface.blit(text_surface, text_rect)
-        
-        canvas.blit(tooltip_surface, (self.x - self.width // 2, self.y - self.height // 2))
+        current_y = padding
+        for surf in line_surfaces:
+            tooltip_surface.blit(surf, (padding, current_y))
+            current_y += surf.get_height() + 2
+
+        canvas.blit(tooltip_surface, (self.x - self.width // 2, self.y))
     
     @staticmethod
     def get_rgb(color):
