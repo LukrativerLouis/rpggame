@@ -123,7 +123,7 @@ class Menu:
             return
         try:
             width, height = map(int, res_string.split('x'))
-            self.game.set_specific_window_size(width, height)
+            self.system.set_specific_window_size(width, height)
         except ValueError:
             print(f"Ungültiges Format: {res_string}")
 

@@ -17,7 +17,7 @@ class Intro:
         # states
         self.animation_finished = False
         # CHANGE TO SHOW INTRO
-        self.fade_out_complete = True
+        self.fade_out_complete = False
         self.wait_duration = 500
 
         self.alpha = 0
