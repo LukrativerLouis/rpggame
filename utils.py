@@ -130,7 +130,7 @@ class Tooltip:
         if offset:
             self.offset = offset
         else:
-            self.offset = 40
+            self.offset = 20
         
         # Animation
         self.hover_delay = 500

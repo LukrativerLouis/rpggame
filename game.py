@@ -332,8 +332,6 @@ class Game():
                     if item not in self.character.equipment:
                         if item.rect.collidepoint(mouse_pos):
                             self.on_item_hover(item)
-                        else:
-                            item.create_tooltip()
 
                     item.tooltip.draw(canvas, mouse_pos, item.rect, self.system.screen.height)
 
@@ -343,4 +341,6 @@ class Game():
             self.shop_window.character_blueprint.exp_bar_tooltip.draw(canvas, mouse_pos, self.shop_window.character_blueprint.exp_bar)
 
         if self.active_item is not None:
+            if self.main_item_list[self.active_item].is_compare_tooltip:
+                self.main_item_list[self.active_item].create_tooltip()
             self.main_item_list[self.active_item].draw(canvas, mouse_pos)

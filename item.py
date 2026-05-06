@@ -28,6 +28,7 @@ class Item():
         self.visible = visible
         self.tooltip = Tooltip(self.rect.centerx, self.rect.centery, 200, 100, "", offset = 100)
         color_list = ["lightblue", "cornflowerblue", "magenta", "orange", "darkseagreen", "deeppink", "darkorange4"]
+        self.is_compare_tooltip = False
         self.color = random.choice(color_list)
 
         self.create_tooltip()
@@ -42,8 +43,13 @@ class Item():
         comparison_lines = [f"--- {self.name} vs {equipped_item.name} ---"]
         
         for stat in relevant_stats:
+
             new_val = getattr(self, stat, 0)
             old_val = getattr(equipped_item, stat, 0)
+
+            if stat == "weapon_s":
+                new_val = round(self.weapon_p * new_val, 1)
+                old_val = round(equipped_item.weapon_p * old_val, 1)
             diff = new_val - old_val
             
             if diff > 0:
@@ -58,10 +64,16 @@ class Item():
 
             if old_val == 0 and new_val == 0:
                 continue
+
+            if stat == "weapon_p":
+                stat = "Max Damage"
+            if stat == "weapon_s":
+                stat = "Min Damage"
             
             comparison_lines.append(f"{stat.capitalize()}: {new_val} ({symbol}{abs(diff)})")
         
         self.tooltip.text = "\n".join(comparison_lines)
+        self.is_compare_tooltip = True
 
     def create_tooltip(self):
         relevant_stats = ITEM_STAT_MAPPING.get(self.type, 
@@ -73,12 +85,18 @@ class Item():
         
         for stat in relevant_stats:
             val = getattr(self, stat, 0)
+            if stat == "weapon_p":
+                stat = "Max Damage"
+            if stat == "weapon_s":
+                stat = "Min Damage"
+                val = round(self.weapon_p * self.weapon_s, 1)
             stats.append((f"{stat.capitalize()}: {val}", val > 0))
         
         stats.append((f"Cost: {self.gold_value}g", self.gold_value > 0))
         
         active_lines = [text for text, condition in stats if condition]
         self.tooltip.text = "\n".join(active_lines)
+        self.is_compare_tooltip = False
     
     def get_sell_value(self):
         # TODO: make sell value dynamic

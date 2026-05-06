@@ -138,7 +138,9 @@ class Character_Blueprint:
             tooltip.x = button_x
             tooltip.y = button_y - 50
             tooltip.text = f"Cost: {self.character.get_stat_price(stat_name)}g"
-            tooltip.draw(canvas, mouse_pos, button.rect)
+
+        for i, button in enumerate(self.stat_button_list):
+            self.stat_tooltips[i].draw(canvas, mouse_pos, button.rect)
 
         # exp tooltip
         if active_item == None:
