@@ -296,16 +296,18 @@ class Menu:
         stats_window = create_rectangle(canvas, 1300, 100, 350, 500, 0, "gray")
         create_rectangle(canvas, 1300, 100, 350, 500, 5, "blue")
 
-        total_seconds = (self.system.total_time_ms  // 1000) % 60
-        total_minutes = (self.system.total_time_ms  // (1000 * 60)) % 60
-        total_hours = (self.system.total_time_ms  // (1000 * 60 * 60))
+        ts = self.system.total_time_ms // 1000
+        total_hours = ts // 3600
+        total_minutes = (ts % 3600) // 60
+        total_seconds = ts % 60
 
-        current_seconds = (self.system.session_time_ms  // 1000) % 60
-        current_minutes = (self.system.session_time_ms  // (1000 * 60)) % 60
-        current_hours = (self.system.session_time_ms  // (1000 * 60 * 60))
+        cs = self.system.session_time_ms // 1000
+        current_hours = cs // 3600
+        current_minutes = (cs % 3600) // 60
+        current_seconds = cs % 60
 
-        show_text(canvas, f"{self.settings.translate("playtime_total")}: {int(total_hours)}h {int(total_minutes)}m {int(total_seconds)}s", stats_window.centerx, stats_window.y + 20, "black", True)
-        show_text(canvas, f"{self.settings.translate("playtime_current")}: {int(current_hours)}h {int(current_minutes)}m {int(current_seconds)}s", stats_window.centerx, stats_window.y + 40, "black", True)
+        show_text(canvas, f"{self.settings.translate('playtime_total')}: {int(total_hours)}h {int(total_minutes)}m {int(total_seconds)}s", stats_window.centerx, stats_window.y + 20, "black", True)
+        show_text(canvas, f"{self.settings.translate('playtime_current')}: {int(current_hours)}h {int(current_minutes)}m {int(current_seconds)}s", stats_window.centerx, stats_window.y + 40, "black", True)
 
     def draw(self, canvas, mouse_pos):
         for button in self.menu_button_list:

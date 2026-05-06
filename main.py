@@ -20,6 +20,17 @@ class System():
         self.is_web = sys.platform == WEB_PLATFORM
         self.settings = Settings()
 
+        # auto save
+        self.last_auto_save_time = 0
+        self.auto_save_interval = AUTO_SAVE_TIME * 60 * 1000
+        self.show_auto_save = False
+        self.auto_save_start_time = 0
+        self.auto_save_animation_time = 2.0
+
+        # THIS NEEDS TO BE ABOVE THE SCREEN
+        self.save_service = Save_Service(self, self.settings)
+        self.save_service.load_options()
+
         if self.is_web:
             self.screen = pygame.display.set_mode((self.settings.base_width, self.settings.base_height))
         else: 
@@ -27,22 +38,13 @@ class System():
         
         if self.settings.forced_width and self.settings.forced_height:
             self.screen = pygame.display.set_mode((self.settings.forced_width, self.settings.forced_height), pygame.RESIZABLE | pygame.DOUBLEBUF)
+
+        self.save_icon_image = pygame.image.load("assets/save/save_icon.png").convert_alpha()
         
         self.intro = Intro()
 
         self.start_time = pygame.time.get_ticks()
         self.clock = pygame.time.Clock()
-
-        # auto save
-        self.last_auto_save_time = 0
-        self.auto_save_interval = AUTO_SAVE_TIME * 60 * 1000
-        self.show_auto_save = False
-        self.auto_save_start_time = 0
-        self.auto_save_animation_time = 2.0
-        self.save_icon_image = pygame.image.load("assets/save/save_icon.png").convert_alpha()
-
-        self.save_service = Save_Service(self, self.settings)
-        self.save_service.load_options()
 
         self.menu = Menu(self, self.settings)
         self.game: Game = None
@@ -122,8 +124,12 @@ class System():
 
     def start_total_game_time(self):
         self.session_time_ms = pygame.time.get_ticks() - self.start_time
+
+        session_seconds = self.session_time_ms // 1000
+
+        save_seconds = self.save_service.game_time // 1000
         
-        self.total_time_ms = self.save_service.game_time + self.session_time_ms
+        self.total_time_ms = (save_seconds + session_seconds) * 1000
 
     def perform_auto_saving(self):
         if self.settings.auto_save and self.session_time_ms - self.last_auto_save_time >= self.auto_save_interval:
