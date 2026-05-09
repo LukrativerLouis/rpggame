@@ -210,6 +210,8 @@ class System():
         else:
             # global except intro
             show_text(self.canvas, f"{GAME_VERSION}", x = 10, y = 1050, color= "lightblue")
+
+            # auto save icon
             if self.show_auto_save:
                 elapsed_time = self.session_time_ms - self.auto_save_start_time
                 duration_ms = self.auto_save_animation_time * 1000
