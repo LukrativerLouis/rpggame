@@ -3,7 +3,7 @@ from settings import *
 import random
 
 class Item():
-    def __init__(self, id, x, y, width, height, name, strength, dexterity, endurance, precision, armor, weapon_p, weapon_s, gold_value, type, sub_type, visible):
+    def __init__(self, id, x, y, width, height, name, strength, dexterity, endurance, precision, armor, weapon_p, weapon_s, gold_value, type, sub_type, rarity, visible):
         self.id = id
         self.x = x
         self.y = y
@@ -25,11 +25,12 @@ class Item():
         self.sell_value = self.get_sell_value()
         self.type = type
         self.sub_type = sub_type
+        self.rarity = rarity
         self.visible = visible
         self.tooltip = Tooltip(self.rect.centerx, self.rect.centery, 200, 100, "", offset = 100)
         color_list = ["lightblue", "cornflowerblue", "magenta", "orange", "darkseagreen", "deeppink", "darkorange4"]
         self.is_compare_tooltip = False
-        self.color = random.choice(color_list)
+        self.color = self.rarity
 
         self.create_tooltip()
 
@@ -48,8 +49,12 @@ class Item():
             old_val = getattr(equipped_item, stat, 0)
 
             if stat == "weapon_s":
-                new_val = round(self.weapon_p * new_val, 1)
-                old_val = round(equipped_item.weapon_p * old_val, 1)
+                new_val = round(self.weapon_p * new_val)
+                old_val = round(equipped_item.weapon_p * old_val)
+            if stat == "weapon_p":
+                new_val = round(self.weapon_p)
+                old_val = round(equipped_item.weapon_p)
+
             diff = new_val - old_val
             
             if diff > 0:
@@ -89,7 +94,7 @@ class Item():
                 stat = "Max Damage"
             if stat == "weapon_s":
                 stat = "Min Damage"
-                val = round(self.weapon_p * self.weapon_s, 1)
+                val = round(self.weapon_p * self.weapon_s)
             stats.append((f"{stat.capitalize()}: {val}", val > 0))
         
         stats.append((f"Cost: {self.gold_value}g", self.gold_value > 0))
@@ -129,6 +134,7 @@ class Item():
             "gold_value": self.gold_value,
             "type": self.type,
             "sub_type": self.sub_type,
+            "rarity": self.rarity,
             "visible": False,
             "x": self.x,
             "y": self.y
@@ -203,9 +209,91 @@ ITEM_STAT_MAPPING = {
 }
 
 item_list = [
-    {"name": "Wooden Sword", "strength": 1, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "weapon_p": 5, "weapon_s": 0.5,"type": WEAPON, "sub_type": SWORD},
-    {"name": "Cracked Wooden Sword", "strength": 0.5, "dexterity": 0, "endurance": 0.5, "precision": 0, "armor": 0, "weapon_p": 3, "weapon_s": 0.3, "type": WEAPON, "sub_type": SWORD}
+    # Weapons
+    {"name": "Wooden Sword", "min_level": 1, "max_level": 5, "strength": 1, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "weapon_p": 5, "weapon_s": 0.5,"type": WEAPON, "sub_type": SWORD},
+    {"name": "Cracked Wooden Sword", "min_level": 1, "max_level": 5, "strength": 0.5, "dexterity": 0, "endurance": 0.5, "precision": 0, "armor": 0, "weapon_p": 3, "weapon_s": 0.3, "type": WEAPON, "sub_type": SWORD}
+
+    # Helmet
+
+    # Chest Plate
+
+    # Leggings
+
+    # Shoes
 ]
+
+def get_specific_item(name):
+    # returns only the dict entry
+    for item in item_list:
+        if item["name"] == name:
+            return item
+
+def get_available_items(player_level):
+    available = []
+    for item in item_list:
+        if item["min_level"] <= player_level <= item["max_level"]:
+            available.append(item)
+    return available
+
+def roll_item_rarity(stat_list):
+    rarity_roll = random.uniform(0, 10000)
+    multiplier = 1.0
+    rarity = "White"
+
+    if rarity_roll == 9998:
+        multiplier = 1.5
+        rarity = "Gold"
+    elif rarity_roll > 9950:
+        multiplier = 1.2
+        rarity = "Purple"
+    elif rarity_roll > 9900:
+        multiplier = 1.1
+        rarity = "Blue"
+    
+    new_stat_list = []
+    for stat in stat_list:
+        if stat >= 1:
+            new_stat_list.append(round(stat * multiplier, 1))
+        else:
+            new_stat_list.append(stat)
+
+    return rarity, new_stat_list
+
+def create_random_item(player_level, x = 0, y = 0):
+    pool = get_available_items(player_level)
+
+    if not pool:
+        return None
+
+    template = random.choice(pool)
+    stat_list = [
+        template.get("strength", 0),
+        template.get("dexterity", 0),
+        template.get("endurance", 0),
+        template.get("precision", 0),
+        template.get("armor", 0),
+        template["weapon_p"]
+    ]
+
+    rarity, new_stat_list = roll_item_rarity(stat_list)
+
+    return Item(
+        id=random.randint(0, 100000),
+        x=x, y=y, width=ITEM_SIZE, height=ITEM_SIZE,
+        name=template["name"],
+        strength=new_stat_list[0],
+        dexterity=new_stat_list[1],
+        endurance=new_stat_list[2],
+        precision=new_stat_list[3],
+        armor=new_stat_list[4],
+        weapon_p=new_stat_list[5],
+        weapon_s=template["weapon_s"],
+        gold_value= player_level,
+        type=template["type"],
+        sub_type=template["sub_type"],
+        rarity= rarity,
+        visible=False
+    )
 
 def getItemDetailsRandom():
     random_item = random.choice(item_list)

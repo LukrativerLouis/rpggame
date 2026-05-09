@@ -114,7 +114,7 @@ class Character:
             self.fighting_power = (self.strength * 0.3) + (self.dexterity * 0.7)
             self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_ARCHER)
         elif self.class_type == MAGE:
-            self.fighting_power = 1
+            self.fighting_power = (self.strength * 0.5) + (self.dexterity * 0.5)
             self.max_health = BASE_HP + (self.endurance * HEALTH_SCALING_MAGE)
         
         # all classes
@@ -288,14 +288,20 @@ def getQuestDetails():
     random_quest = random.choice(quests_list["quests"])
     return random_quest[TITLE_KEY], random_quest[DESCRIPTION_KEY]
 
-def calculate_player_damage(player, enemy):
-    final_dmg = 0
-    weapon_roll = random.randint(int(player.weapon_p * player.weapon_s), player.weapon_p)
-    regular_dmg = weapon_roll + player.fighting_power
-    is_crit = random.random() < (player.crit_chance / 100)
-    if is_crit:
-        final_dmg = regular_dmg * player.crit_multiplier
-    else:
-        final_dmg = regular_dmg 
+def calculate_player_damage(attacker, defender):
 
-    return round(final_dmg), is_crit
+    raw_damage = attacker.fighting_power * random.uniform(attacker.weapon_p, attacker.weapon_s)
+    is_crit = random.random() * 100 < attacker.crit_chance
+    if is_crit:
+        raw_damage *= attacker.crit_multiplier
+    
+    k = ARMOR_K_BASE + (defender.level * ARMOR_LEVEL_SCALING)
+
+    damage_multiplier = k / (k + defender.armor)
+
+    final_dmg = round(raw_damage * damage_multiplier)
+
+    if final_dmg < 1:
+        final_dmg = 1
+
+    return max(1, final_dmg), is_crit
