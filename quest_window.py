@@ -13,6 +13,7 @@ class Quest_Window:
         self.quest_button_list = self.__create_quest_window_buttons()
         self.dialog_button_list = self.__create_dialog_window_buttons()
         self.traveling_screen_button_list = self.__create_traveling_screen_buttons()
+        self.stamina_add_button = Button((0, 0), (50, 50), text = "+", func= lambda: self.buy_stamina())
         self.countdown_bar_length = 1525
         self.countdown_bar_length_current = self.countdown_bar_length
         self.countdown_bar_progress = 50
@@ -54,8 +55,6 @@ class Quest_Window:
             self.selected_quest_index = -1
 
     def __cancel_quest(self):
-        # TODO: Find out if you want to refund the cost
-        self.character.current_stamina += self.selected_quest.stamina_cost
         self.quest_started = False
         self.close_dialog_window(False)
 
@@ -81,6 +80,11 @@ class Quest_Window:
         button_skip_quest = Button(position = (1150, 1025), size = (150, 50), text = self.settings.translate("button_skip_quest_time"), color = [255, 0, 0], change_color = [255, 50, 50], func = lambda: self.__skip_quest_time())
 
         return [button_cancel_quest, button_skip_quest]
+    
+    def buy_stamina(self):
+        if self.character.gold - STAMINA_COST >= 0:
+            self.character.gold -= STAMINA_COST
+            self.character.current_stamina += 10
     
     def __start_quest(self):
         if self.character.current_stamina - self.selected_quest.stamina_cost >= 0:
@@ -163,7 +167,7 @@ class Quest_Window:
             if not self.start_fight_early:
                 self.__start_fight()
 
-    def __draw_stamina_bar(self, canvas):
+    def __draw_stamina_bar(self, canvas, mouse_pos):
 
         stamina_bar_x = 400
         stamina_bar_y = 850
@@ -175,6 +179,8 @@ class Quest_Window:
         max_stamina = self.character.max_stamina
 
         draw_progression_bar(canvas, stamina_bar_x, stamina_bar_y, current_stamina, max_stamina, stamina_bar_width, stamina_bar_heigth, stamina_bar_border, "darkgoldenrod2", "gray", "white", self.settings.translate("stamina_bar"))
+        self.stamina_add_button.set_pos((stamina_bar_x + stamina_bar_width + 30, stamina_bar_y + stamina_bar_heigth / 2))
+        self.stamina_add_button.draw(canvas, mouse_pos)
 
     def draw(self, canvas, mouse_pos):
         # temp quest board
@@ -183,7 +189,7 @@ class Quest_Window:
         for button in self.quest_button_list:
             button.draw(canvas, mouse_pos)
 
-        self.__draw_stamina_bar(canvas)
+        self.__draw_stamina_bar(canvas, mouse_pos)
 
         if self.show_dialog_window and self.selected_quest is not None:
             self.__draw_quest_window(canvas)
@@ -204,6 +210,9 @@ class Quest_Window:
 
         for button in self.quest_button_list:
             button.handle_event(event, mouse_pos)
+
+        self.stamina_add_button.handle_event(event, mouse_pos)
+        
         if self.show_dialog_window and self.selected_quest is not None:
             for button in self.dialog_button_list:
                 button.handle_event(event, mouse_pos)

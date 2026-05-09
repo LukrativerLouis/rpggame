@@ -211,7 +211,7 @@ ITEM_STAT_MAPPING = {
 item_list = [
     # Weapons
     {"name": "Wooden Sword", "min_level": 1, "max_level": 5, "strength": 1, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "weapon_p": 5, "weapon_s": 0.5,"type": WEAPON, "sub_type": SWORD},
-    {"name": "Cracked Wooden Sword", "min_level": 1, "max_level": 5, "strength": 0.5, "dexterity": 0, "endurance": 0.5, "precision": 0, "armor": 0, "weapon_p": 3, "weapon_s": 0.3, "type": WEAPON, "sub_type": SWORD}
+    {"name": "Cracked Wooden Sword", "min_level": 1, "max_level": 5, "strength": 1, "dexterity": 0, "endurance": 0.5, "precision": 0, "armor": 0, "weapon_p": 3, "weapon_s": 0.3, "type": WEAPON, "sub_type": SWORD}
 
     # Helmet
 
@@ -253,9 +253,9 @@ def roll_item_rarity(stat_list):
     new_stat_list = []
     for stat in stat_list:
         if stat >= 1:
-            new_stat_list.append(round(stat * multiplier, 1))
+            new_stat_list.append(round(stat * multiplier))
         else:
-            new_stat_list.append(stat)
+            new_stat_list.append(round(stat))
 
     return rarity, new_stat_list
 
