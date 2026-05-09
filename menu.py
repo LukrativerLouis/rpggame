@@ -226,6 +226,11 @@ class Menu:
 
         self.character_slot_buttons[0].draw(canvas, mouse_pos)
 
+        if self.cursor_focused:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
     def create_character_and_change_state(self, character_slot=None):
         if character_slot is None:
             chosen_name = self.character_add_text_box.text
@@ -240,7 +245,9 @@ class Menu:
         else:
             # Bestehender Charakter ausgewählt
             self.character_slot = character_slot
-            
+        
+        self.cursor_focused = False
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         self.system.switch_menu_state(GAME_STATE)
 
     def handle_character_slot_events(self, event, mouse_pos):
@@ -272,11 +279,6 @@ class Menu:
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         self.cursor_focused = False
                         self.create_character_and_change_state(i)
-        
-        if self.cursor_focused:
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-        else:
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
     def handle_options_events(self, event, mouse_pos):
         for toggle in self.options_toggle:

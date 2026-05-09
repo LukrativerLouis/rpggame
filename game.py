@@ -30,7 +30,6 @@ class Game():
 
         self.item_holder_list: list[Item_Holder] = self.shop_window.item_holder_list + self.character_window.item_holder_list
 
-        # IF CURSOR STUFF PLEASE YOU NEED TO REMOVE
         if pygame.mouse.get_cursor() != pygame.Cursor(pygame.SYSTEM_CURSOR_ARROW):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
