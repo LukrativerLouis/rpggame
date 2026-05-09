@@ -30,6 +30,9 @@ class Game():
 
         self.item_holder_list: list[Item_Holder] = self.shop_window.item_holder_list + self.character_window.item_holder_list
 
+        self.level_up_alert = Alert(195 + 1725 / 2, 1080 / 2, 200, 300, "Neues Level erreicht", 1920, 1080, func = lambda: self.hide_level_up_alert())
+        self.show_level_up_alert = False
+
         if pygame.mouse.get_cursor() != pygame.Cursor(pygame.SYSTEM_CURSOR_ARROW):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
@@ -110,11 +113,20 @@ class Game():
                 return item
         return None
 
+    def hide_level_up_alert(self):
+        self.show_level_up_alert = False
+
     def handle_events(self, event, mouse_pos):
         # event handling
 
-        for button in self.main_button_list:
-            button.handle_event(event, mouse_pos)
+        if event == pygame.event.Event(pygame.USEREVENT, attr1= LEVEL_UP_EVENT):
+            self.show_level_up_alert = True
+
+        if not self.show_level_up_alert:
+            for button in self.main_button_list:
+                button.handle_event(event, mouse_pos)
+        else:
+            self.level_up_alert.handle_event(event, mouse_pos)
 
         # event handling window states
 
@@ -128,10 +140,6 @@ class Game():
             self.character_window.handle_events(event, mouse_pos)
         elif self.main_window_state == DUNGEON_MAIN_WINDOW_STATE:
             self.dungeon_window.handle_events(event, mouse_pos)
-
-        # character events
-
-        self.character.check_level_up()
 
         # start item events
 
@@ -285,6 +293,10 @@ class Game():
         # right main rect
         create_rectangle(canvas, 195, 0, 1725, 1080, 5, "blue")
 
+        # character event
+
+        self.character.check_level_up()
+
         # window states
 
         for item in self.character.inventory:
@@ -343,3 +355,6 @@ class Game():
             if self.main_item_list[self.active_item].is_compare_tooltip:
                 self.main_item_list[self.active_item].create_tooltip()
             self.main_item_list[self.active_item].draw(canvas, mouse_pos)
+
+        if self.show_level_up_alert:
+            self.level_up_alert.draw(canvas, mouse_pos)

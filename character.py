@@ -56,6 +56,8 @@ class Character:
             self.level += 1
             self.experience -= self.required_experience
             self.required_experience = self.calculate_required_exp()
+            level_up_event = pygame.event.Event(pygame.USEREVENT, attr1=LEVEL_UP_EVENT)
+            pygame.event.post(level_up_event)
 
     def calculate_required_exp(self):
         return round(CHARACTER_BASE_XP * (pow(XP_MULTIPLIER, self.level - 1)))

@@ -560,24 +560,54 @@ class Choosing_Element():
         self.index = 0
         self.button_offset = 100
         self.next_button = Button(position = (self.x + self.button_offset, self.y), size = (40, 40), text= "=>", func = lambda: self.next_element())
+        self.previous_button = Button(position = (self.x - self.button_offset, self.y), size = (40, 40), text= "<=", func = lambda: self.previous_element())
         self.selected_item = self.item_list[self.index]
 
     def set_pos(self, x, y):
         self.x = x
         self.y = y
         self.next_button.set_pos((x + self.button_offset, y))
+        self.previous_button.set_pos((x - self.button_offset, y))
+
+    def previous_element(self):
+        self.index = (self.index - 1) % len(self.item_list)
+        self.selected_item = self.item_list[self.index]
 
     def next_element(self):
-        if self.index + 1 <= len(self.item_list) - 1:
-            self.index += 1
-            self.selected_item = self.item_list[self.index]
-        else:
-            self.index = 0
-            self.selected_item = self.item_list[self.index]
+        self.index = (self.index + 1) % len(self.item_list)
+        self.selected_item = self.item_list[self.index]
 
     def draw(self, canvas, mouse_pos, settings):
         show_text(canvas, settings.translate(self.selected_item), self.x, self.y, self.text_color, True)
         self.next_button.draw(canvas, mouse_pos)
+        self.previous_button.draw(canvas, mouse_pos)
 
     def handle_event(self, event, mouse_pos):
         self.next_button.handle_event(event, mouse_pos)
+        self.previous_button.handle_event(event, mouse_pos)
+
+class Alert():
+    def __init__(self, x, y, width, height, text, screen_width, screen_height, func: None):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.rect = pygame.rect.Rect(self.x - (self.width / 2), self.y - (self.height / 2), self.width, self.height)
+        self.text = text
+        self.func = func
+    
+    def draw(self, canvas, mouse_pos):
+        overlay = pygame.Surface((self.screen_width, self.screen_height))
+        overlay.set_alpha(150)
+        overlay.fill((0, 0, 0))
+        canvas.blit(overlay, (0, 0))
+
+        pygame.draw.rect(canvas, "gray", self.rect)
+        show_text(canvas, self.text, self.rect.centerx, self.rect.centery, "black", True)
+
+    def handle_event(self, event, mouse_pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(mouse_pos):
+            if self.func:
+                self.func()

@@ -22,6 +22,10 @@ DUNGEON_MAIN_WINDOW_STATE = "Dungeon_Main_Window_State"
 CHARACTER_MAIN_WINDOW_STATE = "Character_Main_Window_State"
 SHOP_MAIN_WINDOW_STATE = "Shop_Main_Window_State"
 
+# Events
+
+LEVEL_UP_EVENT = "level_up_event"
+
 AUTO_SAVE_TIME = 5
 SELL_FACTOR = 0.3
 CHARACTER_BASE_XP = 100
@@ -145,6 +149,8 @@ translations = {
         "quest_dragon_description": "Defeat the dragon that is threatening the village.",
         "quest_depths_title": "Dangerous Depths",
         "quest_depths_description": "Explore the cursed cave and make it back alive.",
+        "quest_ipsum_lorem_title": "ipsum lorem",
+        "quest_ipsum_lorem_description": "GRRR Grrrr",
 
         # Dungeon
         "dungeon_monster_1_title": "Monster 1",
@@ -247,6 +253,8 @@ translations = {
         "quest_dragon_description": "Besiege den Drachen, der das Dorf bedroht.",
         "quest_depths_title": "Gefährliche Tiefen",
         "quest_depths_description": "Erkunde die verfluchte Höhle und schaffe es, lebend zurückzukommen.",
+        "quest_ipsum_lorem_title": "ipsum lorem",
+        "quest_ipsum_lorem_description": "GRRR Grrrr",
 
         # Dungeon
         "dungeon_monster_1_title": "Monster 1",
