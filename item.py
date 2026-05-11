@@ -214,24 +214,32 @@ item_list = [
 
     # Warrior Weapons Stage 1
 
-    # --- LEVEL 1-3 (Der absolute Anfang) ---
-    {"name": "Wooden Sword", "min_level": 1, "max_level": 5, "strength": 1, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "weapon_p": 4, "weapon_s": 0.5, "class": WARRIOR, "type": WEAPON, "sub_type": SWORD},
-    {"name": "Ein Stock aus dem Wald", "min_level": 1, "max_level": 3, "strength": 1, "dexterity": 1, "endurance": 0, "precision": 0, "armor": 0, "weapon_p": 4, "weapon_s": 0.2, "type": WEAPON, "sub_type": SWORD},
+    # --- LEVEL 1-3 (Bisschen besser als Hand) ---
+    {"name": "Ein Stock", "min_level": 1, "max_level": 3, "strength": 1, "dexterity": 1, "endurance": 0, "precision": 0, "armor": 0, "weapon_p": 3, "weapon_s": 0.2, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Morscher Holzknüppel", "min_level": 1, "max_level": 3, "strength": 1, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "weapon_p": 3, "weapon_s": 0.1, "class": WARRIOR, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Holzbrett", "min_level": 1, "max_level": 3, "strength": 4, "dexterity": 0, "endurance": 1, "precision": 0, "armor": 0, "weapon_p": 5, "weapon_s": 0.2, "class": WARRIOR, "type": WEAPON, "sub_type": SWORD},
     {"name": "Viel zu kleines Messer", "min_level": 1, "max_level": 4, "strength": 0, "dexterity": 2, "endurance": 0, "precision": 3, "armor": 0, "weapon_p": 3, "weapon_s": 0.8, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Buttermesser", "min_level": 1, "max_level": 4, "strength": 1, "dexterity": 2, "endurance": 0, "precision": 1, "armor": 0, "weapon_p": 4, "weapon_s": 0.8, "type": WEAPON, "sub_type": SWORD},
     
-    # --- LEVEL 4-7 (Erste Gehversuche) ---
-    {"name": "Holzknüppel", "min_level": 2, "max_level": 6, "strength": 3, "dexterity": 0, "endurance": 2, "precision": 0, "armor": 0, "weapon_p": 7, "weapon_s": 0.4, "type": WEAPON, "sub_type": SWORD},
-    {"name": "Bokuto (Holzschwert)", "min_level": 3, "max_level": 7, "strength": 2, "dexterity": 4, "endurance": 1, "precision": 2, "armor": 0, "weapon_p": 9, "weapon_s": 0.5, "type": WEAPON, "sub_type": SWORD},
-    {"name": "Antikes Messer (rostig)", "min_level": 4, "max_level": 8, "strength": 1, "dexterity": 3, "endurance": 0, "precision": 5, "armor": 0, "weapon_p": 8, "weapon_s": 0.3, "type": WEAPON, "sub_type": SWORD},
+    # --- LEVEL 4-7 (In Between) ---
+    {"name": "Holzknüppel", "min_level": 2, "max_level": 6, "strength": 3, "dexterity": 0, "endurance": 2, "precision": 0, "armor": 0, "weapon_p": 8, "weapon_s": 0.2, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Bokuto", "min_level": 3, "max_level": 7, "strength": 2, "dexterity": 2, "endurance": 1, "precision": 1, "armor": 0, "weapon_p": 7, "weapon_s": 0.6, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Antikes Messer", "min_level": 4, "max_level": 8, "strength": 1, "dexterity": 1, "endurance": 0, "precision": 1, "armor": 0, "weapon_p": 8, "weapon_s": 0.2, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Küchenmesser", "min_level": 4, "max_level": 8, "strength": 1, "dexterity": 2, "endurance": 0, "precision": 5, "armor": 0, "weapon_p": 10, "weapon_s": 0.7, "type": WEAPON, "sub_type": SWORD},
 
-    # --- LEVEL 8-11 (Langsam wird es ernst) ---
-    {"name": "Bauernwehr (rostiges Messer)", "min_level": 6, "max_level": 10, "strength": 4, "dexterity": 2, "endurance": 2, "precision": 1, "armor": 0, "weapon_p": 12, "weapon_s": 0.5, "type": WEAPON, "sub_type": SWORD},
-    {"name": "Speer mit Holzspitze", "min_level": 8, "max_level": 12, "strength": 2, "dexterity": 6, "endurance": 1, "precision": 7, "armor": 0, "weapon_p": 15, "weapon_s": 0.6, "type": WEAPON, "sub_type": SWORD},
-    {"name": "Gebrochene Lanze", "min_level": 10, "max_level": 14, "strength": 8, "dexterity": 1, "endurance": 4, "precision": 0, "armor": 0, "weapon_p": 18, "weapon_s": 0.2, "type": WEAPON, "sub_type": SWORD},
+    # --- LEVEL 8-11 (Waffe zum besiegen des ersten Dungeon) ---
+    {"name": "Bauernwehr (rostiges Messer)", "min_level": 6, "max_level": 10, "strength": 5, "dexterity": 1, "endurance": 2, "precision": 1, "armor": 0, "weapon_p": 12, "weapon_s": 0.3, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Speer mit Holzspitze", "min_level": 8, "max_level": 12, "strength": 2, "dexterity": 5, "endurance": 1, "precision": 6, "armor": 0, "weapon_p": 15, "weapon_s": 0.4, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Gebrochene Lanze", "min_level": 10, "max_level": 14, "strength": 4, "dexterity": 1, "endurance": 4, "precision": 0, "armor": 0, "weapon_p": 18, "weapon_s": 0.2, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Rostiges Beil", "min_level": 10, "max_level": 14, "strength": 0, "dexterity": 1, "endurance": 2, "precision": 1, "armor": 0, "weapon_p": 16, "weapon_s": 0.4, "type": WEAPON, "sub_type": SWORD},
 
     # --- LEVEL 12-15 (Die "Top-Tier" Schrottwaffen) ---
-    {"name": "Dreschflegel (kekw)", "min_level": 12, "max_level": 15, "strength": 12, "dexterity": -2, "endurance": 5, "precision": -2, "armor": 0, "weapon_p": 25, "weapon_s": 0.1, "type": WEAPON, "sub_type": SWORD},
-    {"name": "Flamberge (minderwertig)", "min_level": 13, "max_level": 15, "strength": 10, "dexterity": 5, "endurance": 3, "precision": 8, "armor": 0, "weapon_p": 22, "weapon_s": 0.7, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Dreschflegel", "min_level": 11, "max_level": 15, "strength": 6, "dexterity": 2, "endurance": 5, "precision": 0, "armor": 0, "weapon_p": 25, "weapon_s": 0.1, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Flamberge", "min_level": 13, "max_level": 15, "strength": 0, "dexterity": 5, "endurance": 3, "precision": 8, "armor": 0, "weapon_p": 22, "weapon_s": 0.6, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Speer", "min_level": 12, "max_level": 15, "strength": 2, "dexterity": 0, "endurance": 5, "precision": 2, "armor": 0, "weapon_p": 20, "weapon_s": 0.7, "type": WEAPON, "sub_type": SWORD},
+    {"name": "Handaxt", "min_level": 13, "max_level": 15, "strength": 2, "dexterity": 5, "endurance": 0, "precision": 8, "armor": 0, "weapon_p": 19, "weapon_s": 0.9, "type": WEAPON, "sub_type": SWORD},
+
+    # Level 15 Legendary
 
 
     # Warrior Weapons Stage 2
@@ -283,8 +291,8 @@ def roll_item_rarity(stat_list):
 
     return rarity, new_stat_list
 
-def create_random_item(player_level, x = 0, y = 0):
-    pool = get_available_items(player_level)
+def create_random_item(player_level, player_class, x = 0, y = 0):
+    pool = get_available_items(player_level, player_class)
 
     if not pool:
         return None

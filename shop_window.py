@@ -27,7 +27,7 @@ class Shop_Window():
                 self.item_holder_list.append(Item_Holder(x, y, ITEM_HOLDER_SIZE, ITEM_HOLDER_SIZE, "blue", SHOP))
 
     def create_new_item(self, item_holder):
-        item = create_random_item(self.character.level, item_holder.rect.center[0], item_holder.rect.center[1])
+        item = create_random_item(self.character.level, self.character.class_type, item_holder.rect.center[0], item_holder.rect.center[1])
 
         self.character.shop_items.append(item)
 
